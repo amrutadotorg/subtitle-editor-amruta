@@ -1,0 +1,14 @@
+FROM node:24-alpine
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci
+
+# source code mounted via volume at runtime (docker-compose)
+EXPOSE 3000
+ENV NODE_ENV=development
+ENV NEXT_TELEMETRY_DISABLED=1
+
+CMD ["npm", "run", "dev"]
+

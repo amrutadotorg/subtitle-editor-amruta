@@ -1,0 +1,140 @@
+import { useCallback, useState } from "react";
+
+const MAX_HISTORY_LENGTH = 50;
+
+export interface UndoHistory<T> {
+  past: T[];
+  present: T;
+  future: T[];
+}
+
+// Type for the action passed to the state setter, similar to React's useState setter
+type SetStateAction<T> = T | ((prevState: T) => T);
+
+export interface UndoableState<T> {
+  present: T;
+  setState: (newState: SetStateAction<T>) => void;
+  replaceState: (nextState: T) => void;
+  undo: () => void;
+  redo: () => void;
+  canUndo: boolean;
+  canRedo: boolean;
+  getSnapshot: () => UndoHistory<T>;
+  setSnapshot: (history: UndoHistory<T>) => void;
+}
+
+/**
+ * A custom hook to manage state with undo/redo capabilities.
+ * @param initialState The initial state value.
+ * @returns Named state, mutation, history, and undo/redo controls.
+ */
+export function useUndoableState<T>(
+  initialState: T,
+  options?: { isEqual?: (a: T, b: T) => boolean },
+): UndoableState<T> {
+  const [history, setHistory] = useState<UndoHistory<T>>({
+    past: [],
+    present: initialState,
+    future: [],
+  });
+
+  const canUndo = history.past.length > 0;
+  const canRedo = history.future.length > 0;
+  const isEqual = options?.isEqual ?? Object.is;
+
+  // State setter function that updates history
+  const setState = (action: SetStateAction<T>) => {
+    setHistory((currentHistory) => {
+      const previousPresent = currentHistory.present;
+      // Calculate the new present state based on the action
+      const newPresent =
+        typeof action === "function"
+          ? (action as (prevState: T) => T)(previousPresent)
+          : action;
+
+      // Bail when the comparer marks the new state as identical
+      if (isEqual(previousPresent, newPresent)) {
+        return currentHistory;
+      }
+
+      // Add the previous present state to the past and trim it if it grows
+      // beyond the configured limit to avoid unbounded memory usage
+      const newPast = [...currentHistory.past, previousPresent].slice(
+        -MAX_HISTORY_LENGTH,
+      );
+
+      return {
+        past: newPast,
+        present: newPresent,
+        future: [], // Clear future history on new state change
+      };
+    });
+  };
+
+  // Replace present state without recording to history.
+  const replaceState = (nextState: T) => {
+    setHistory({
+      past: [],
+      present: nextState,
+      future: [],
+    });
+  };
+
+  // Undo function
+  const undo = () => {
+    if (!canUndo) return; // Do nothing if there's no past state
+
+    setHistory((currentHistory) => {
+      const { past, present, future } = currentHistory;
+      const previous = past[past.length - 1]; // Get the last state from the past
+      const newPast = past.slice(0, past.length - 1); // Remove the last state from the past
+      const newFuture = [present, ...future]; // Add the current state to the future
+
+      return {
+        past: newPast,
+        present: previous, // Set the present state to the previous one
+        future: newFuture,
+      };
+    });
+  };
+
+  // Redo function
+  const redo = () => {
+    if (!canRedo) return; // Do nothing if there's no future state
+
+    setHistory((currentHistory) => {
+      const { past, present, future } = currentHistory;
+      const next = future[0]; // Get the next state from the future
+      const newFuture = future.slice(1); // Remove the next state from the future
+      // Add the current state to the past and trim history to avoid excessive memory usage
+      const newPast = [...past, present].slice(-MAX_HISTORY_LENGTH);
+
+      return {
+        past: newPast,
+        present: next, // Set the present state to the next one
+        future: newFuture,
+      };
+    });
+  };
+
+  const getHistorySnapshot = useCallback(() => history, [history]);
+  const setHistorySnapshot = useCallback((nextHistory: UndoHistory<T>) => {
+    setHistory({
+      past: nextHistory.past.slice(-MAX_HISTORY_LENGTH),
+      present: nextHistory.present,
+      future: nextHistory.future.slice(0, MAX_HISTORY_LENGTH),
+    });
+  }, []);
+
+  return {
+    present: history.present,
+    setState,
+    replaceState,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
+    getSnapshot: getHistorySnapshot,
+    setSnapshot: setHistorySnapshot,
+  };
+}

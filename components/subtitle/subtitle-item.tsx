@@ -1,0 +1,302 @@
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  useSubtitleActionsContext,
+  useSubtitleState,
+  useSubtitleTimings,
+} from "@/context/subtitle-context";
+import { getCuePreviewSeekTime } from "@/lib/subtitle-playback";
+import { getTrackColor, getTrackHandleColor } from "@/lib/track-colors";
+import {
+  computeCueMetrics,
+  type CueWarning,
+} from "@/lib/subtitle-metrics";
+import { cn, timeToSeconds } from "@/lib/utils";
+import type { Subtitle } from "@/types/subtitle";
+import { motion } from "motion/react";
+import { useTranslations } from "next-intl";
+import { memo, useMemo, useState } from "react";
+import SubtitleItemDeleteButton from "./subtitle-item-delete-button";
+import SubtitleItemMergeActions from "./subtitle-item-merge-actions";
+import SubtitleTextEditor from "./subtitle-item-text-editor";
+import SubtitleTimeFields from "./subtitle-time-fields";
+
+interface SubtitleItemProps {
+  subtitle: Subtitle;
+  nextSubtitle: Subtitle | null;
+  previousSubtitle: Subtitle | null;
+  isLastItem: boolean;
+  currentTime: number;
+  editingSubtitleUuid: string | null;
+  onScrollToRegion: (uuid: string) => void;
+  isPlaying: boolean;
+  resumePlayback: () => void;
+  setIsPlaying: React.Dispatch<React.SetStateAction<boolean>>;
+  setPlaybackTime: (time: number) => void;
+  setEditingSubtitleUuid: React.Dispatch<React.SetStateAction<string | null>>;
+  onPrepareSubtitleInteraction: (uuid: string) => void;
+}
+
+const SubtitleItem = memo(function SubtitleItem({
+  subtitle,
+  nextSubtitle,
+  previousSubtitle,
+  isLastItem,
+  currentTime,
+  editingSubtitleUuid,
+  onScrollToRegion,
+  isPlaying,
+  resumePlayback,
+  setIsPlaying,
+  setPlaybackTime,
+  setEditingSubtitleUuid,
+  onPrepareSubtitleInteraction,
+}: SubtitleItemProps) {
+  const {
+    updateSubtitleStartTimeAction,
+    updateSubtitleEndTimeAction,
+    updateSubtitleTextAction,
+    mergeSubtitlesAction,
+    addSubtitleAction,
+    deleteSubtitleAction,
+    splitSubtitleAction,
+  } = useSubtitleActionsContext();
+  const { byUuid: subtitleTimingMap } = useSubtitleTimings();
+  const {
+    activeTrackId,
+    showSubtitleDuration,
+    tracks,
+    rulesMaxCps,
+    rulesMaxLineLength,
+    rulesMinDurationMs,
+    rulesMaxDurationMs,
+  } = useSubtitleState();
+  const t = useTranslations();
+
+  const resolveStartSeconds = (candidate: Subtitle | null) => {
+    if (!candidate) {
+      return null;
+    }
+    const entry = subtitleTimingMap.get(candidate.uuid);
+    return entry ? entry.start : timeToSeconds(candidate.startTime);
+  };
+
+  const resolveEndSeconds = (candidate: Subtitle | null) => {
+    if (!candidate) {
+      return null;
+    }
+    const entry = subtitleTimingMap.get(candidate.uuid);
+    return entry ? entry.end : timeToSeconds(candidate.endTime);
+  };
+
+  const startSeconds = resolveStartSeconds(subtitle) ?? 0;
+  const endSeconds = resolveEndSeconds(subtitle) ?? startSeconds;
+  const previewStartSeconds = getCuePreviewSeekTime(startSeconds, endSeconds);
+  const nextStartSeconds = resolveStartSeconds(nextSubtitle);
+  const durationSeconds = Math.max(0, endSeconds - startSeconds);
+
+  const isEditing = editingSubtitleUuid === subtitle.uuid;
+  const isCurrent = startSeconds <= currentTime && endSeconds > currentTime;
+  const activeTrackIndex = Math.max(
+    tracks.findIndex((track) => track.id === activeTrackId),
+    0,
+  );
+  const currentRowStyle = isCurrent
+    ? ({
+        "--subtitle-row-current-bg": getTrackColor(activeTrackIndex, 0.22),
+        "--subtitle-row-current-bar": getTrackHandleColor(activeTrackIndex),
+      } as React.CSSProperties)
+    : undefined;
+
+  const cuePrevEndSeconds = previousSubtitle
+    ? resolveEndSeconds(previousSubtitle)
+    : null;
+
+  const [localText, setLocalText] = useState<string | null>(null);
+
+  const currentSubtitleForMetrics = useMemo(() => {
+    if (localText === null) return subtitle;
+    return { ...subtitle, text: localText };
+  }, [subtitle, localText]);
+
+  const cueMetrics = useMemo(() => {
+    if (!showSubtitleDuration) return null;
+    return computeCueMetrics(
+      currentSubtitleForMetrics,
+      cuePrevEndSeconds,
+      nextStartSeconds,
+      {
+        maxCps: rulesMaxCps,
+        maxWpm: 180,
+        maxLineLength: rulesMaxLineLength,
+        maxLines: 2,
+        minDurationSeconds: rulesMinDurationMs / 1000,
+        maxDurationSeconds: rulesMaxDurationMs / 1000,
+      },
+    );
+  }, [
+    showSubtitleDuration,
+    currentSubtitleForMetrics,
+    cuePrevEndSeconds,
+    nextStartSeconds,
+    rulesMaxCps,
+    rulesMaxLineLength,
+    rulesMinDurationMs,
+    rulesMaxDurationMs,
+  ]);
+
+  const cps = cueMetrics ? cueMetrics.cps : 0;
+  const cueWarnings = cueMetrics ? cueMetrics.warnings : [];
+
+  const warningLabel = (w: CueWarning): string => {
+    switch (w.kind) {
+      case "cps_high":
+        return t("statistics.warnCpsHigh", {
+          value: w.value.toFixed(1),
+          max: w.threshold,
+        });
+      case "wpm_high":
+        return t("statistics.warnWpmHigh", {
+          value: w.value.toFixed(1),
+          max: w.threshold,
+        });
+      case "line_length":
+        return t("statistics.warnLineLength", { max: w.threshold });
+      case "too_many_lines":
+        return t("statistics.warnTooManyLines", {
+          count: w.value,
+          max: w.threshold,
+        });
+      case "duration_short":
+        return t("statistics.warnDurationShort", {
+          value: w.value.toFixed(2),
+          min: w.threshold,
+        });
+      case "duration_long":
+        return t("statistics.warnDurationLong", {
+          value: w.value.toFixed(1),
+          max: w.threshold,
+        });
+    }
+  };
+
+  return (
+    <motion.div
+      key={subtitle.uuid}
+      initial={{ opacity: 0, height: 0 }}
+      animate={{ opacity: 1, height: "auto" }}
+      exit={{ opacity: 0, y: 0 }}
+      transition={{ duration: 0.1 }}
+    >
+      <TooltipProvider>
+        {/* biome-ignore lint/a11y/noStaticElementInteractions: Interactive div */}
+        <div
+          id={`subtitle-${subtitle.uuid}`}
+          data-current={isCurrent ? "true" : undefined}
+          style={currentRowStyle}
+          tabIndex={-1}
+          onPointerDown={() => onPrepareSubtitleInteraction(subtitle.uuid)}
+          onClick={() => onScrollToRegion(subtitle.uuid)}
+          onFocus={() => {
+            if (isPlaying) {
+              return;
+            }
+            setPlaybackTime(previewStartSeconds);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Tab") {
+              e.preventDefault();
+              setPlaybackTime(previewStartSeconds);
+              setIsPlaying(true);
+              resumePlayback();
+            }
+          }}
+          className={`subtitle-row px-4 py-2 border-b border-b-black dark:border-b-white cursor-pointer grid gap-4 items-center ${
+            showSubtitleDuration
+              ? "grid-cols-[1rem_7rem_5rem_1fr]"
+              : "grid-cols-[1rem_7rem_1fr]"
+          }`}
+        >
+          <div className="text-sm font-mono">{subtitle.id}</div>
+
+          <SubtitleTimeFields
+            subtitle={subtitle}
+            startSeconds={startSeconds}
+            endSeconds={endSeconds}
+            editingSubtitleUuid={editingSubtitleUuid}
+            onUpdateStartTime={updateSubtitleStartTimeAction}
+            onUpdateEndTime={updateSubtitleEndTimeAction}
+          />
+
+          {showSubtitleDuration ? (
+            <div className="flex flex-col justify-center items-center gap-1.5 text-sm font-mono tabular-nums text-center">
+              <span className={cn(
+                "font-semibold text-xs px-1.5 py-0.5 rounded-sm select-none",
+                Math.round(cps) <= rulesMaxCps
+                  ? "text-green-600 dark:text-green-400 bg-green-500/10"
+                  : "text-[var(--ruby-9)] dark:text-[color(display-p3_0.715_0.193_0.262)] bg-amber-500/10 font-bold"
+              )}>
+                {Math.round(cps)} {t("subtitleStats.cpsUnit")}
+              </span>
+
+            </div>
+          ) : null}
+
+          <div className="flex justify-between items-start gap-4">
+            <div className="flex-1">
+              <SubtitleTextEditor
+                subtitle={subtitle}
+                isEditing={isEditing}
+                previousSubtitle={previousSubtitle}
+                nextSubtitle={nextSubtitle}
+                onPrepareSubtitleInteraction={onPrepareSubtitleInteraction}
+                onScrollToRegion={onScrollToRegion}
+                isPlaying={isPlaying}
+                resumePlayback={resumePlayback}
+                setIsPlaying={setIsPlaying}
+                setPlaybackTime={setPlaybackTime}
+                setEditingSubtitleUuid={setEditingSubtitleUuid}
+                resolveStartSeconds={resolveStartSeconds}
+                startSeconds={startSeconds}
+                onUpdateText={updateSubtitleTextAction}
+                onSplitSubtitle={splitSubtitleAction}
+                onLocalTextChange={setLocalText}
+                onAddSubtitle={(currentId: number, nextId: number | null, text: string) => {
+                  const newUuid = addSubtitleAction(currentId, nextId, text);
+                  if (newUuid) {
+                    setEditingSubtitleUuid(newUuid);
+                  }
+                }}
+              />
+            </div>
+
+            <SubtitleItemDeleteButton
+              onDelete={() => deleteSubtitleAction(subtitle.id)}
+            />
+          </div>
+        </div>
+
+        <SubtitleItemMergeActions
+          subtitle={subtitle}
+          nextSubtitle={nextSubtitle}
+          isLastItem={isLastItem}
+          nextStartSeconds={nextStartSeconds}
+          endSeconds={endSeconds}
+          onMerge={mergeSubtitlesAction}
+          onAdd={(currentId, nextId, text) => {
+            const newUuid = addSubtitleAction(currentId, nextId, text);
+            if (newUuid) {
+              setEditingSubtitleUuid(newUuid);
+            }
+          }}
+        />
+      </TooltipProvider>
+    </motion.div>
+  );
+});
+
+export default SubtitleItem;
