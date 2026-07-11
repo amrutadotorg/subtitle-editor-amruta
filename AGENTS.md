@@ -204,6 +204,27 @@ import { useEffect, useRef, useState } from "react";
 - **ESLint rule `react-hooks/set-state-in-effect`** is disabled for 10 specific files (legitimate pattern for autosave); do not re-enable without understanding the autosave architecture
 - **`fast-xml-parser`** is pinned in overrides to 5.7.1 — do not upgrade
 
+## Git Workflow
+
+- **`main`** is the sole long-lived branch; all work lands here.
+- CI runs on every push and PR to `main` via `.github/workflows/ci.yml`.
+- Before opening a PR, run the full [Verification Workflow](#verification-workflow) locally.
+- Keep commits atomic: one logical change per commit.
+- Do not force-push to `main` or rewrite published history.
+- Use `git add -A` cautiously — review `git status` before staging.
+
+### CI Pipeline (`.github/workflows/ci.yml`)
+
+Triggers on push/PR to `main`. Steps, in order:
+
+1. `npm run lint` — ESLint (zero warnings)
+2. `npm run format` — Biome auto-format
+3. `npm run format:check` — Biome format verification
+4. `npm run test` — Node test runner
+5. `npm run build` — Next.js production build
+
+All steps must pass. A failure in any step blocks the merge.
+
 ## Do Not Touch
 
 - **`.next/`** — Next.js build output (auto-generated)
