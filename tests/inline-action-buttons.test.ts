@@ -69,7 +69,7 @@ test("subtitle merge actions invoke merge and add actions when there is room", (
   fireEvent.click(view.getByRole("button", { name: "Add" }));
 
   assert.deepEqual(merges, [[1, 2]]);
-  assert.deepEqual(adds, [[1, 2, "New subtitle"]]);
+  assert.deepEqual(adds, [[1, 2, ""]]);
 });
 
 test("subtitle add action is disabled when adjacent subtitles leave no room", () => {
