@@ -318,6 +318,7 @@ export const addSubtitle = (
   beforeId: number,
   afterId: number | null,
   newSubtitleText: string = "New subtitle",
+  durationHint?: number,
 ): Subtitle[] => {
   if (subtitles.length === 0) {
     return [
@@ -350,11 +351,18 @@ export const addSubtitle = (
     // Adding in between
     const afterSub = subtitles.find((s) => s.id === afterId);
     if (!afterSub) return subtitles;
+    const startTimeSeconds = timeToSeconds(beforeSub.endTime);
+    const endTimeSeconds = timeToSeconds(afterSub.startTime);
+    const gap = endTimeSeconds - startTimeSeconds;
+    let newEndSeconds = endTimeSeconds;
+    if (durationHint !== undefined && gap >= durationHint) {
+      newEndSeconds = startTimeSeconds + durationHint;
+    }
     newSubtitle = {
       uuid: uuidv4(), // Assign new UUID
       id: beforeSub.id + 1, // Will be reordered later
       startTime: beforeSub.endTime,
-      endTime: afterSub.startTime,
+      endTime: secondsToTime(newEndSeconds),
       text: newSubtitleText,
     };
   }

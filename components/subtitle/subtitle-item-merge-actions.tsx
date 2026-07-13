@@ -14,7 +14,12 @@ interface SubtitleItemMergeActionsProps {
   nextStartSeconds: number | null;
   endSeconds: number;
   onMerge: (currentId: number, nextId: number) => void;
-  onAdd: (currentId: number, nextId: number | null, text: string) => void;
+  onAdd: (
+    currentId: number,
+    nextId: number | null,
+    text: string,
+    durationHint?: number,
+  ) => void;
 }
 
 export default function SubtitleItemMergeActions({
@@ -60,12 +65,13 @@ export default function SubtitleItemMergeActions({
         <TooltipTrigger
           type="button"
           disabled={isAddDisabled}
-          onClick={() => {
+          onClick={(event) => {
             if (!isAddDisabled) {
               onAdd(
                 subtitle.id,
                 !isLastItem && nextSubtitle ? nextSubtitle.id : null,
                 "",
+                event.shiftKey ? 3 : undefined,
               );
             }
           }}

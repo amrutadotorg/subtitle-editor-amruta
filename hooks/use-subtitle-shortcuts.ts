@@ -21,6 +21,7 @@ interface SubtitleShortcutsOptions {
     beforeId: number,
     afterId: number | null,
     text?: string,
+    durationHint?: number,
   ) => string | undefined;
 }
 
@@ -76,23 +77,27 @@ export function useSubtitleShortcuts({
               const newUuid = addSubtitleAction(
                 currentSubtitle.id,
                 nextSubtitle ? nextSubtitle.id : null,
-                ""
+                "",
               );
               if (newUuid) {
                 setEditingSubtitleUuid(newUuid);
               }
             }
-          } else if (event.key === "Tab" || (event.key === "Enter" && !event.ctrlKey && !event.metaKey)) {
+          } else if (
+            event.key === "Tab" ||
+            (event.key === "Enter" && !event.ctrlKey && !event.metaKey)
+          ) {
             setEditingSubtitleUuid(currentSubtitle.uuid);
           }
         } else {
           if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
             if (addSubtitleAction) {
-              const lastSubtitle = subtitles.length > 0 ? subtitles[subtitles.length - 1] : null;
+              const lastSubtitle =
+                subtitles.length > 0 ? subtitles[subtitles.length - 1] : null;
               const newUuid = addSubtitleAction(
                 lastSubtitle ? lastSubtitle.id : 0,
                 null,
-                ""
+                "",
               );
               if (newUuid) {
                 setEditingSubtitleUuid(newUuid);

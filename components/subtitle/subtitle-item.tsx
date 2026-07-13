@@ -11,10 +11,7 @@ import {
 } from "@/context/subtitle-context";
 import { getCuePreviewSeekTime } from "@/lib/subtitle-playback";
 import { getTrackColor, getTrackHandleColor } from "@/lib/track-colors";
-import {
-  computeCueMetrics,
-  type CueWarning,
-} from "@/lib/subtitle-metrics";
+import { computeCueMetrics, type CueWarning } from "@/lib/subtitle-metrics";
 import { cn, timeToSeconds } from "@/lib/utils";
 import type { Subtitle } from "@/types/subtitle";
 import { motion } from "motion/react";
@@ -234,15 +231,16 @@ const SubtitleItem = memo(function SubtitleItem({
 
           {showSubtitleDuration ? (
             <div className="flex flex-col justify-center items-center gap-1.5 text-sm font-mono tabular-nums text-center">
-              <span className={cn(
-                "font-semibold text-xs px-1.5 py-0.5 rounded-sm select-none",
-                Math.round(cps) <= rulesMaxCps
-                  ? "text-green-600 dark:text-green-400 bg-green-500/10"
-                  : "text-[var(--ruby-9)] dark:text-[color(display-p3_0.715_0.193_0.262)] bg-amber-500/10 font-bold"
-              )}>
+              <span
+                className={cn(
+                  "font-semibold text-xs px-1.5 py-0.5 rounded-sm select-none",
+                  Math.round(cps) <= rulesMaxCps
+                    ? "text-green-600 dark:text-green-400 bg-green-500/10"
+                    : "text-[var(--ruby-9)] dark:text-[color(display-p3_0.715_0.193_0.262)] bg-amber-500/10 font-bold",
+                )}
+              >
                 {Math.round(cps)} {t("subtitleStats.cpsUnit")}
               </span>
-
             </div>
           ) : null}
 
@@ -265,8 +263,18 @@ const SubtitleItem = memo(function SubtitleItem({
                 onUpdateText={updateSubtitleTextAction}
                 onSplitSubtitle={splitSubtitleAction}
                 onLocalTextChange={setLocalText}
-                onAddSubtitle={(currentId: number, nextId: number | null, text: string) => {
-                  const newUuid = addSubtitleAction(currentId, nextId, text);
+                onAddSubtitle={(
+                  currentId: number,
+                  nextId: number | null,
+                  text: string,
+                  durationHint?: number,
+                ) => {
+                  const newUuid = addSubtitleAction(
+                    currentId,
+                    nextId,
+                    text,
+                    durationHint,
+                  );
                   if (newUuid) {
                     setEditingSubtitleUuid(newUuid);
                   }
@@ -287,8 +295,13 @@ const SubtitleItem = memo(function SubtitleItem({
           nextStartSeconds={nextStartSeconds}
           endSeconds={endSeconds}
           onMerge={mergeSubtitlesAction}
-          onAdd={(currentId, nextId, text) => {
-            const newUuid = addSubtitleAction(currentId, nextId, text);
+          onAdd={(currentId, nextId, text, durationHint) => {
+            const newUuid = addSubtitleAction(
+              currentId,
+              nextId,
+              text,
+              durationHint,
+            );
             if (newUuid) {
               setEditingSubtitleUuid(newUuid);
             }

@@ -58,6 +58,7 @@ export interface SubtitleActions {
     beforeId: number,
     afterId: number | null,
     newSubtitleText?: string,
+    durationHint?: number,
   ) => string | undefined;
   deleteSubtitleAction: (id: number) => void;
   mergeSubtitlesAction: (id1: number, id2: number) => void;
@@ -224,15 +225,17 @@ export const useSubtitleActions = ({
       beforeId: number,
       afterId: number | null,
       newSubtitleText?: string,
+      durationHint?: number,
     ) => {
       const updatedSubtitles = addSubtitle(
         activeSubtitles,
         beforeId,
         afterId,
         newSubtitleText,
+        durationHint,
       );
       handleTrackedStateChange(updatedSubtitles);
-      
+
       const newSubtitle = updatedSubtitles.find(
         (s) => !activeSubtitles.some((old) => old.uuid === s.uuid),
       );

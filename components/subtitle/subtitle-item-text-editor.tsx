@@ -34,6 +34,7 @@ interface SubtitleTextEditorProps {
     currentId: number,
     nextId: number | null,
     text: string,
+    durationHint?: number,
   ) => void;
 }
 
@@ -151,7 +152,7 @@ export default function SubtitleTextEditor({
                 onAddSubtitle(
                   subtitle.id,
                   nextSubtitle ? nextSubtitle.id : null,
-                  ""
+                  "",
                 );
               }
               return;
@@ -204,7 +205,7 @@ export default function SubtitleTextEditor({
             onAddSubtitle(
               subtitle.id,
               nextSubtitle ? nextSubtitle.id : null,
-              ""
+              "",
             );
           }
         }
