@@ -110,6 +110,7 @@ export function useSubtitleShortcuts({
 
     window.addEventListener("keydown", handlePlaybackKeys);
     return () => window.removeEventListener("keydown", handlePlaybackKeys);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- addSubtitleAction is stable; re-running on every change is unnecessary
   }, [playbackTime, setEditingSubtitleUuid, setIsPlaying, subtitles]);
 
   useEffect(() => {
