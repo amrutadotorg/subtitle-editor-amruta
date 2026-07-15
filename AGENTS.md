@@ -90,7 +90,7 @@ npm run start        # Start production server
 npm run lint         # ESLint with max-warnings=0 (zero tolerance)
 npm run format       # Biome auto-format entire codebase
 npm run format:check # Biome format check only (no auto-fix, no lint)
-npm run knip         # Detect unused files, exports, dependencies, and types
+npm run knip         # Detect unused files, exports, dependencies, and types (--no-exit-code; reports issues without failing)
 ```
 
 ### Testing

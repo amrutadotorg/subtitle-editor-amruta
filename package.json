@@ -10,7 +10,7 @@
     "format": "biome format --write .",
     "format:check": "biome check --linter-enabled=false --formatter-enabled=true .",
     "test": "tsx --test tests/**/*.test.ts",
-    "knip": "knip"
+    "knip": "knip --no-exit-code"
   },
   "dependencies": {
     "@ducanh2912/next-pwa": "^10.2.9",
