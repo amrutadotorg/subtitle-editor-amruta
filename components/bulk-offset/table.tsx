@@ -8,7 +8,7 @@ import type { Subtitle } from "@/types/subtitle";
 import type { CheckedState } from "@radix-ui/react-checkbox";
 import { useTranslations } from "next-intl";
 
-export interface PreviewSubtitle {
+interface PreviewSubtitle {
   previewStart: string;
   previewEnd: string;
   startChanged: boolean;

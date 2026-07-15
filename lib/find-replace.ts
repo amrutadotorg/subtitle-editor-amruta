@@ -1,12 +1,12 @@
 import { escapeRegExp } from "./utils";
 
-export interface FindRegexOptions {
+interface FindRegexOptions {
   isCaseSensitive: boolean;
   isMatchFullWord: boolean;
   isRegexMode: boolean;
 }
 
-export interface FindRegexConfig {
+interface FindRegexConfig {
   source: string;
   flags: string;
 }
@@ -34,20 +34,6 @@ export function getFindRegexConfig(
 
     new RegExp(safePattern, flags);
     return { source: safePattern, flags };
-  } catch {
-    return null;
-  }
-}
-
-export function createFindRegexFromConfig(
-  config: FindRegexConfig | null,
-): RegExp | null {
-  if (!config) {
-    return null;
-  }
-
-  try {
-    return new RegExp(config.source, config.flags);
   } catch {
     return null;
   }

@@ -1,4 +1,4 @@
-export type RegexFeatures = {
+type RegexFeatures = {
   allowZeroLength: boolean;
   hasStartAnchor: boolean;
   hasEndAnchor: boolean;
@@ -129,7 +129,7 @@ export const collectMatches = (
   return matches;
 };
 
-export const expandReplacement = (
+const expandReplacement = (
   replacement: string,
   match: RegExpExecArray,
   original: string,

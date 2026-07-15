@@ -72,7 +72,7 @@ export const buildVttContent = (
 };
 
 // Optional helper for SRT export if we decide to strip VTT-only tags.
-export const stripVttStyling = (text: string, allowBasic = true): string => {
+const stripVttStyling = (text: string, allowBasic = true): string => {
   if (!allowBasic) return text.replace(/<\/?[^>]+>/g, "");
   // Remove all tags except <i>, <b>, <u>
   return text.replace(/<(?!\/?(?:i|b|u)\b)[^>]+>/g, "");

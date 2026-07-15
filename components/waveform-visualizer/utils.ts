@@ -10,7 +10,7 @@ import type { RegionMapEntry } from "./use-label-measurements";
 const DEFAULT_HANDLE_COLOR = "#ef4444";
 type Theme = "light" | "dark";
 
-export const createSubtitleRegionContent = (
+const createSubtitleRegionContent = (
   startTime: string,
   text: string,
   endTime: string,
@@ -152,7 +152,7 @@ export const hasStructuralRegionChange = (
 const getRegionRenderKey = (subtitle: Subtitle, theme: Theme): string =>
   [theme, subtitle.startTime, subtitle.endTime, subtitle.text].join("\u001f");
 
-export const positionRegionElement = (
+const positionRegionElement = (
   region: Region,
   trackIndex: number,
   trackCount: number,

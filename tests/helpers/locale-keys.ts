@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 
-export type JsonValue =
+type JsonValue =
   | string
   | number
   | boolean
@@ -8,7 +8,7 @@ export type JsonValue =
   | JsonValue[]
   | { [key: string]: JsonValue };
 
-export type JsonObject = { [key: string]: JsonValue };
+type JsonObject = { [key: string]: JsonValue };
 
 export const flattenKeys = (value: JsonObject, prefix = ""): string[] =>
   Object.entries(value).flatMap(([key, child]) =>

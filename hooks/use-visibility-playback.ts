@@ -23,7 +23,7 @@ interface PlaybackVisibilityCoordinatorOptions {
 export const shouldIgnorePauseWhileHidden = (playInBackground: boolean) =>
   playInBackground && typeof document !== "undefined" && document.hidden;
 
-export const useVisibilityPlayback = ({
+const useVisibilityPlayback = ({
   onHide,
   onShow,
 }: VisibilityPlaybackOptions) => {

@@ -1,7 +1,7 @@
 import type { Subtitle } from "@/types/subtitle";
 import { secondsToTime, timeToSeconds } from "@/lib/utils";
 
-export type BulkShiftTarget = "start" | "end" | "both";
+type BulkShiftTarget = "start" | "end" | "both";
 
 export const computeBulkShift = (
   subtitles: Subtitle[],

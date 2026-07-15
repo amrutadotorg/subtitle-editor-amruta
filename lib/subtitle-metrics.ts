@@ -5,7 +5,7 @@ import { timeToSeconds } from "@/lib/utils";
 // Thresholds
 // ---------------------------------------------------------------------------
 
-export interface MetricsThresholds {
+interface MetricsThresholds {
   maxCps: number;
   maxWpm: number;
   maxLineLength: number;
@@ -48,7 +48,7 @@ export interface CueWarning {
   threshold: number;
 }
 
-export interface CueMetrics {
+interface CueMetrics {
   uuid: string;
   id: number;
   durationSeconds: number;
@@ -71,17 +71,17 @@ export interface CueMetrics {
 // Track-level types
 // ---------------------------------------------------------------------------
 
-export interface RepeatedLine {
+interface RepeatedLine {
   text: string;
   count: number;
 }
 
-export interface WordFrequency {
+interface WordFrequency {
   word: string;
   count: number;
 }
 
-export interface TrackMetrics {
+interface TrackMetrics {
   totalCues: number;
   totalWords: number;
   totalChars: number;
@@ -128,8 +128,7 @@ export function computeCueMetrics(
   const charCount = Array.from(subtitle.text).length;
 
   const cps = durationSeconds > 0 ? charCount / durationSeconds : 0;
-  const wpm =
-    durationSeconds > 0 ? wordCount / (durationSeconds / 60) : 0;
+  const wpm = durationSeconds > 0 ? wordCount / (durationSeconds / 60) : 0;
 
   const lines = subtitle.text.split("\n");
   const lineCount = lines.length;
@@ -146,10 +145,18 @@ export function computeCueMetrics(
   const warnings: CueWarning[] = [];
 
   if (cps > thresholds.maxCps) {
-    warnings.push({ kind: "cps_high", value: cps, threshold: thresholds.maxCps });
+    warnings.push({
+      kind: "cps_high",
+      value: cps,
+      threshold: thresholds.maxCps,
+    });
   }
   if (wpm > thresholds.maxWpm) {
-    warnings.push({ kind: "wpm_high", value: wpm, threshold: thresholds.maxWpm });
+    warnings.push({
+      kind: "wpm_high",
+      value: wpm,
+      threshold: thresholds.maxWpm,
+    });
   }
   if (maxLineLengthValue > thresholds.maxLineLength) {
     warnings.push({
@@ -201,10 +208,46 @@ export function computeCueMetrics(
 
 const WORD_SPLIT_RE = /[\s\p{P}]+/u;
 const STOP_WORDS = new Set([
-  "a", "an", "the", "and", "or", "but", "in", "on", "at", "to", "for",
-  "of", "with", "by", "from", "is", "it", "as", "be", "this", "that",
-  "was", "are", "were", "been", "have", "has", "had", "do", "does", "did",
-  "not", "i", "you", "he", "she", "we", "they", "my", "your",
+  "a",
+  "an",
+  "the",
+  "and",
+  "or",
+  "but",
+  "in",
+  "on",
+  "at",
+  "to",
+  "for",
+  "of",
+  "with",
+  "by",
+  "from",
+  "is",
+  "it",
+  "as",
+  "be",
+  "this",
+  "that",
+  "was",
+  "are",
+  "were",
+  "been",
+  "have",
+  "has",
+  "had",
+  "do",
+  "does",
+  "did",
+  "not",
+  "i",
+  "you",
+  "he",
+  "she",
+  "we",
+  "they",
+  "my",
+  "your",
 ]);
 
 /**
@@ -222,7 +265,12 @@ export function computeTrackMetrics(
     const next = index < subtitles.length - 1 ? subtitles[index + 1] : null;
     const prevEndSeconds = prev ? timeToSeconds(prev.endTime) : null;
     const nextStartSeconds = next ? timeToSeconds(next.startTime) : null;
-    return computeCueMetrics(subtitle, prevEndSeconds, nextStartSeconds, thresholds);
+    return computeCueMetrics(
+      subtitle,
+      prevEndSeconds,
+      nextStartSeconds,
+      thresholds,
+    );
   });
 
   const totalCues = perCue.length;

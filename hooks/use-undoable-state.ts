@@ -11,7 +11,7 @@ export interface UndoHistory<T> {
 // Type for the action passed to the state setter, similar to React's useState setter
 type SetStateAction<T> = T | ((prevState: T) => T);
 
-export interface UndoableState<T> {
+interface UndoableState<T> {
   present: T;
   setState: (newState: SetStateAction<T>) => void;
   replaceState: (nextState: T) => void;

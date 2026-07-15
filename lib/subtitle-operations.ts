@@ -203,7 +203,7 @@ export function extractVttPrologue(vttContent: string): {
   return { header, prologue };
 }
 
-export const reorderSubtitleIds = (subtitles: Subtitle[]): Subtitle[] => {
+const reorderSubtitleIds = (subtitles: Subtitle[]): Subtitle[] => {
   let nextId = 1;
   return subtitles.map((subtitle) => {
     const newId = nextId;

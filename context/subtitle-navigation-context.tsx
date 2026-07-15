@@ -2,13 +2,15 @@
 
 import { createContext, useContext } from "react";
 
-export interface SubtitleNavigationContextValue {
+interface SubtitleNavigationContextValue {
   navigateToSubtitle: (uuid: string) => void;
 }
 
-const SubtitleNavigationContext = createContext<SubtitleNavigationContextValue>({
-  navigateToSubtitle: () => {},
-});
+const SubtitleNavigationContext = createContext<SubtitleNavigationContextValue>(
+  {
+    navigateToSubtitle: () => {},
+  },
+);
 
 export const SubtitleNavigationProvider = SubtitleNavigationContext.Provider;
 

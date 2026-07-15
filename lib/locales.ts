@@ -1,6 +1,6 @@
 export const locales = ["de", "en", "pl", "yue"] as const;
 
-export type Locale = (typeof locales)[number];
+type Locale = (typeof locales)[number];
 
 export const localeConfig: Record<
   Locale,

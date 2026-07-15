@@ -28,7 +28,7 @@ A browser-based subtitle editor (SRT/VTT) with multi-track support, audio wavefo
 
 ```
 ├── app/                    # Next.js App Router pages and API routes
-│   ├── [locale]/           # i18n-routed pages (page.tsx, layout.tsx, head.tsx)
+│   ├── [locale]/           # i18n-routed pages (page.tsx, layout.tsx)
 │   ├── api/                # API routes (vimeo/download, load-shared)
 │   ├── faq/                # Static FAQ page
 │   ├── offline/            # PWA offline fallback page
@@ -90,6 +90,7 @@ npm run start        # Start production server
 npm run lint         # ESLint with max-warnings=0 (zero tolerance)
 npm run format       # Biome auto-format entire codebase
 npm run format:check # Biome format check only (no auto-fix, no lint)
+npm run knip         # Detect unused files, exports, dependencies, and types
 ```
 
 ### Testing
@@ -112,11 +113,12 @@ npm run lint            # 1. ESLint — must pass with zero warnings
 npm run format          # 2. Biome format — auto-fix formatting
 npm run format:check    # 3. Biome format verify — must exit clean
 npm run test            # 4. All unit tests must pass
+npm run knip            # 5. No unused files, exports, or dependencies
 ```
 
 For UI-impacting changes, also run:
 ```bash
-npm run build           # 5. Production build must succeed (catches type errors, missing exports)
+npm run build           # 6. Production build must succeed (catches type errors, missing exports)
 ```
 
 **Do NOT skip any step.** ESLint has `--max-warnings=0`, so any warning is a failure.
@@ -221,7 +223,8 @@ Triggers on push/PR to `main`. Steps, in order:
 2. `npm run format` — Biome auto-format
 3. `npm run format:check` — Biome format verification
 4. `npm run test` — Node test runner
-5. `npm run build` — Next.js production build
+5. `npm run knip` — Unused code detection
+6. `npm run build` — Next.js production build
 
 All steps must pass. A failure in any step blocks the merge.
 

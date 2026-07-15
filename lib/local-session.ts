@@ -1,7 +1,7 @@
 import type { Subtitle, SubtitleTrack } from "@/types/subtitle";
 
 export const LOCAL_SESSION_STORAGE_KEY = "subtitle-editor:autosave:v1";
-export const SETTINGS_STORAGE_KEY = "subtitle-editor:settings:v1";
+const SETTINGS_STORAGE_KEY = "subtitle-editor:settings:v1";
 export const LOCAL_SESSION_SCHEMA_VERSION = 1;
 
 export interface LocalSessionPreferences {
@@ -26,7 +26,7 @@ export interface LocalSessionSnapshot {
   vimeoVideoId?: string;
 }
 
-export interface CreateLocalSessionSnapshotInput {
+interface CreateLocalSessionSnapshotInput {
   tracks: SubtitleTrack[];
   activeTrackId: string | null;
   preferences: LocalSessionPreferences;
@@ -35,13 +35,13 @@ export interface CreateLocalSessionSnapshotInput {
   appVersion?: string;
 }
 
-export interface LocalSessionSignatureInput {
+interface LocalSessionSignatureInput {
   tracks: SubtitleTrack[];
   activeTrackId: string | null;
   preferences: LocalSessionPreferences;
 }
 
-export interface LocalSessionStorage {
+interface LocalSessionStorage {
   getItem: (key: string) => string | null;
   setItem: (key: string, value: string) => void;
   removeItem: (key: string) => void;
@@ -253,18 +253,25 @@ const parsePreferences = (value: unknown): LocalSessionPreferences | null => {
     return null;
   }
 
-  const rulesMaxLineLength = typeof value.rulesMaxLineLength === "number" && Number.isFinite(value.rulesMaxLineLength)
-    ? value.rulesMaxLineLength
-    : 42;
-  const rulesMaxCps = typeof value.rulesMaxCps === "number" && Number.isFinite(value.rulesMaxCps)
-    ? value.rulesMaxCps
-    : 25;
-  const rulesMinDurationMs = typeof value.rulesMinDurationMs === "number" && Number.isFinite(value.rulesMinDurationMs)
-    ? value.rulesMinDurationMs
-    : 1000;
-  const rulesMaxDurationMs = typeof value.rulesMaxDurationMs === "number" && Number.isFinite(value.rulesMaxDurationMs)
-    ? value.rulesMaxDurationMs
-    : 8000;
+  const rulesMaxLineLength =
+    typeof value.rulesMaxLineLength === "number" &&
+    Number.isFinite(value.rulesMaxLineLength)
+      ? value.rulesMaxLineLength
+      : 42;
+  const rulesMaxCps =
+    typeof value.rulesMaxCps === "number" && Number.isFinite(value.rulesMaxCps)
+      ? value.rulesMaxCps
+      : 25;
+  const rulesMinDurationMs =
+    typeof value.rulesMinDurationMs === "number" &&
+    Number.isFinite(value.rulesMinDurationMs)
+      ? value.rulesMinDurationMs
+      : 1000;
+  const rulesMaxDurationMs =
+    typeof value.rulesMaxDurationMs === "number" &&
+    Number.isFinite(value.rulesMaxDurationMs)
+      ? value.rulesMaxDurationMs
+      : 8000;
 
   return {
     showTrackLabels: value.showTrackLabels,

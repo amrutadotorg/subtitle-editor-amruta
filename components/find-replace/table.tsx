@@ -115,14 +115,14 @@ function renderReplacementHighlights({
   return <>{fragments}</>;
 }
 
-export type FindReplaceTableLabels = {
+type FindReplaceTableLabels = {
   id: string;
   original: string;
   preview: string;
   noMatches: string;
 };
 
-export type FindReplaceTableProps = {
+type FindReplaceTableProps = {
   matchedSubtitles: Subtitle[];
   compiledRegex: RegExp | null;
   findText: string;

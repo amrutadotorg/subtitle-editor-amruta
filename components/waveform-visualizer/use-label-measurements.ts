@@ -9,7 +9,7 @@ export type RegionMapEntry = {
   renderKey?: string;
 };
 
-export interface LabelMeasurementResult {
+interface LabelMeasurementResult {
   labelsOffsetTop: number;
   labelsAreaHeight: number;
   measureLabelsOverlay: () => void;
