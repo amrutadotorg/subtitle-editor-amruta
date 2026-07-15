@@ -73,8 +73,12 @@ export default forwardRef(function WaveformVisualizer(
   const { updateSubtitleTimeByUuidAction } = useSubtitleActionsContext();
 
   const [isLargeFile, setIsLargeFile] = useState(false);
-  const [extractedPeaks, setExtractedPeaks] = useState<Float32Array[] | undefined>(undefined);
-  const [extractedDuration, setExtractedDuration] = useState<number | undefined>(undefined);
+  const [extractedPeaks, setExtractedPeaks] = useState<
+    Float32Array[] | undefined
+  >(undefined);
+  const [extractedDuration, setExtractedDuration] = useState<
+    number | undefined
+  >(undefined);
   const [extractionProgress, setExtractionProgress] = useState(0);
   const [isExtracting, setIsExtracting] = useState(false);
 
@@ -90,14 +94,14 @@ export default forwardRef(function WaveformVisualizer(
     }
 
     const large = mediaFile.size > 100 * 1024 * 1024;
-    
+
     // We only try to extract using mp4box for mp4/mov/m4a files
     const isMp4 = mediaFile.name.toLowerCase().match(/\.(mp4|m4a|mov)$/);
 
     if (large && isMp4) {
       setIsExtracting(true);
       setExtractionProgress(0);
-      
+
       extractPeaks(mediaFile, (percent: number) => {
         setExtractionProgress(percent);
       })
@@ -179,7 +183,10 @@ export default forwardRef(function WaveformVisualizer(
           );
           const paddedHours = String(hours).padStart(2, "0");
           const paddedMinutes = String(minutes).padStart(2, "0");
-          const paddedSeconds = String(Math.floor(remainingSeconds)).padStart(2, "0");
+          const paddedSeconds = String(Math.floor(remainingSeconds)).padStart(
+            2,
+            "0",
+          );
           const paddedMilliseconds = String(milliseconds).padStart(3, "0");
           return `${paddedHours}:${paddedMinutes}:${paddedSeconds},${paddedMilliseconds}`;
         },

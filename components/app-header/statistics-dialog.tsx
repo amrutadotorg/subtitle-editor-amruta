@@ -89,9 +89,7 @@ export default function StatisticsDialog({
       <DialogContent className="sm:max-w-2xl max-h-[85vh] flex flex-col overflow-hidden">
         <DialogHeader className="shrink-0">
           <DialogTitle>{t("statistics.title")}</DialogTitle>
-          <DialogDescription>
-            {activeTrack?.name ?? "—"}
-          </DialogDescription>
+          <DialogDescription>{activeTrack?.name ?? "—"}</DialogDescription>
         </DialogHeader>
 
         {!metrics ? (
@@ -208,7 +206,9 @@ export default function StatisticsDialog({
                       <span className="shrink-0 font-semibold text-muted-foreground text-xs mt-0.5 tabular-nums">
                         {t("statistics.repeatedCount", { count })}
                       </span>
-                      <span className="font-mono text-xs break-all">{text}</span>
+                      <span className="font-mono text-xs break-all">
+                        {text}
+                      </span>
                     </li>
                   ))}
                 </ul>

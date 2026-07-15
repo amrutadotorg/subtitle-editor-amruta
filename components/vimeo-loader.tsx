@@ -78,8 +78,10 @@ export default function VimeoLoader({
       if (!res.ok) {
         const body = await res.json().catch(() => null);
         if (body?.error === "vimeo") {
-          if (body.status === 403) throw new Error(t("vimeoLoader.errorForbidden"));
-          if (body.status === 404) throw new Error(t("vimeoLoader.errorNotFound"));
+          if (body.status === 403)
+            throw new Error(t("vimeoLoader.errorForbidden"));
+          if (body.status === 404)
+            throw new Error(t("vimeoLoader.errorNotFound"));
         }
         throw new Error(t("vimeoLoader.errorGeneric"));
       }

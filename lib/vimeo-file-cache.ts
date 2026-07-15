@@ -13,9 +13,7 @@ function openDB(): Promise<IDBDatabase> {
   });
 }
 
-export async function getCachedFile(
-  videoId: string,
-): Promise<File | null> {
+export async function getCachedFile(videoId: string): Promise<File | null> {
   try {
     const db = await openDB();
     return new Promise((resolve) => {

@@ -11,14 +11,18 @@ export async function GET(request: NextRequest) {
   }
 
   // Path Traversal protection: allow only format "subdirectory/filename.vtt" or "filename.vtt"
-  if (!/^[a-zA-Z0-9_\-\/]+\.(vtt|srt)$/.test(fileName) || fileName.includes("..")) {
+  if (
+    !/^[a-zA-Z0-9_\-\/]+\.(vtt|srt)$/.test(fileName) ||
+    fileName.includes("..")
+  ) {
     return new NextResponse("Invalid file name format", { status: 400 });
   }
 
   // The shared volume is mounted at /app/shared_uploads in Docker
-  const baseDir = process.env.NODE_ENV === "production" 
-    ? "/app/shared_uploads" 
-    : path.resolve(process.cwd(), "shared_uploads");
+  const baseDir =
+    process.env.NODE_ENV === "production"
+      ? "/app/shared_uploads"
+      : path.resolve(process.cwd(), "shared_uploads");
 
   // Resolve absolute path to ensure no hidden directory traversal
   const filePath = path.resolve(baseDir, fileName);
@@ -34,7 +38,7 @@ export async function GET(request: NextRequest) {
     }
 
     const fileContent = fs.readFileSync(filePath, "utf-8");
-    
+
     return new NextResponse(fileContent, {
       status: 200,
       headers: {

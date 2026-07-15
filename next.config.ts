@@ -18,14 +18,11 @@ const withPWA = withPWAInit({
   },
 });
 
-
 const nextConfig: NextConfig = {
   compress: true,
   reactCompiler: true,
   output: "standalone",
   allowedDevOrigins: ["127.0.0.1", "localhost"],
 };
-
-
 
 export default withPWA(withNextIntl(nextConfig));

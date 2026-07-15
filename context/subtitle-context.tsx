@@ -131,16 +131,33 @@ const readRecoverableLocalSession = (): LocalSessionSnapshot | null => {
 export function SubtitleProvider({ children }: SubtitleProviderProps) {
   const [tracks, setTracks] = useState<SubtitleTrack[]>([]);
   const [activeTrackId, setActiveTrackId] = useState<string | null>(null);
-  const [showTrackLabels, setShowTrackLabels] = useState<boolean>(() => loadSettingsFromStorage()?.showTrackLabels ?? false);
-  const [showSubtitleDuration, setShowSubtitleDuration] =
-    useState<boolean>(() => loadSettingsFromStorage()?.showSubtitleDuration ?? false);
-  const [addSpaceOnMerge, setAddSpaceOnMerge] = useState<boolean>(() => loadSettingsFromStorage()?.addSpaceOnMerge ?? false);
-  const [clampOverlaps, setClampOverlaps] = useState<boolean>(() => loadSettingsFromStorage()?.clampOverlaps ?? true);
-  const [playInBackground, setPlayInBackground] = useState<boolean>(() => loadSettingsFromStorage()?.playInBackground ?? false);
-  const [rulesMaxLineLength, setRulesMaxLineLength] = useState<number>(() => loadSettingsFromStorage()?.rulesMaxLineLength ?? 42);
-  const [rulesMaxCps, setRulesMaxCps] = useState<number>(() => loadSettingsFromStorage()?.rulesMaxCps ?? 25);
-  const [rulesMinDurationMs, setRulesMinDurationMs] = useState<number>(() => loadSettingsFromStorage()?.rulesMinDurationMs ?? 1000);
-  const [rulesMaxDurationMs, setRulesMaxDurationMs] = useState<number>(() => loadSettingsFromStorage()?.rulesMaxDurationMs ?? 8000);
+  const [showTrackLabels, setShowTrackLabels] = useState<boolean>(
+    () => loadSettingsFromStorage()?.showTrackLabels ?? false,
+  );
+  const [showSubtitleDuration, setShowSubtitleDuration] = useState<boolean>(
+    () => loadSettingsFromStorage()?.showSubtitleDuration ?? false,
+  );
+  const [addSpaceOnMerge, setAddSpaceOnMerge] = useState<boolean>(
+    () => loadSettingsFromStorage()?.addSpaceOnMerge ?? false,
+  );
+  const [clampOverlaps, setClampOverlaps] = useState<boolean>(
+    () => loadSettingsFromStorage()?.clampOverlaps ?? true,
+  );
+  const [playInBackground, setPlayInBackground] = useState<boolean>(
+    () => loadSettingsFromStorage()?.playInBackground ?? false,
+  );
+  const [rulesMaxLineLength, setRulesMaxLineLength] = useState<number>(
+    () => loadSettingsFromStorage()?.rulesMaxLineLength ?? 42,
+  );
+  const [rulesMaxCps, setRulesMaxCps] = useState<number>(
+    () => loadSettingsFromStorage()?.rulesMaxCps ?? 25,
+  );
+  const [rulesMinDurationMs, setRulesMinDurationMs] = useState<number>(
+    () => loadSettingsFromStorage()?.rulesMinDurationMs ?? 1000,
+  );
+  const [rulesMaxDurationMs, setRulesMaxDurationMs] = useState<number>(
+    () => loadSettingsFromStorage()?.rulesMaxDurationMs ?? 8000,
+  );
   const [pendingLocalSession, setPendingLocalSession] =
     useState<LocalSessionSnapshot | null>(() => readRecoverableLocalSession());
   const [hasLocalSession, setHasLocalSession] = useState(
@@ -290,10 +307,16 @@ export function SubtitleProvider({ children }: SubtitleProviderProps) {
     setAddSpaceOnMerge(pendingLocalSession.preferences.addSpaceOnMerge);
     setClampOverlaps(pendingLocalSession.preferences.clampOverlaps);
     setPlayInBackground(pendingLocalSession.preferences.playInBackground);
-    setRulesMaxLineLength(pendingLocalSession.preferences.rulesMaxLineLength ?? 42);
+    setRulesMaxLineLength(
+      pendingLocalSession.preferences.rulesMaxLineLength ?? 42,
+    );
     setRulesMaxCps(pendingLocalSession.preferences.rulesMaxCps ?? 25);
-    setRulesMinDurationMs(pendingLocalSession.preferences.rulesMinDurationMs ?? 1000);
-    setRulesMaxDurationMs(pendingLocalSession.preferences.rulesMaxDurationMs ?? 8000);
+    setRulesMinDurationMs(
+      pendingLocalSession.preferences.rulesMinDurationMs ?? 1000,
+    );
+    setRulesMaxDurationMs(
+      pendingLocalSession.preferences.rulesMaxDurationMs ?? 8000,
+    );
     setHistorySnapshot(
       nextActiveTrackId
         ? (nextHistories.get(nextActiveTrackId) ?? EMPTY_HISTORY)

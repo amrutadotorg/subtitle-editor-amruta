@@ -12,7 +12,11 @@ import type { Subtitle } from "../types/subtitle";
 // ---------------------------------------------------------------------------
 
 function makeSub(
-  overrides: Partial<Subtitle> & { startTime: string; endTime: string; text: string },
+  overrides: Partial<Subtitle> & {
+    startTime: string;
+    endTime: string;
+    text: string;
+  },
 ): Subtitle {
   return {
     uuid: overrides.uuid ?? "test-uuid",
@@ -39,7 +43,11 @@ test("computes duration correctly", () => {
 test("computes charCount using Unicode-safe Array.from", () => {
   // 2-char emoji is 1 Unicode code point
   const cue = computeCueMetrics(
-    makeSub({ startTime: "00:00:00,000", endTime: "00:00:02,000", text: "😀ab" }),
+    makeSub({
+      startTime: "00:00:00,000",
+      endTime: "00:00:02,000",
+      text: "😀ab",
+    }),
     null,
     null,
   );
@@ -48,7 +56,11 @@ test("computes charCount using Unicode-safe Array.from", () => {
 
 test("computes word count ignoring leading/trailing whitespace", () => {
   const cue = computeCueMetrics(
-    makeSub({ startTime: "00:00:00,000", endTime: "00:00:02,000", text: "  hello world  " }),
+    makeSub({
+      startTime: "00:00:00,000",
+      endTime: "00:00:02,000",
+      text: "  hello world  ",
+    }),
     null,
     null,
   );
@@ -58,7 +70,11 @@ test("computes word count ignoring leading/trailing whitespace", () => {
 test("computes CPS correctly", () => {
   // 10 chars over 2 s = 5 CPS
   const cue = computeCueMetrics(
-    makeSub({ startTime: "00:00:00,000", endTime: "00:00:02,000", text: "1234567890" }),
+    makeSub({
+      startTime: "00:00:00,000",
+      endTime: "00:00:02,000",
+      text: "1234567890",
+    }),
     null,
     null,
   );
@@ -68,7 +84,11 @@ test("computes CPS correctly", () => {
 test("computes WPM correctly", () => {
   // 3 words over 1 s = 180 WPM
   const cue = computeCueMetrics(
-    makeSub({ startTime: "00:00:00,000", endTime: "00:00:01,000", text: "one two three" }),
+    makeSub({
+      startTime: "00:00:00,000",
+      endTime: "00:00:01,000",
+      text: "one two three",
+    }),
     null,
     null,
   );
@@ -81,7 +101,11 @@ test("computes WPM correctly", () => {
 
 test("zero-duration cue: CPS and WPM are 0, warns duration_short", () => {
   const cue = computeCueMetrics(
-    makeSub({ startTime: "00:00:01,000", endTime: "00:00:01,000", text: "text" }),
+    makeSub({
+      startTime: "00:00:01,000",
+      endTime: "00:00:01,000",
+      text: "text",
+    }),
     null,
     null,
   );
@@ -134,7 +158,11 @@ test("warns duration_long when duration > 7s", () => {
 
 test("does NOT warn duration when within thresholds", () => {
   const cue = computeCueMetrics(
-    makeSub({ startTime: "00:00:00,000", endTime: "00:00:03,000", text: "hello world" }),
+    makeSub({
+      startTime: "00:00:00,000",
+      endTime: "00:00:03,000",
+      text: "hello world",
+    }),
     null,
     null,
   );
@@ -271,7 +299,11 @@ test("respects custom thresholds", () => {
   const customThresholds = { ...METRICS_THRESHOLDS, maxCps: 5 };
   // 10 chars over 2 s = 5 CPS — equal to threshold, NOT over
   const cue = computeCueMetrics(
-    makeSub({ startTime: "00:00:00,000", endTime: "00:00:02,000", text: "1234567890" }),
+    makeSub({
+      startTime: "00:00:00,000",
+      endTime: "00:00:02,000",
+      text: "1234567890",
+    }),
     null,
     null,
     customThresholds,
@@ -280,7 +312,11 @@ test("respects custom thresholds", () => {
 
   const customThresholds2 = { ...METRICS_THRESHOLDS, maxCps: 4 };
   const cue2 = computeCueMetrics(
-    makeSub({ startTime: "00:00:00,000", endTime: "00:00:02,000", text: "1234567890" }),
+    makeSub({
+      startTime: "00:00:00,000",
+      endTime: "00:00:02,000",
+      text: "1234567890",
+    }),
     null,
     null,
     customThresholds2,

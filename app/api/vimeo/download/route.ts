@@ -54,7 +54,10 @@ export async function GET(request: NextRequest) {
 
   if (!metaRes.ok) {
     const detail = await metaRes.text();
-    return NextResponse.json({ error: "vimeo", status: metaRes.status, detail }, { status: metaRes.status });
+    return NextResponse.json(
+      { error: "vimeo", status: metaRes.status, detail },
+      { status: metaRes.status },
+    );
   }
 
   const meta = await metaRes.json();
@@ -66,9 +69,7 @@ export async function GET(request: NextRequest) {
   }> = meta.download ?? [];
 
   // Pick best quality (HD > SD), fallback to first available
-  const sorted = [...files].sort(
-    (a, b) => (b.width ?? 0) - (a.width ?? 0),
-  );
+  const sorted = [...files].sort((a, b) => (b.width ?? 0) - (a.width ?? 0));
   const file = sorted[0];
 
   if (!file?.link) {

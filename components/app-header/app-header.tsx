@@ -99,7 +99,9 @@ export function AppHeader({
         <h1 className="text-lg font-semibold mx-1 sm:mx-4 inline-flex items-center gap-2">
           <Logo className="h-[1.25em] w-[1.25em] shrink-0" />
           {t("navigation.title")}
-          <span className="text-[10px] font-mono opacity-40 self-end mb-0.5">v{version}</span>
+          <span className="text-[10px] font-mono opacity-40 self-end mb-0.5">
+            v{version}
+          </span>
         </h1>
         <LanguageSwitcher />
       </div>
@@ -216,7 +218,9 @@ export function AppHeader({
                 onClick={() => onSetVimeoOpen(true)}
               >
                 <IconBrandVimeo size={20} />
-                <span className="hidden leading-none truncate sm:inline">{t("vimeoLoader.buttonLabel")}</span>
+                <span className="hidden leading-none truncate sm:inline">
+                  {t("vimeoLoader.buttonLabel")}
+                </span>
               </Button>
             </TooltipTrigger>
             <TooltipContent>{t("vimeoLoader.buttonLabel")}</TooltipContent>

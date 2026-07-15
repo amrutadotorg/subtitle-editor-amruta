@@ -206,7 +206,7 @@ export default function SettingsDialog({
               onCheckedChange={(value) => setPlayInBackground(value)}
             />
           </div>
-          
+
           <div className="h-px bg-border my-2" />
 
           <div className="space-y-3">

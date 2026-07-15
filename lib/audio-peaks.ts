@@ -125,7 +125,7 @@ export async function extractPeaks(
         });
         decoder.decode(chunk);
       }
-      
+
       if (samples.length > 0) {
         mp4box.releaseUsedSamples(id, samples[samples.length - 1].number);
       }
@@ -150,13 +150,20 @@ export async function extractPeaks(
           }
           if (peaks.length === 0) peaks.push(0);
           if (onProgress) onProgress(100);
-          resolve({ peaks: new Float32Array(peaks), duration: durationSeconds });
+          resolve({
+            peaks: new Float32Array(peaks),
+            duration: durationSeconds,
+          });
         };
         finish();
         return;
       }
 
-      const end = Math.min(mdatCursor + CHUNK_SIZE, mdatOffset + mdatSize, file.size);
+      const end = Math.min(
+        mdatCursor + CHUNK_SIZE,
+        mdatOffset + mdatSize,
+        file.size,
+      );
       const reader = new FileReader();
       reader.onload = (e) => {
         const buffer = e.target?.result as ArrayBuffer;
@@ -173,7 +180,10 @@ export async function extractPeaks(
             if (decoder) await decoder.flush();
             if (peaks.length === 0) peaks.push(0);
             if (onProgress) onProgress(100);
-            resolve({ peaks: new Float32Array(peaks), duration: durationSeconds });
+            resolve({
+              peaks: new Float32Array(peaks),
+              duration: durationSeconds,
+            });
           };
           finish();
         }
@@ -191,17 +201,22 @@ export async function extractPeaks(
 
       const view = new DataView(headerBuffer);
       let size = view.getUint32(0);
-      const type = String.fromCharCode(view.getUint8(4), view.getUint8(5), view.getUint8(6), view.getUint8(7));
+      const type = String.fromCharCode(
+        view.getUint8(4),
+        view.getUint8(5),
+        view.getUint8(6),
+        view.getUint8(7),
+      );
 
       if (size === 1) {
         const high = view.getUint32(8);
         const low = view.getUint32(12);
-        size = (high * Math.pow(2, 32)) + low;
+        size = high * Math.pow(2, 32) + low;
       } else if (size === 0) {
         size = file.size - offset;
       }
 
-      if (type === 'mdat') {
+      if (type === "mdat") {
         mdatOffset = offset;
         mdatSize = size;
         // Don't append mdat to mp4box yet. Just record it and skip its size.
@@ -223,7 +238,7 @@ export async function extractPeaks(
       reject(new Error("No mdat box found."));
       return;
     }
-    
+
     mdatCursor = mdatOffset;
     readNextMdatChunk();
   });

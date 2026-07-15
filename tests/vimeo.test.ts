@@ -37,7 +37,9 @@ test("extractVideoId from player.vimeo.com URL", () => {
 
 test("extractVideoId from player.vimeo.com URL with query params", () => {
   assert.equal(
-    extractVideoId("https://player.vimeo.com/video/123456789?badge=0&autopause=0"),
+    extractVideoId(
+      "https://player.vimeo.com/video/123456789?badge=0&autopause=0",
+    ),
     "123456789",
   );
 });
