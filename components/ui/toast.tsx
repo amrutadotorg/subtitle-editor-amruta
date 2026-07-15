@@ -125,5 +125,6 @@ export {
   ToastTitle,
   ToastDescription,
   ToastClose,
-  ToastAction,
 };
+/** @public */
+export { ToastAction };
