@@ -2,7 +2,7 @@ import type { Subtitle, SubtitleTrack } from "@/types/subtitle";
 
 export const LOCAL_SESSION_STORAGE_KEY = "subtitle-editor:autosave:v1";
 const SETTINGS_STORAGE_KEY = "subtitle-editor:settings:v1";
-export const LOCAL_SESSION_SCHEMA_VERSION = 1;
+const LOCAL_SESSION_SCHEMA_VERSION = 1;
 
 export interface LocalSessionPreferences {
   showTrackLabels: boolean;

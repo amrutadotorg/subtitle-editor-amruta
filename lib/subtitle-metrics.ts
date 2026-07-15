@@ -33,7 +33,7 @@ export const METRICS_THRESHOLDS: MetricsThresholds = {
 // Per-cue types
 // ---------------------------------------------------------------------------
 
-export type CueWarningKind =
+type CueWarningKind =
   | "cps_high"
   | "wpm_high"
   | "line_length"
