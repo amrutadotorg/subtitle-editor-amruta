@@ -10,3 +10,11 @@ updates:
         update-types: ["patch"]
       minor:
         update-types: ["minor"]
+
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      docker:
+        patterns: ["*"]
