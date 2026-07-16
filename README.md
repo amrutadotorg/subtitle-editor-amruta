@@ -1,4 +1,25 @@
-# subtitle-editor.org
+# subtitle-editor.amruta.org
+
+A fork of [subtitle-editor](https://github.com/laubonghaudoi/subtitle-editor) by [@laubonghaudoi](https://github.com/laubonghaudoi), heavily modified for custom deployment needs. The original project is a minimal, browser-based subtitle editor — this fork builds on that foundation with production infrastructure and extended features.
+
+### What's changed from the original
+
+- **Vimeo integration** — import videos directly from Vimeo via API proxy (`/api/vimeo/*`)
+- **SSO authentication** — HMAC-signed SSO cookie verification for access control (`proxy.ts`)
+- **Cloudflare deployment** — ready for Cloudflare Workers/Pages with `wrangler` support
+- **Additional locales** — added Polish (pl), German (de), and Cantonese (yue) translations
+- **Large file support (1GB+)** — streaming MP4 box parser with chunked mdat processing (5MB chunks) via mp4box + Web AudioDecoder; avoids loading entire file into memory
+- **Docker deployment** — production Dockerfile with multi-stage builds and nginx reverse proxy
+- **Dependabot** — automated dependency updates for npm and Docker base images
+- **CI/CD pipeline** — GitHub Actions with lint, test, build, format, and knip checks
+
+### Original features (inherited)
+
+- Multi-track editing
+- Waveform visualization
+- Localization (en, de, pl, yue)
+- .srt / .vtt format support
+- Progressive Web App (PWA)
 
 ## Design principles
 
@@ -13,30 +34,32 @@
 
 I talked about my design principles in the [FAQ](https://subtitle-editor.org/faq) and [this issue](https://github.com/laubonghaudoi/subtitle-editor/issues/11#issuecomment-3201949429).
 
-### Features
-
-- Multi-track editing
-- Waveform visualization
-- Localization
-- .srt / .vtt format support
-- Progressive Web App (PWA)
-
 ### Tech stacks
 
-- NextJS 16 + React 19
-- shadcn + radix-ui + Tailwind CSS
-- wavesurfer.js
+- Next.js 16 + React 19 + TypeScript 6
+- shadcn/ui + Radix UI + Tailwind CSS 4
+- wavesurfer.js 7
 - Native HTML media elements
 - Tabler icons
-- Motion
+- Motion (Framer Motion successor)
+- Docker + nginx reverse proxy
+- Cloudflare Workers support
 
 ## Local Development
+
+### Prerequisites
+
+- **Node.js 24** (see `.nvmrc`)
+- **`.env.local`** with:
+  - `VIMEO_ACCESS_TOKEN` — Vimeo API access token
+  - `SSO_SALT` — HMAC secret for SSO cookie verification
 
 ### Setup
 
 ```bash
-git clone https://github.com/laubonghaudoi/subtitle-editor.git
+git clone https://github.com/amrutadotorg/subtitle-editor-amruta.git
 cd subtitle-editor
+nvm use
 npm install
 # Run the development server with Turbopack.
 npm run dev
@@ -44,6 +67,16 @@ npm run dev
 npm run build
 # Serve the pre-built app.
 npm run start
+```
+
+### Docker
+
+```bash
+# Development (hot reload, port 3000)
+docker compose --profile dev up
+
+# Production (built image, port 3001)
+docker compose --profile prod up
 ```
 
 ### Project Structure
@@ -64,7 +97,7 @@ npm test                # Run the entire suite
 npm test -- parse-vtt.test.ts  # Focus on a single file
 ```
 
-Tests rely on Node’s built-in `node:test` runner and cover parsing, time conversions, and multi-track behavior. Add fixtures under `tests/fixtures/` when validating new subtitle edge cases.
+Tests rely on Node's built-in `node:test` runner and cover parsing, time conversions, and multi-track behavior. Add fixtures under `tests/fixtures/` when validating new subtitle edge cases.
 
 ### Linting and Formatting
 
@@ -81,8 +114,8 @@ Locales are configured in `lib/locales.ts`. Add new locales by extending the `lo
 
 ## Contributing
 
-I will check issues and accept PRs regularly, but I am quite busy these days so I may not have time to develop new features. This is a community project and your contributions are always welcomed!
+This is a fork maintained separately from the upstream project. Contributions are welcome — please open issues or PRs against this repository. For upstream features, see the [original repo](https://github.com/laubonghaudoi/subtitle-editor).
 
 ## License
 
-Released under the MIT License. See [LICENSE](LICENSE) for details.
+Released under the MIT License. See [LICENSE](LICENSE) for details. Original work by [@laubonghaudoi](https://github.com/laubonghaudoi).
