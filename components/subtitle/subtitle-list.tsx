@@ -15,7 +15,7 @@ import {
   type Dispatch,
   type SetStateAction,
 } from "react";
-import { v4 as uuidv4 } from "uuid";
+
 import SubtitleItem from "./subtitle-item";
 import SubtitleListEmpty from "./subtitle-list-empty";
 import { useSubtitleAutoScroll } from "./use-subtitle-auto-scroll";
@@ -177,7 +177,7 @@ const SubtitleList = forwardRef<SubtitleListRef, SubtitleListProps>(
       if (!activeTrackId) return;
       loadSubtitlesIntoTrack(activeTrackId, [
         {
-          uuid: uuidv4(),
+          uuid: crypto.randomUUID(),
           id: 1,
           startTime: "00:00:00,000",
           endTime: "00:00:03,000",

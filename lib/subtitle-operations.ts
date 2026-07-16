@@ -1,5 +1,5 @@
 import type { Subtitle } from "@/types/subtitle";
-import { v4 as uuidv4 } from "uuid";
+
 import { secondsToTime, timeToSeconds } from "./utils";
 
 const DEFAULT_SUBTITLE_DURATION = 3; // seconds
@@ -21,7 +21,7 @@ export const parseSRT = (srtContent: string): Subtitle[] => {
         const text = lines.slice(2).join("\n");
 
         subtitles.push({
-          uuid: uuidv4(), // Assign a unique ID on parse
+          uuid: crypto.randomUUID(), // Assign a unique ID on parse
           id,
           startTime,
           endTime,
@@ -138,7 +138,7 @@ export const parseVTT = (vttContent: string): Subtitle[] => {
     }
 
     subtitles.push({
-      uuid: uuidv4(),
+      uuid: crypto.randomUUID(),
       id: idCounter++,
       startTime,
       endTime,
@@ -285,7 +285,7 @@ export const mergeSubtitles = (
   const sub2 = subtitles.find((s) => s.id === id2);
   if (!sub1 || !sub2) return subtitles;
   // Keep the UUID of the first subtitle for the merged one
-  // Or generate a new one if preferred: uuid: uuidv4()
+  // Or generate a new one if preferred: uuid: crypto.randomUUID()
   const mergedSubtitle: Subtitle = {
     uuid: sub1.uuid, // Keep the first subtitle's UUID
     id: sub1.id, // Will be reordered later
@@ -323,7 +323,7 @@ export const addSubtitle = (
   if (subtitles.length === 0) {
     return [
       {
-        uuid: uuidv4(),
+        uuid: crypto.randomUUID(),
         id: 1,
         startTime: "00:00:00,000",
         endTime: "00:00:03,000",
@@ -341,7 +341,7 @@ export const addSubtitle = (
     const endTimeSeconds =
       timeToSeconds(beforeSub.endTime) + DEFAULT_SUBTITLE_DURATION;
     newSubtitle = {
-      uuid: uuidv4(), // Assign new UUID
+      uuid: crypto.randomUUID(), // Assign new UUID
       id: beforeSub.id + 1, // Will be reordered later
       startTime: beforeSub.endTime,
       endTime: secondsToTime(endTimeSeconds),
@@ -359,7 +359,7 @@ export const addSubtitle = (
       newEndSeconds = startTimeSeconds + durationHint;
     }
     newSubtitle = {
-      uuid: uuidv4(), // Assign new UUID
+      uuid: crypto.randomUUID(), // Assign new UUID
       id: beforeSub.id + 1, // Will be reordered later
       startTime: beforeSub.endTime,
       endTime: secondsToTime(newEndSeconds),
@@ -422,7 +422,7 @@ export function splitSubtitle(
   // Create second half - gets a new UUID
   const second: Subtitle = {
     ...sub, // Includes original uuid initially, but we overwrite it
-    uuid: uuidv4(), // Assign new UUID
+    uuid: crypto.randomUUID(), // Assign new UUID
     id: sub.id + 1, // Will be reordered later
     startTime: secondsToTime(splitSec),
     text: sub.text.slice(caretPos),

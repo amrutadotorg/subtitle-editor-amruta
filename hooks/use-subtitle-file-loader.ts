@@ -7,7 +7,7 @@ import {
   parseVTT,
 } from "@/lib/subtitle-operations";
 import { useCallback } from "react";
-import { v4 as uuidv4 } from "uuid";
+
 
 interface UseSubtitleFileLoaderOptions {
   activeTrackId: string | null;
@@ -64,7 +64,7 @@ export const useSubtitleFileLoader = ({
     setInitialSubtitles(
       [
         {
-          uuid: uuidv4(),
+          uuid: crypto.randomUUID(),
           id: 1,
           startTime: "00:00:00,000",
           endTime: "00:00:03,000",

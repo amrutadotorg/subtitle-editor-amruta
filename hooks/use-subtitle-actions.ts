@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { v4 as uuidv4 } from "uuid";
+
 import type { MutableRefObject, Dispatch, SetStateAction } from "react";
 import type { Subtitle, SubtitleTrack } from "@/types/subtitle";
 import type { UndoHistory } from "@/hooks/use-undoable-state";
@@ -131,7 +131,7 @@ export const useSubtitleActions = ({
         return null;
       }
 
-      const newTrackId = uuidv4();
+      const newTrackId = crypto.randomUUID();
       const history = createTrackHistory(newTrackId, subtitles);
       const newTrack: SubtitleTrack = {
         id: newTrackId,

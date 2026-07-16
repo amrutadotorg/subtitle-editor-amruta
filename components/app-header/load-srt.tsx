@@ -45,7 +45,7 @@ import {
 } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useId, useState, type CSSProperties } from "react";
-import { v4 as uuidv4 } from "uuid";
+
 
 const getTrackButtonStyle = (trackIndex: number): CSSProperties => {
   const backgroundColor = getTrackHandleColor(trackIndex);
@@ -109,7 +109,7 @@ export default function LoadSrt() {
   const handleStartFromScratch = (trackId: string) => {
     loadSubtitlesIntoTrack(trackId, [
       {
-        uuid: uuidv4(),
+        uuid: crypto.randomUUID(),
         id: 1,
         startTime: "00:00:00,000",
         endTime: "00:00:03,000",
