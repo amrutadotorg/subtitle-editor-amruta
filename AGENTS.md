@@ -21,7 +21,7 @@ A browser-based subtitle editor (SRT/VTT) with multi-track support, audio wavefo
 | Testing | Node test runner (`tsx --test`), @testing-library/react, jsdom |
 | Linting | ESLint 9 (eslint-config-next/core-web-vitals), Biome 2 (formatter only, linter disabled) |
 | PWA | @ducanh2912/next-pwa (service worker, offline fallback) |
-| Runtime | Node.js 22 (.nvmrc) |
+| Runtime | Node.js 24 (.nvmrc) |
 | Docker | docker-compose with dev and prod profiles |
 
 ## Directory Structure
@@ -104,6 +104,41 @@ docker compose --profile dev up    # Dev server on port 3000 (hot reload, source
 docker compose --profile prod up   # Prod server on port 3001 (built image)
 ```
 
+### Docker Deployment (Production)
+```bash
+docker compose build subtitle_editor   # Build production image
+docker compose up -d subtitle_editor   # Deploy (recreate container)
+docker restart nginx subtitle_editor   # Reload nginx proxy
+```
+
+The image is `subtitle-editor:prod`. After deploying, users must hard-refresh (Ctrl+Shift+R) to see changes if the service worker was updated.
+
+## Dependency Updates (Dependabot)
+
+Dependabot is configured via `.github/dependabot.yml` with two ecosystems:
+
+- **npm** — weekly PRs grouped by patch/minor (major gets separate PR)
+- **docker** — weekly PRs for base image updates (`node:24-alpine`)
+
+### Deployment workflow after Dependabot PR merge
+
+```bash
+# 1. Pull latest main (with merged Dependabot PR)
+git pull origin main
+
+# 2. Reinstall dependencies (matches what Dockerfile.prod does)
+nvm use && npm ci
+
+# 3. Rebuild Docker image
+docker compose build subtitle_editor
+
+# 4. Deploy
+docker compose up -d subtitle_editor
+docker restart nginx subtitle_editor
+```
+
+CI runs lint, test, build, **and** `docker build` on every Dependabot PR — green CI means the update is safe to merge. After merge, the steps above deploy the updated image.
+
 ## Verification Workflow
 
 Before considering any change complete, an agent **must** run:
@@ -125,7 +160,7 @@ npm run build           # 6. Production build must succeed (catches type errors,
 
 ## Environment Setup
 
-- **Node.js 22** (required; `.nvmrc` specifies version)
+- **Node.js 24** (required; `.nvmrc` specifies version)
 - **`.env.local`** contains:
   - `VIMEO_ACCESS_TOKEN` — Vimeo API access token for video import
   - `SSO_SALT` — HMAC secret for SSO cookie verification
