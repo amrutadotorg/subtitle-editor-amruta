@@ -46,7 +46,6 @@ import {
 import { useTranslations } from "next-intl";
 import { useEffect, useId, useState, type CSSProperties } from "react";
 
-
 const getTrackButtonStyle = (trackIndex: number): CSSProperties => {
   const backgroundColor = getTrackHandleColor(trackIndex);
   return {

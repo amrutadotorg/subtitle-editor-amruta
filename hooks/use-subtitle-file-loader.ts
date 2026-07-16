@@ -8,7 +8,6 @@ import {
 } from "@/lib/subtitle-operations";
 import { useCallback } from "react";
 
-
 interface UseSubtitleFileLoaderOptions {
   activeTrackId: string | null;
   activeTrackIsEmpty: boolean;
