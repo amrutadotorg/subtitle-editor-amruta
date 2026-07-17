@@ -182,7 +182,7 @@ export default function SubtitleTextEditor({
   return (
     <button
       type="button"
-      className="w-full text-left text-lg px-3 py-2 cursor-pointer whitespace-pre-wrap wrap-break-word"
+      className="w-full text-start text-lg px-3 py-2 cursor-pointer whitespace-pre-wrap wrap-break-word"
       tabIndex={0}
       aria-label={
         subtitle.text

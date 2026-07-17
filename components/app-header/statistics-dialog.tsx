@@ -108,22 +108,22 @@ export default function StatisticsDialog({
                   <table className="w-full text-xs">
                     <thead className="bg-muted/60">
                       <tr>
-                        <th className="px-2 py-1.5 text-left font-medium text-muted-foreground">
+                        <th className="px-2 py-1.5 text-start font-medium text-muted-foreground">
                           {t("statistics.colId")}
                         </th>
-                        <th className="px-2 py-1.5 text-right font-medium text-muted-foreground">
+                        <th className="px-2 py-1.5 text-end font-medium text-muted-foreground">
                           {t("statistics.colDuration")}
                         </th>
-                        <th className="px-2 py-1.5 text-right font-medium text-muted-foreground">
+                        <th className="px-2 py-1.5 text-end font-medium text-muted-foreground">
                           {t("statistics.colCps")}
                         </th>
-                        <th className="px-2 py-1.5 text-right font-medium text-muted-foreground">
+                        <th className="px-2 py-1.5 text-end font-medium text-muted-foreground">
                           {t("statistics.colWpm")}
                         </th>
-                        <th className="px-2 py-1.5 text-right font-medium text-muted-foreground">
+                        <th className="px-2 py-1.5 text-end font-medium text-muted-foreground">
                           {t("statistics.colLines")}
                         </th>
-                        <th className="px-2 py-1.5 text-left font-medium text-muted-foreground">
+                        <th className="px-2 py-1.5 text-start font-medium text-muted-foreground">
                           {t("statistics.colWarnings")}
                         </th>
                       </tr>
@@ -139,11 +139,11 @@ export default function StatisticsDialog({
                           }}
                         >
                           <td className="px-2 py-1.5 font-mono">{cue.id}</td>
-                          <td className="px-2 py-1.5 font-mono text-right tabular-nums">
+                          <td className="px-2 py-1.5 font-mono text-end tabular-nums">
                             {fmtSeconds(cue.durationSeconds)}
                           </td>
                           <td
-                            className={`px-2 py-1.5 font-mono text-right tabular-nums ${
+                            className={`px-2 py-1.5 font-mono text-end tabular-nums ${
                               cue.warnings.some((w) => w.kind === "cps_high")
                                 ? "text-amber-700 dark:text-amber-400 font-semibold"
                                 : ""
@@ -152,7 +152,7 @@ export default function StatisticsDialog({
                             {fmtNum(cue.cps)}
                           </td>
                           <td
-                            className={`px-2 py-1.5 font-mono text-right tabular-nums ${
+                            className={`px-2 py-1.5 font-mono text-end tabular-nums ${
                               cue.warnings.some((w) => w.kind === "wpm_high")
                                 ? "text-amber-700 dark:text-amber-400 font-semibold"
                                 : ""
@@ -161,7 +161,7 @@ export default function StatisticsDialog({
                             {fmtNum(cue.wpm)}
                           </td>
                           <td
-                            className={`px-2 py-1.5 font-mono text-right tabular-nums ${
+                            className={`px-2 py-1.5 font-mono text-end tabular-nums ${
                               cue.warnings.some(
                                 (w) => w.kind === "too_many_lines",
                               )

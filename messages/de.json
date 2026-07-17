@@ -125,6 +125,7 @@
     "arrowsAction": "zum Springen zum vorherigen/nächsten Untertitel.",
     "splitSubtitle": "zum Teilen des Untertiteltextes an der Cursorposition während der Bearbeitung.",
     "addSubtitle": "um beim Bearbeiten einen neuen Untertitel darunter hinzuzufügen.",
+    "shiftAdd": "um einen 3-Sekunden-Untertitel hinzuzufügen.",
     "mergeSubtitle": "zum Zusammenführen des aktuellen Untertitels mit dem vorherigen.",
     "switchTrack": "um zwischen Untertitelspuren zu wechseln, wenn mehrere vorhanden sind.",
     "undoRedo": "zum Rückgängigmachen,",
@@ -225,7 +226,7 @@
     "seconds": "{value}s"
   },
   "tooltips": {
-    "add": "Hinzufügen",
+    "add": "Hinzufügen (Shift = 3s)",
     "merge": "Zusammenführen",
     "delete": "Löschen",
     "noRoom": "Kein Platz zum Hinzufügen"

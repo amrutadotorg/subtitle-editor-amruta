@@ -125,6 +125,7 @@
     "arrowsAction": "跳到上一條 / 下一條字幕。",
     "splitSubtitle": "（編輯嗰陣）從光標位置將字幕分成兩條。",
     "addSubtitle": "（編輯嗰陣）喺下面加一條新字幕。",
+    "shiftAdd": "加一條3秒嘅字幕。",
     "mergeSubtitle": "將當前字幕合併到前一條。",
     "switchTrack": "切換字幕軌，如果你有幾條字幕軌。",
     "undoRedo": "撤返，",
@@ -225,7 +226,7 @@
     "seconds": "{value}秒"
   },
   "tooltips": {
-    "add": "加新",
+    "add": "加新 (Shift = 3秒)",
     "merge": "合併",
     "delete": "刪除",
     "noRoom": "冇位再加"
@@ -261,6 +262,13 @@
     "toMain": "跳至主要內容",
     "toSubtitles": "跳至字幕",
     "toVideo": "跳至影片"
+  },
+  "waveform": {
+    "instructions": "波形視圖已聚焦。撳空白鍵播放或暫停，用左右箭嘴鍵移動一秒。",
+    "keyboardHint": "空白鍵: 播放/暫停 · ←/→: 前後 ±1秒",
+    "regionSummary": "{start} 至 {end} 嘅字幕，喺第 {track} 條軌",
+    "regionAnnouncement": "已揀咗由 {start} 至 {end} 嘅字幕，喺第 {track} 條軌。",
+    "untitledTrack": "未命名嘅軌"
   },
   "vimeoLoader": {
     "title": "從 Vimeo 載入",

@@ -227,7 +227,7 @@ export default function SettingsDialog({
                   const val = Number.parseInt(e.target.value, 10);
                   setRulesMaxLineLength(Number.isNaN(val) ? 0 : val);
                 }}
-                className="h-8 w-24 justify-self-end text-right font-mono bg-background"
+                className="h-8 w-24 justify-self-end text-end font-mono bg-background"
               />
             </div>
 
@@ -244,7 +244,7 @@ export default function SettingsDialog({
                   const val = Number.parseInt(e.target.value, 10);
                   setRulesMaxCps(Number.isNaN(val) ? 0 : val);
                 }}
-                className="h-8 w-24 justify-self-end text-right font-mono bg-background"
+                className="h-8 w-24 justify-self-end text-end font-mono bg-background"
               />
             </div>
 
@@ -262,7 +262,7 @@ export default function SettingsDialog({
                   const val = Number.parseInt(e.target.value, 10);
                   setRulesMinDurationMs(Number.isNaN(val) ? 0 : val);
                 }}
-                className="h-8 w-24 justify-self-end text-right font-mono bg-background"
+                className="h-8 w-24 justify-self-end text-end font-mono bg-background"
               />
             </div>
 
@@ -280,7 +280,7 @@ export default function SettingsDialog({
                   const val = Number.parseInt(e.target.value, 10);
                   setRulesMaxDurationMs(Number.isNaN(val) ? 0 : val);
                 }}
-                className="h-8 w-24 justify-self-end text-right font-mono bg-background"
+                className="h-8 w-24 justify-self-end text-end font-mono bg-background"
               />
             </div>
           </div>

@@ -440,7 +440,7 @@ export default forwardRef(function WaveformVisualizer(
             return (
               <div
                 key={track.id}
-                className="absolute left-2 px-2 py-0.5 rounded-xs border-2 text-sm font-semibold"
+                className="absolute start-2 px-2 py-0.5 rounded-xs border-2 text-sm font-semibold"
                 style={{
                   top: `${((idx + 0.5) * 100) / tracks.length}%`,
                   transform: "translateY(-50%)",

@@ -5,15 +5,7 @@ import { flattenKeys, loadCatalog } from "./helpers/locale-keys";
 const LOCALES = ["en", "yue", "de", "pl"] as const;
 type Locale = (typeof LOCALES)[number];
 
-const PENDING_PR_48: Partial<Record<Locale, Set<string>>> = {
-  yue: new Set([
-    "waveform.instructions",
-    "waveform.keyboardHint",
-    "waveform.regionSummary",
-    "waveform.regionAnnouncement",
-    "waveform.untitledTrack",
-  ]),
-};
+const PENDING_PR_48: Partial<Record<Locale, Set<string>>> = {};
 
 test("locale catalogs match en object keys while treating arrays as leaves", () => {
   const en = new Set(flattenKeys(loadCatalog("en")));

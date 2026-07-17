@@ -139,7 +139,7 @@ export function BulkOffsetControls({
             variant="outline"
             onClick={() => onShiftTargetChange("start")}
             aria-pressed={shiftTarget === "start"}
-            className="rounded-none text-sm border-r-0"
+            className="rounded-none text-sm border-e-0"
             style={
               shiftTarget === "start" ? activeToggleStyle : inactiveToggleStyle
             }
@@ -152,7 +152,7 @@ export function BulkOffsetControls({
             variant="outline"
             onClick={() => onShiftTargetChange("both")}
             aria-pressed={shiftTarget === "both"}
-            className="rounded-none text-sm border-l-0 border-r-0"
+            className="rounded-none text-sm border-s-0 border-e-0"
             style={
               shiftTarget === "both" ? activeToggleStyle : inactiveToggleStyle
             }
@@ -165,7 +165,7 @@ export function BulkOffsetControls({
             variant="outline"
             onClick={() => onShiftTargetChange("end")}
             aria-pressed={shiftTarget === "end"}
-            className="rounded-none text-sm border-l-0"
+            className="rounded-none text-sm border-s-0"
             style={
               shiftTarget === "end" ? activeToggleStyle : inactiveToggleStyle
             }

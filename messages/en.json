@@ -125,6 +125,7 @@
     "arrowsAction": "to jump to the previous/next subtitle.",
     "splitSubtitle": "to split the subtitle text at the cursor position when editing it.",
     "addSubtitle": "to add a new subtitle below when editing it.",
+    "shiftAdd": "to add a 3-second subtitle.",
     "mergeSubtitle": "to merge the current subtitle with the previous one.",
     "switchTrack": "to switch subtitle tracks if you have multiple tracks.",
     "undoRedo": "to undo,",
@@ -225,7 +226,7 @@
     "seconds": "{value}s"
   },
   "tooltips": {
-    "add": "Add",
+    "add": "Add (Shift = 3s)",
     "merge": "Merge",
     "delete": "Delete",
     "noRoom": "No room to add"

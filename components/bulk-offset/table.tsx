@@ -68,7 +68,7 @@ export function BulkOffsetTable({
             </div>
           </th>
           <th
-            className="h-12 bg-background px-2 text-left align-middle text-sm font-semibold leading-tight"
+            className="h-12 bg-background px-2 text-start align-middle text-sm font-semibold leading-tight"
             rowSpan={2}
           >
             {t("bulkOffset.table.id")}
@@ -152,7 +152,7 @@ export function BulkOffsetTable({
                     />
                   </div>
                 </td>
-                <td className="px-2 py-1 text-left text-sm" rowSpan={2}>
+                <td className="px-2 py-1 text-start text-sm" rowSpan={2}>
                   {subtitle.id}
                 </td>
                 <td className="px-2 pt-1 pb-0 align-middle font-mono text-center">

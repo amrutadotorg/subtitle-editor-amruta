@@ -202,7 +202,7 @@ export function AppHeader({
             aria-label={mediaFileName}
           >
             <IconMovie size={20} />
-            <span className="hidden max-w-36 flex-1 overflow-hidden whitespace-nowrap text-ellipsis text-left sm:block">
+            <span className="hidden max-w-36 flex-1 overflow-hidden whitespace-nowrap text-ellipsis text-start sm:block">
               {mediaFileName}
             </span>
           </Button>

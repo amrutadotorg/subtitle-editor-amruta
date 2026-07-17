@@ -125,6 +125,7 @@
     "arrowsAction": "aby przejść do poprzedniego/następnego napisu.",
     "splitSubtitle": "aby podzielić tekst napisu w miejscu kursora podczas edycji.",
     "addSubtitle": "aby dodać nowy napis poniżej podczas edycji.",
+    "shiftAdd": "aby dodać 3-sekundowy napis.",
     "mergeSubtitle": "aby połączyć bieżący napis z poprzednim.",
     "switchTrack": "aby przełączać ścieżki napisów (jeśli jest ich więcej).",
     "undoRedo": "aby cofnąć,",
@@ -225,7 +226,7 @@
     "seconds": "{value}s"
   },
   "tooltips": {
-    "add": "Dodaj",
+    "add": "Dodaj (Shift = 3s)",
     "merge": "Połącz",
     "delete": "Usuń",
     "noRoom": "Brak miejsca na dodanie"

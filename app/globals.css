@@ -652,6 +652,11 @@
   }
 }
 
+/* RTL support */
+[dir="rtl"] .subtitle-row[data-current="true"] {
+  box-shadow: inset -4px 0 0 var(--subtitle-row-current-bar);
+}
+
 @layer utilities {
   .sr-only {
     position: absolute;

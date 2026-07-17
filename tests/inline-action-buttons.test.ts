@@ -66,7 +66,7 @@ test("subtitle merge actions invoke merge and add actions when there is room", (
   );
 
   fireEvent.click(view.getByRole("button", { name: "Merge" }));
-  fireEvent.click(view.getByRole("button", { name: "Add" }));
+  fireEvent.click(view.getByRole("button", { name: "Add (Shift = 3s)" }));
 
   assert.deepEqual(merges, [[1, 2]]);
   assert.deepEqual(adds, [[1, 2, ""]]);

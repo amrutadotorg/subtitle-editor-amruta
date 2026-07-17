@@ -40,6 +40,8 @@ export default function BottomInstructions() {
           <li>
             <kbd>ctrl</kbd> (Windows) / <kbd>&#8984;</kbd> (Mac) +{" "}
             <kbd>enter</kbd> {t("shortcuts.addSubtitle")}
+            <br />
+            <kbd>shift</kbd> + click <kbd>+</kbd> {t("shortcuts.shiftAdd")}
           </li>
           <li>
             <kbd>shift</kbd> + <kbd>backspace</kbd>{" "}

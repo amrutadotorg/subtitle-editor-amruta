@@ -408,7 +408,7 @@ function MainContent() {
 
             <div
               className={cn(
-                "w-full md:w-1/2 min-h-[32vh] md:min-h-0 border-t-2 md:border-t-0 md:border-l-2 border-black dark:border-white transition-colors",
+                "w-full md:w-1/2 min-h-[32vh] md:min-h-0 border-t-2 md:border-t-0 md:border-s-2 border-black dark:border-white transition-colors",
                 isMediaDragActive && "bg-iris-100",
               )}
               {...mediaDropHandlers}

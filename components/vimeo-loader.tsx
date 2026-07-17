@@ -174,7 +174,7 @@ export default function VimeoLoader({
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <p className="text-xs text-muted-foreground text-right tabular-nums">
+            <p className="text-xs text-muted-foreground text-end tabular-nums">
               {progress}%
             </p>
           </div>
