@@ -57,7 +57,8 @@
     "supportedFormatsNote": "Diese Liste wird anhand der nativen HTML-Media-Unterstützung deines Browsers erkannt. Das tatsächliche Laden hängt weiterhin von den Codecs in der Datei ab.",
     "supportedFormatsUnsupported": "Streaming-Manifeste (.m3u8, .mpd) und FLV werden von dieser App derzeit nicht unterstützt.",
     "subtitles": "Untertitel",
-    "loadFromVimeo": "Oder ein Vimeo-Video laden (nur Amruta.org)"
+    "loadFromVimeo": "Oder ein Vimeo-Video laden (nur Amruta.org)",
+    "supportInfo": "Für Support oder um einen Fehler zu melden, senden Sie bitte eine E-Mail an help@amruta.org"
   },
   "findReplace": {
     "title": "Suchen / Ersetzen",
@@ -222,7 +223,7 @@
     "warnTooManyLines": "{count} Zeilen überschreitet Maximum von {max}",
     "warnDurationShort": "{value}s liegt unter Minimum von {min}s",
     "warnDurationLong": "{value}s überschreitet Maximum von {max}s",
-    "repeatedCount": "\u00d7{count}",
+    "repeatedCount": "×{count}",
     "seconds": "{value}s"
   },
   "tooltips": {

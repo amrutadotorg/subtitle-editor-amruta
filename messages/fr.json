@@ -57,7 +57,8 @@
     "supportedFormatsNote": "Cette liste est détectée à partir de la prise en charge HTML native des supports par votre navigateur. Le chargement réel dépend des codecs du fichier.",
     "supportedFormatsUnsupported": "Les manifestes de streaming (.m3u8, .mpd) et le format FLV ne sont pas pris en charge par cette application.",
     "subtitles": "Sous-titres",
-    "loadFromVimeo": "Ou charger une vidéo Vimeo (Amruta.org uniquement)"
+    "loadFromVimeo": "Ou charger une vidéo Vimeo (Amruta.org uniquement)",
+    "supportInfo": "Pour obtenir de l'aide ou signaler un bug, veuillez envoyer un e-mail à help@amruta.org"
   },
   "findReplace": {
     "title": "Rechercher / Remplacer",

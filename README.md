@@ -7,7 +7,7 @@ A fork of [subtitle-editor](https://github.com/laubonghaudoi/subtitle-editor) by
 - **Vimeo integration** — import videos directly from Vimeo via API proxy (`/api/vimeo/*`)
 - **SSO authentication** — HMAC-signed SSO cookie verification for access control (`proxy.ts`)
 - **Cloudflare deployment** — ready for Cloudflare Workers/Pages with `wrangler` support
-- **Additional locales** — added Polish (pl), German (de), and Cantonese (yue) translations
+- **Additional locales** — added Arabic (ar), Bengali (bn), German (de), Spanish (es), French (fr), Hindi (hi), Marathi (mr), Polish (pl), Portuguese (pt), Russian (ru), Cantonese (yue), and Chinese (zh) translations
 - **Large file support (1GB+)** — streaming MP4 box parser with chunked mdat processing (5MB chunks) via mp4box + Web AudioDecoder; avoids loading entire file into memory
 - **Docker deployment** — production Dockerfile with multi-stage builds and nginx reverse proxy
 - **Dependabot** — automated dependency updates for npm and Docker base images
@@ -17,7 +17,7 @@ A fork of [subtitle-editor](https://github.com/laubonghaudoi/subtitle-editor) by
 
 - Multi-track editing
 - Waveform visualization
-- Localization (en, de, pl, yue)
+- Localization (en, ar, bn, de, es, fr, hi, mr, pl, pt, ru, yue, zh)
 - .srt / .vtt format support
 - Progressive Web App (PWA)
 

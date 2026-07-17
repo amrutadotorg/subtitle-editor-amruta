@@ -57,7 +57,8 @@
     "supportedFormatsNote": "Esta lista é detectada a partir do suporte nativo de mídia HTML do seu navegador. O carregamento real depende dos codecs dentro do arquivo.",
     "supportedFormatsUnsupported": "Manifestos de streaming (.m3u8, .mpd) e FLV não são suportados por este aplicativo no momento.",
     "subtitles": "Legendas",
-    "loadFromVimeo": "Ou carregue um vídeo do Vimeo (apenas Amruta.org)"
+    "loadFromVimeo": "Ou carregue um vídeo do Vimeo (apenas Amruta.org)",
+    "supportInfo": "Para obter suporte ou reportar um bug, envie um e-mail para help@amruta.org"
   },
   "findReplace": {
     "title": "Localizar / Substituir",

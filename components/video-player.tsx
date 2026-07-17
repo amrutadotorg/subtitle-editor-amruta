@@ -25,7 +25,7 @@ import {
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-import { IconBrandVimeo } from "@tabler/icons-react";
+import { IconBrandVimeo, IconUpload } from "@tabler/icons-react";
 
 export interface VideoPlayerProps {
   mediaFile: File | null;
@@ -246,7 +246,8 @@ const VideoPlayer = forwardRef(function VideoPlayer(
   if (!mediaUrl) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
-        <Label className="cursor-pointer text-xl hover:text-accent-ink underline">
+        <Label className="cursor-pointer inline-flex items-center text-xl hover:text-accent-ink underline">
+          <IconUpload size={24} className="mr-2" />
           {t("videoPlayer.loadFile")}
           <Input
             className="hidden"
@@ -289,16 +290,38 @@ const VideoPlayer = forwardRef(function VideoPlayer(
             {t("videoPlayer.supportedFormatsUnsupported")}
           </p>
           {onOpenVimeo && (
-            <Button
-              variant="link"
-              className="text-lg hover:text-accent-ink underline mt-2"
-              onClick={onOpenVimeo}
-            >
-              <IconBrandVimeo size={20} />
-              <span>{t("videoPlayer.loadFromVimeo")}</span>
-            </Button>
+            <div className="flex justify-center w-full mt-4">
+              <Button
+                variant="link"
+                className="text-xl hover:text-accent-ink underline"
+                onClick={onOpenVimeo}
+              >
+                <IconBrandVimeo size={20} />
+                <span>{t("videoPlayer.loadFromVimeo")}</span>
+              </Button>
+            </div>
           )}
         </div>
+        <p className="text-muted-foreground text-sm mt-4 text-center">
+          {(() => {
+            const supportText = t("videoPlayer.supportInfo");
+            const email = "help@amruta.org";
+            if (!supportText.includes(email)) return supportText;
+            const parts = supportText.split(email);
+            return (
+              <>
+                {parts[0]}
+                <a
+                  href={`mailto:${email}`}
+                  className="underline hover:text-accent-ink transition-colors"
+                >
+                  {email}
+                </a>
+                {parts[1]}
+              </>
+            );
+          })()}
+        </p>
       </div>
     );
   }

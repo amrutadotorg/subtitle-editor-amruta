@@ -57,7 +57,8 @@
     "supportedFormatsNote": "এই তালিকা আপনার ব্রাউজারের নেটিভ HTML মিডিয়া সমর্থন থেকে শনাক্ত। প্রকৃত লোডিং ফাইলের কোডেকের উপর নির্ভর করে।",
     "supportedFormatsUnsupported": "এই অ্যাপ বর্তমানে স্ট্রিমিং ম্যানিফেস্ট (.m3u8, .mpd) এবং FLV সমর্থন করে না।",
     "subtitles": "উপশিরোনাম",
-    "loadFromVimeo": "অথবা Vimeo ভিডিও লোড করুন (শুধুমাত্র Amruta.org)"
+    "loadFromVimeo": "অথবা Vimeo ভিডিও লোড করুন (শুধুমাত্র Amruta.org)",
+    "supportInfo": "সহায়তার জন্য বা বাগ রিপোর্ট করতে, অনুগ্রহ করে help@amruta.org-এ ইমেইল করুন"
   },
   "findReplace": {
     "title": "খুঁজুন / প্রতিস্থাপন করুন",

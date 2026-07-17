@@ -57,7 +57,8 @@
     "supportedFormatsNote": "Ta lista opiera się na natywnej obsłudze mediów Twojej przeglądarki. Rzeczywiste wczytanie zależy również od kodeków w pliku.",
     "supportedFormatsUnsupported": "Manifesty streamingu (.m3u8, .mpd) oraz format FLV nie są obecnie obsługiwane przez tę aplikację.",
     "subtitles": "Napisy",
-    "loadFromVimeo": "Lub wczytaj film z Vimeo (tylko Amruta.org)"
+    "loadFromVimeo": "Lub wczytaj film z Vimeo (tylko Amruta.org)",
+    "supportInfo": "W celu uzyskania pomocy lub zgłoszenia błędu wyślij e-mail na adres help@amruta.org"
   },
   "findReplace": {
     "title": "Znajdź / Zamień",
@@ -222,7 +223,7 @@
     "warnTooManyLines": "{count} linii przekracza maks. {max}",
     "warnDurationShort": "{value}s poniżej minimum {min}s",
     "warnDurationLong": "{value}s przekracza maks. {max}s",
-    "repeatedCount": "\u00d7{count}",
+    "repeatedCount": "×{count}",
     "seconds": "{value}s"
   },
   "tooltips": {

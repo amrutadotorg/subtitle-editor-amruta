@@ -57,7 +57,8 @@
     "supportedFormatsNote": "يتم كشف هذه القائمة من دعم الوسائط الأصلي في متصفحك. يعتمد التحميل الفعلي على الترميزات داخل الملف.",
     "supportedFormatsUnsupported": "لم يتم دعم ملفات البث (.m3u8، .mpd) و FLV حالياً في هذا التطبيق.",
     "subtitles": "الترجمة",
-    "loadFromVimeo": "أو حمّل فيديو من Vimeo (Amruta.org فقط)"
+    "loadFromVimeo": "أو حمّل فيديو من Vimeo (Amruta.org فقط)",
+    "supportInfo": "للدعم أو للإبلاغ عن مشكلة، يرجى مراسلة help@amruta.org"
   },
   "findReplace": {
     "title": "بحث / استبدال",
