@@ -187,7 +187,8 @@ function MainContent() {
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
     const sharedFile = searchParams.get("import");
-    if (sharedFile && !hasImportedRef.current) {
+    const captionFile = searchParams.get("caption");
+    if ((sharedFile || captionFile) && !hasImportedRef.current) {
       hasImportedRef.current = true;
 
       // Clear previous auto-saved session to prevent recovery dialog from overlapping newly loaded file
@@ -197,7 +198,11 @@ function MainContent() {
         console.warn("Failed to clear local session storage:", err);
       }
 
-      fetch(`/api/load-shared?file=${encodeURIComponent(sharedFile)}`)
+      fetch(
+        captionFile
+          ? `/api/load-captions?file=${encodeURIComponent(captionFile)}`
+          : `/api/load-shared?file=${encodeURIComponent(sharedFile!)}`,
+      )
         .then((res) => {
           if (!res.ok) throw new Error("Failed to load shared subtitles file");
           return res.text();
@@ -205,7 +210,7 @@ function MainContent() {
         .then((text) => {
           const ytid = searchParams.get("ytid");
           const lang = searchParams.get("lang");
-          let fileName = sharedFile;
+          let fileName = captionFile ?? sharedFile ?? "";
           if (ytid) {
             fileName = lang ? `${ytid}.${lang}.vtt` : `${ytid}.vtt`;
           }
@@ -270,6 +275,7 @@ function MainContent() {
           const url = new URL(window.location.href);
           url.searchParams.delete("import");
           url.searchParams.delete("vimeo_id");
+          url.searchParams.delete("caption");
           window.history.replaceState({}, "", url.toString());
         })
         .catch((err) => {
