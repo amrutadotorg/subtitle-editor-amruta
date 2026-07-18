@@ -284,6 +284,9 @@
     "invalidUrl": "इस URL से वीडियो ID निकाल नहीं सके",
     "errorForbidden": "केवल Amruta.org वीडियो समर्थित हैं",
     "errorNotFound": "Vimeo पर वीडियो नहीं मिला",
-    "errorGeneric": "Vimeo से वीडियो लोड नहीं कर सके"
+    "errorGeneric": "Vimeo से वीडियो लोड नहीं कर सके",
+    "autoLoadDownloading": "Vimeo वीडियो लोड हो रहा है…",
+    "autoLoadError": "Vimeo वीडियो लोड करने में विफल। कृपया इसे मैन्युअल रूप से लोड करने का प्रयास करें।",
+    "autoLoadRetry": "मैन्युअल रूप से लोड करें"
   }
 }

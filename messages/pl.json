@@ -284,6 +284,9 @@
     "invalidUrl": "Nie udało się wyodrębnić ID filmu z tego URL",
     "errorForbidden": "Obsługiwane są tylko linki z Amruta.org",
     "errorNotFound": "Nie znaleziono filmu na Vimeo",
-    "errorGeneric": "Nie udało się załadować filmu z Vimeo"
+    "errorGeneric": "Nie udało się wczytać wideo z Vimeo",
+    "autoLoadDownloading": "Ładowanie wideo z Vimeo…",
+    "autoLoadError": "Nie udało się załadować wideo z Vimeo. Spróbuj wczytać je ręcznie.",
+    "autoLoadRetry": "Wczytaj ręcznie"
   }
 }

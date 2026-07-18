@@ -284,6 +284,9 @@
     "invalidUrl": "Impossible d'extraire l'ID de la vidéo depuis cette URL",
     "errorForbidden": "Seules les vidéos Amruta.org sont prises en charge",
     "errorNotFound": "Vidéo introuvable sur Vimeo",
-    "errorGeneric": "Impossible de charger la vidéo depuis Vimeo"
+    "errorGeneric": "Impossible de charger la vidéo depuis Vimeo",
+    "autoLoadDownloading": "Chargement de la vidéo Vimeo…",
+    "autoLoadError": "Échec du chargement de la vidéo Vimeo. Veuillez essayer de la charger manuellement.",
+    "autoLoadRetry": "Charger manuellement"
   }
 }

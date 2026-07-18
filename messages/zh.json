@@ -284,6 +284,9 @@
     "invalidUrl": "无法从此 URL 中提取视频 ID",
     "errorForbidden": "仅支持 Amruta.org 的视频",
     "errorNotFound": "在 Vimeo 上未找到该视频",
-    "errorGeneric": "无法从 Vimeo 加载视频"
+    "errorGeneric": "无法从 Vimeo 加载视频",
+    "autoLoadDownloading": "正在加载 Vimeo 视频…",
+    "autoLoadError": "无法加载 Vimeo 视频。请尝试手动加载。",
+    "autoLoadRetry": "手动加载"
   }
 }

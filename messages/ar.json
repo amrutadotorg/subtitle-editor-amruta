@@ -284,6 +284,9 @@
     "invalidUrl": "لم يتم استخراج معرّف الفيديو من هذا الرابط",
     "errorForbidden": "يتم دعم فيديوهات Amruta.org فقط",
     "errorNotFound": "لم يتم العثور على الفيديو على Vimeo",
-    "errorGeneric": "لم يتم تحميل الفيديو من Vimeo"
+    "errorGeneric": "لم يتم تحميل الفيديو من Vimeo",
+    "autoLoadDownloading": "جارٍ تحميل فيديو Vimeo…",
+    "autoLoadError": "فشل تحميل فيديو Vimeo. يرجى محاولة تحميله يدويًا.",
+    "autoLoadRetry": "تحميل يدويًا"
   }
 }

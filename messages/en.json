@@ -284,6 +284,9 @@
     "invalidUrl": "Could not extract video ID from this URL",
     "errorForbidden": "Only Amruta.org videos are supported",
     "errorNotFound": "Video not found on Vimeo",
-    "errorGeneric": "Could not load video from Vimeo"
+    "errorGeneric": "Could not load video from Vimeo",
+    "autoLoadDownloading": "Downloading Vimeo video…",
+    "autoLoadError": "Failed to load Vimeo video. Please try loading it manually.",
+    "autoLoadRetry": "Load manually"
   }
 }

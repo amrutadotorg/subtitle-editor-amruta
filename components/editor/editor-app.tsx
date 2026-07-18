@@ -11,6 +11,7 @@ import TrackTabs from "@/components/subtitle/track-tabs";
 import type {
   VideoPlayerHandle,
   VideoPlayerProps,
+  VimeoLoadingState,
 } from "@/components/video-player";
 import {
   SubtitleProvider,
@@ -152,6 +153,9 @@ function MainContent() {
     null,
   );
   const [isVimeoOpen, setIsVimeoOpen] = useState(false);
+  const [vimeoAutoLoad, setVimeoAutoLoad] = useState<VimeoLoadingState | null>(
+    null,
+  );
   const resumeMediaPlayback = () => {
     videoPlayerRef.current?.resumePlayback();
   };
@@ -249,21 +253,48 @@ function MainContent() {
       if (cachedFile) {
         loadMediaFile(cachedFile);
       } else {
-        // Not cached — download from Vimeo API
+        // Not cached — show loading overlay and download from Vimeo API
+        setVimeoAutoLoad({ status: "downloading", progress: null });
         fetch(
           `/api/vimeo/download?url=${encodeURIComponent(`https://vimeo.com/${vimeoId}`)}`,
         )
           .then((res) => {
             if (!res.ok)
               throw new Error(`Vimeo download failed (${res.status})`);
+
+            const contentLength = res.headers.get("content-length");
+            const total = contentLength ? parseInt(contentLength, 10) : null;
+
+            // Extract filename for display
+            const disposition = res.headers.get("content-disposition");
+            const filename =
+              disposition?.match(/filename="(.+?)"/)?.[1] ??
+              `vimeo-${vimeoId}.mp4`;
+            setVimeoAutoLoad({
+              status: "downloading",
+              progress: total ? 0 : null,
+              filename,
+            });
+
             const reader = res.body!.getReader();
             const chunks: Uint8Array[] = [];
+            let received = 0;
+
             const pump = (): Promise<void> =>
               reader.read().then(({ done, value }) => {
                 if (done) return;
                 chunks.push(value);
+                received += value.length;
+                if (total) {
+                  setVimeoAutoLoad({
+                    status: "downloading",
+                    progress: Math.round((received / total) * 100),
+                    filename,
+                  });
+                }
                 return pump();
               });
+
             return pump().then(() => {
               const totalLen = chunks.reduce((n, c) => n + c.length, 0);
               const merged = new Uint8Array(totalLen);
@@ -274,19 +305,19 @@ function MainContent() {
               }
               const contentType =
                 res.headers.get("content-type") ?? "video/mp4";
-              const filename =
-                res.headers
-                  .get("content-disposition")
-                  ?.match(/filename="(.+?)"/)?.[1] ?? `vimeo-${vimeoId}.mp4`;
               const blob = new Blob([merged], { type: contentType });
               const file = new File([blob], filename, {
                 type: contentType,
               });
               setCachedFile(vimeoId, file);
+              setVimeoAutoLoad(null);
               loadMediaFile(file);
             });
           })
-          .catch((err) => console.error("Vimeo auto-load failed:", err));
+          .catch((err) => {
+            console.error("Vimeo auto-load failed:", err);
+            setVimeoAutoLoad({ status: "error", progress: null });
+          });
       }
     });
   }, [loadMediaFile, setVimeoVideoId]);
@@ -447,6 +478,7 @@ function MainContent() {
                 playbackRate={playbackRate}
                 playInBackground={playInBackground}
                 onOpenVimeo={() => setIsVimeoOpen(true)}
+                vimeoLoadingState={vimeoAutoLoad}
               />
             </div>
           </div>

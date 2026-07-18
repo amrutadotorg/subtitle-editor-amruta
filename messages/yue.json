@@ -280,6 +280,9 @@
     "invalidUrl": "無法從此 URL 提取影片 ID",
     "errorForbidden": "僅支援 Amruta.org 的影片連結",
     "errorNotFound": "在 Vimeo 上找不到該影片",
-    "errorGeneric": "無法從 Vimeo 載入影片"
+    "errorGeneric": "無法從 Vimeo 載入影片",
+    "autoLoadDownloading": "正在載入 Vimeo 影片…",
+    "autoLoadError": "無法載入 Vimeo 影片。請嘗試手動載入。",
+    "autoLoadRetry": "手動載入"
   }
 }

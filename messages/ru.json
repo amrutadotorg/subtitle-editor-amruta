@@ -284,6 +284,9 @@
     "invalidUrl": "Не удалось извлечь ID видео из этого URL",
     "errorForbidden": "Поддерживаются только видео Amruta.org",
     "errorNotFound": "Видео не найдено на Vimeo",
-    "errorGeneric": "Не удалось загрузить видео с Vimeo"
+    "errorGeneric": "Не удалось загрузить видео с Vimeo",
+    "autoLoadDownloading": "Загрузка видео с Vimeo…",
+    "autoLoadError": "Не удалось загрузить видео с Vimeo. Попробуйте загрузить его вручную.",
+    "autoLoadRetry": "Загрузить вручную"
   }
 }

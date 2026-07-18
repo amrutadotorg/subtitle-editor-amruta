@@ -536,6 +536,21 @@
       height: 0;
     }
   }
+
+  @keyframes progress-indeterminate {
+    0% {
+      width: 0%;
+      margin-left: 0%;
+    }
+    50% {
+      width: 60%;
+      margin-left: 20%;
+    }
+    100% {
+      width: 0%;
+      margin-left: 100%;
+    }
+  }
 }
 
 /*

@@ -25,7 +25,17 @@ import {
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-import { IconBrandVimeo, IconUpload } from "@tabler/icons-react";
+import {
+  IconBrandVimeo,
+  IconUpload,
+  IconAlertCircle,
+} from "@tabler/icons-react";
+
+export interface VimeoLoadingState {
+  status: "downloading" | "error";
+  progress: number | null; // 0-100, null = indeterminate
+  filename?: string;
+}
 
 export interface VideoPlayerProps {
   mediaFile: File | null;
@@ -39,6 +49,7 @@ export interface VideoPlayerProps {
   playbackRate: number;
   playInBackground: boolean;
   onOpenVimeo?: () => void;
+  vimeoLoadingState?: VimeoLoadingState | null;
 }
 
 export interface VideoPlayerHandle {
@@ -58,6 +69,7 @@ const VideoPlayer = forwardRef(function VideoPlayer(
     playbackRate,
     playInBackground,
     onOpenVimeo,
+    vimeoLoadingState,
   }: VideoPlayerProps,
   ref: ForwardedRef<VideoPlayerHandle>,
 ) {
@@ -245,7 +257,63 @@ const VideoPlayer = forwardRef(function VideoPlayer(
 
   if (!mediaUrl) {
     return (
-      <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
+      <div className="relative flex flex-col items-center justify-center h-full text-muted-foreground">
+        {/* Vimeo auto-load overlay */}
+        {vimeoLoadingState && (
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-background/90 backdrop-blur-sm gap-4 px-8">
+            {vimeoLoadingState.status === "downloading" ? (
+              <>
+                <IconBrandVimeo
+                  size={36}
+                  className="text-iris-700 dark:text-iris-300 animate-pulse"
+                />
+                <p className="text-base font-medium text-center">
+                  {t("vimeoLoader.autoLoadDownloading")}
+                  {vimeoLoadingState.filename && (
+                    <span className="block text-sm text-muted-foreground mt-1 truncate max-w-xs">
+                      {vimeoLoadingState.filename}
+                    </span>
+                  )}
+                </p>
+                <div className="w-full max-w-sm space-y-1">
+                  <div className="h-2 rounded-full bg-muted overflow-hidden">
+                    {vimeoLoadingState.progress !== null ? (
+                      <div
+                        className="h-full rounded-full bg-iris-700 dark:bg-iris-400 transition-all duration-200"
+                        style={{ width: `${vimeoLoadingState.progress}%` }}
+                      />
+                    ) : (
+                      <div className="h-full rounded-full bg-iris-700 dark:bg-iris-400 animate-[progress-indeterminate_1.5s_ease-in-out_infinite]" />
+                    )}
+                  </div>
+                  {vimeoLoadingState.progress !== null && (
+                    <p className="text-xs text-muted-foreground text-end tabular-nums">
+                      {vimeoLoadingState.progress}%
+                    </p>
+                  )}
+                </div>
+              </>
+            ) : (
+              <>
+                <IconAlertCircle size={36} className="text-red-500" />
+                <p className="text-base font-medium text-center text-foreground">
+                  {t("vimeoLoader.autoLoadError")}
+                </p>
+                {onOpenVimeo && (
+                  <Button
+                    variant="outline"
+                    onClick={onOpenVimeo}
+                    className="gap-2"
+                  >
+                    <IconBrandVimeo size={16} />
+                    {t("vimeoLoader.autoLoadRetry")}
+                  </Button>
+                )}
+              </>
+            )}
+          </div>
+        )}
+
         <Label className="cursor-pointer inline-flex items-center text-xl hover:text-accent-ink underline">
           <IconUpload size={24} className="mr-2" />
           {t("videoPlayer.loadFile")}
