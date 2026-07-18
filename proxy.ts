@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import createMiddleware from "next-intl/middleware";
-import { locales } from "@/lib/locales";
+import { locales, isValidLocale } from "@/lib/locales";
 
 const COOKIE_NAME = "amruta_sso";
 const LOGIN_URL =
@@ -84,12 +84,19 @@ const intlMiddleware = createMiddleware({
 });
 
 export default async function proxy(request: NextRequest) {
-  const ssoResponse = await verifySso(request);
-  if (ssoResponse) return ssoResponse;
+  const pathname = request.nextUrl.pathname;
+  const firstSegment = pathname.split("/")[1];
+
+  // Only apply SSO to locale routes (editor pages) and root.
+  // Static pages like /best-practices, /offline, etc. are public.
+  if (!firstSegment || isValidLocale(firstSegment)) {
+    const ssoResponse = await verifySso(request);
+    if (ssoResponse) return ssoResponse;
+  }
 
   return intlMiddleware(request);
 }
 
 export const config = {
-  matcher: ["/((?!_next|api|faq|offline|.*\\..*).*)"],
+  matcher: ["/((?!_next|api|.*\\..*).*)"],
 };

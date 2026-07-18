@@ -15,7 +15,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     ...localeEntries,
     {
-      url: `${baseUrl}/faq`,
+      url: `${baseUrl}/best-practices`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.8,

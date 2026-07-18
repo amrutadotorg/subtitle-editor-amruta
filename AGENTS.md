@@ -30,7 +30,7 @@ A browser-based subtitle editor (SRT/VTT) with multi-track support, audio wavefo
 ├── app/                    # Next.js App Router pages and API routes
 │   ├── [locale]/           # i18n-routed pages (page.tsx, layout.tsx)
 │   ├── api/                # API routes (vimeo/download, load-shared, load-captions)
-│   ├── faq/                # Static FAQ page
+│   ├── best-practices/     # Static subtitling best practices page
 │   ├── offline/            # PWA offline fallback page
 │   ├── globals.css         # Global styles, Tailwind config, Radix color mappings, CSS variables
 │   ├── layout.tsx          # Root layout (ThemeProvider, Toaster, fonts, PWA meta)
@@ -246,6 +246,17 @@ import { useEffect, useRef, useState } from "react";
 - **React Compiler** is enabled (`reactCompiler: true`) — this is intentional and must remain enabled
 - **ESLint rule `react-hooks/set-state-in-effect`** is disabled for 10 specific files (legitimate pattern for autosave); do not re-enable without understanding the autosave architecture
 - **`fast-xml-parser`** is pinned in overrides to 5.7.1 — do not upgrade
+- **2-line subtitle limit** — the editor enforces a maximum of 2 lines per subtitle (industry best practice); splitting into separate cues is expected behavior, not a bug
+
+## Adding New Public Static Pages
+
+When adding a new static page (like `/best-practices`) that should be publicly accessible **without SSO authentication**:
+
+1. Create the page under `app/<page-name>/page.tsx`
+2. Update `app/sitemap.ts` to include the new page
+3. Run the full verification workflow, then rebuild and deploy
+
+**No need to update `proxy.ts`** — SSO only applies to locale routes (`/en`, `/de`, etc.) and the root `/`. Any other path is automatically public.
 
 ## Git Workflow
 
@@ -294,7 +305,8 @@ All steps must pass. A failure in any step blocks the merge.
 | `app/[locale]/page.tsx` | Main page entry (server component → ResponsiveEditorEntry) |
 | `app/globals.css` | Tailwind v4 config, Radix color mappings, CSS custom properties |
 | `next.config.ts` | Next.js config: PWA, i18n plugin, standalone output, React Compiler |
-| `proxy.ts` | Middleware: SSO verification + next-intl locale routing |
+| `proxy.ts` | Middleware: SSO verification (locale routes only) + next-intl locale routing |
+| `app/best-practices/page.tsx` | Static "Top 10 Subtitling Best Practices" page |
 | `context/subtitle-context.tsx` | Core state management (6 contexts, undo/redo, local session) |
 | `components/editor/editor-app.tsx` | Main editor client component |
 | `lib/locales.ts` | Locale definitions and validation |

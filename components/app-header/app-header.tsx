@@ -1,6 +1,7 @@
 "use client";
 
 import FindReplace from "@/components/find-replace";
+import Link from "next/link";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +20,7 @@ import {
   IconArrowBack,
   IconArrowForward,
   IconBrandVimeo,
+  IconBulb,
   IconMovie,
 } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
@@ -143,6 +145,24 @@ export function AppHeader({
 
         <SettingsTrigger />
         <StatisticsTrigger />
+
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="cursor-pointer"
+                asChild
+              >
+                <Link href="/best-practices" aria-label="Best Practices">
+                  <IconBulb />
+                </Link>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Best Practices</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
 
         <TooltipProvider>
           <Tooltip>
