@@ -124,6 +124,7 @@
     "tab": "pour modifier le texte du sous-titre actuel.",
     "arrows": "et",
     "arrowsAction": "pour passer au sous-titre précédent/suivant.",
+    "insertNewline": "pour insérer un saut de ligne à la position du curseur dans le texte du sous-titre (max 2 lignes).",
     "splitSubtitle": "pour diviser le texte du sous-titre à la position du curseur lors de l'édition.",
     "addSubtitle": "pour ajouter un nouveau sous-titre en dessous lors de l'édition.",
     "shiftAdd": "pour ajouter un sous-titre de 3 secondes.",

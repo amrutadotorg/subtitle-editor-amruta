@@ -124,6 +124,7 @@
     "tab": "para editar o texto da legenda atual.",
     "arrows": "e",
     "arrowsAction": "para ir para a legenda anterior/próxima.",
+    "insertNewline": "para inserir uma quebra de linha na posição do cursor no texto da legenda (máx. 2 linhas).",
     "splitSubtitle": "para dividir o texto da legenda na posição do cursor ao editá-la.",
     "addSubtitle": "para adicionar uma nova legenda abaixo ao editá-la.",
     "shiftAdd": "para adicionar uma legenda de 3 segundos.",

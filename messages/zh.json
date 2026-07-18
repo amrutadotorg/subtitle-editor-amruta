@@ -124,6 +124,7 @@
     "tab": "编辑当前字幕文本。",
     "arrows": "和",
     "arrowsAction": "跳转到上一条/下一条字幕。",
+    "insertNewline": "在字幕文本的光标位置插入换行（最多2行）。",
     "splitSubtitle": "编辑时在光标位置拆分字幕文本。",
     "addSubtitle": "编辑时在下方添加新字幕。",
     "shiftAdd": "添加一条 3 秒的字幕。",

@@ -162,9 +162,30 @@ export default function SubtitleTextEditor({
             const caretPos = e.currentTarget.selectionStart ?? editText.length;
             const nextText = e.currentTarget.value;
 
-            if (e.shiftKey) {
+            if (e.altKey && !e.shiftKey) {
               onSplitSubtitle(subtitle.id, caretPos, nextText.length, nextText);
-            } else if (nextText !== subtitle.text) {
+              setEditingSubtitleUuid(null);
+              return;
+            }
+
+            if (e.shiftKey && !e.altKey) {
+              const lineCount = (nextText.match(/\n/g) || []).length;
+              if (lineCount < 1) {
+                const newText =
+                  nextText.slice(0, caretPos) + "\n" + nextText.slice(caretPos);
+                setEditText(newText);
+                onLocalTextChange?.(newText);
+                requestAnimationFrame(() => {
+                  if (textAreaRef.current) {
+                    textAreaRef.current.selectionStart = caretPos + 1;
+                    textAreaRef.current.selectionEnd = caretPos + 1;
+                  }
+                });
+              }
+              return;
+            }
+
+            if (nextText !== subtitle.text) {
               onUpdateText(subtitle.id, nextText);
             }
 

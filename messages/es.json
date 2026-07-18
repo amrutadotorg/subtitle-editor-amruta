@@ -124,6 +124,7 @@
     "tab": "para editar el texto del subtítulo actual.",
     "arrows": "y",
     "arrowsAction": "para saltar al subtítulo anterior/siguiente.",
+    "insertNewline": "para insertar un salto de línea en la posición del cursor en el texto del subtítulo (máx. 2 líneas).",
     "splitSubtitle": "para dividir el texto del subtítulo en la posición del cursor al editarlo.",
     "addSubtitle": "para agregar un nuevo subtítulo abajo al editarlo.",
     "shiftAdd": "para agregar un subtítulo de 3 segundos.",

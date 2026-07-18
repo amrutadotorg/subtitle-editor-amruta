@@ -35,7 +35,11 @@ export default function BottomInstructions() {
             {t("shortcuts.arrowsAction")}
           </li>
           <li>
-            <kbd>shift</kbd> + <kbd>enter</kbd> {t("shortcuts.splitSubtitle")}
+            <kbd>shift</kbd> + <kbd>enter</kbd> {t("shortcuts.insertNewline")}
+          </li>
+          <li>
+            <kbd>alt</kbd> (Windows) / <kbd>⌥</kbd> (Mac) + <kbd>enter</kbd>{" "}
+            {t("shortcuts.splitSubtitle")}
           </li>
           <li>
             <kbd>ctrl</kbd> (Windows) / <kbd>&#8984;</kbd> (Mac) +{" "}
