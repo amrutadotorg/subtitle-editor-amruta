@@ -29,6 +29,7 @@ import {
   IconBrandVimeo,
   IconUpload,
   IconAlertCircle,
+  IconX,
 } from "@tabler/icons-react";
 
 export interface VimeoLoadingState {
@@ -50,6 +51,8 @@ export interface VideoPlayerProps {
   playInBackground: boolean;
   onOpenVimeo?: () => void;
   vimeoLoadingState?: VimeoLoadingState | null;
+  /** Called when the user cancels an in-progress Vimeo auto-load (Cancel button or ESC) */
+  onVimeoLoadCancel?: () => void;
 }
 
 export interface VideoPlayerHandle {
@@ -70,6 +73,7 @@ const VideoPlayer = forwardRef(function VideoPlayer(
     playInBackground,
     onOpenVimeo,
     vimeoLoadingState,
+    onVimeoLoadCancel,
   }: VideoPlayerProps,
   ref: ForwardedRef<VideoPlayerHandle>,
 ) {
@@ -104,6 +108,15 @@ const VideoPlayer = forwardRef(function VideoPlayer(
       ),
     );
   }, []);
+
+  useEffect(() => {
+    if (!vimeoLoadingState || !onVimeoLoadCancel) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onVimeoLoadCancel();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [vimeoLoadingState, onVimeoLoadCancel]);
 
   const resumePlayback = useCallback(() => {
     const playerInstance = playerRef.current;
@@ -261,6 +274,16 @@ const VideoPlayer = forwardRef(function VideoPlayer(
         {/* Vimeo auto-load overlay */}
         {vimeoLoadingState && (
           <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-background/90 backdrop-blur-sm gap-4 px-8">
+            {onVimeoLoadCancel && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute top-4 right-4"
+                onClick={onVimeoLoadCancel}
+              >
+                <IconX size={20} />
+              </Button>
+            )}
             {vimeoLoadingState.status === "downloading" ? (
               <>
                 <IconBrandVimeo

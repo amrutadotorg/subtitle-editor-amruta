@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { getCachedFile, setCachedFile } from "@/lib/vimeo-file-cache";
 import { IconLoader2, IconDownload } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 function extractVideoId(url: string): string | null {
   const patterns = [
@@ -46,6 +46,22 @@ export default function VimeoLoader({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState<number | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  const handleClose = useCallback(
+    (nextOpen: boolean) => {
+      if (!nextOpen && loading) {
+        // Abort any in-flight download when the dialog is closed
+        abortControllerRef.current?.abort();
+        abortControllerRef.current = null;
+        setLoading(false);
+        setProgress(null);
+        setError(null);
+      }
+      onOpenChange(nextOpen);
+    },
+    [loading, onOpenChange],
+  );
 
   const handleDownload = useCallback(async () => {
     const trimmed = url.trim();
@@ -70,9 +86,13 @@ export default function VimeoLoader({
     setError(null);
     setProgress(null);
 
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     try {
       const res = await fetch(
         `/api/vimeo/download?url=${encodeURIComponent(trimmed)}`,
+        { signal: controller.signal },
       );
 
       if (!res.ok) {
@@ -100,10 +120,11 @@ export default function VimeoLoader({
         if (total) setProgress(Math.round((received / total) * 100));
       }
 
-      const filename =
+      const rawFilename =
         res.headers
           .get("content-disposition")
           ?.match(/filename="(.+?)"/)?.[1] ?? "vimeo-video.mp4";
+      const filename = decodeURIComponent(rawFilename);
 
       const totalLen = chunks.reduce((n, c) => n + c.length, 0);
       const merged = new Uint8Array(totalLen);
@@ -127,15 +148,17 @@ export default function VimeoLoader({
       setUrl("");
       onOpenChange(false);
     } catch (e) {
+      if ((e as Error).name === "AbortError") return; // User cancelled — silently close
       setError(e instanceof Error ? e.message : "Download failed");
     } finally {
+      abortControllerRef.current = null;
       setLoading(false);
       setProgress(null);
     }
   }, [url, onFileLoaded, onOpenChange, onVideoId, t]);
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{t("vimeoLoader.title")}</DialogTitle>
@@ -181,11 +204,7 @@ export default function VimeoLoader({
         )}
 
         <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={loading}
-          >
+          <Button variant="outline" onClick={() => handleClose(false)}>
             {t("dialog.cancel")}
           </Button>
           <Button

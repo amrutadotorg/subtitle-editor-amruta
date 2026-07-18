@@ -26,6 +26,7 @@ import { useWaveformRegions } from "./use-waveform-regions";
 import type { BulkOffsetPreviewState } from "@/components/bulk-offset/drawer";
 import { useTheme } from "next-themes";
 import { extractPeaks } from "@/lib/audio-peaks";
+import { getCachedPeaks, setCachedPeaks } from "@/lib/waveform-peaks-cache";
 
 interface WaveformVisualizerProps {
   mediaFile: File | null;
@@ -35,6 +36,8 @@ interface WaveformVisualizerProps {
   onPlayPause: (playing: boolean) => void;
   onRegionClick?: (uuid: string, opts?: { crossTrack?: boolean }) => void;
   previewOffsets?: Record<string, BulkOffsetPreviewState>;
+  /** Stable key used to look up / store peak data in IndexedDB (e.g. vimeoVideoId) */
+  peaksCacheKey?: string | null;
 }
 
 export default forwardRef(function WaveformVisualizer(
@@ -46,6 +49,7 @@ export default forwardRef(function WaveformVisualizer(
     onPlayPause,
     onRegionClick,
     previewOffsets = {},
+    peaksCacheKey,
   }: WaveformVisualizerProps,
   ref: ForwardedRef<{
     resumePlayback: () => void;
@@ -99,28 +103,51 @@ export default forwardRef(function WaveformVisualizer(
     const isMp4 = mediaFile.name.toLowerCase().match(/\.(mp4|m4a|mov)$/);
 
     if (large && isMp4) {
-      setIsExtracting(true);
-      setExtractionProgress(0);
+      // Check IndexedDB for cached peaks first
+      const runExtraction = (skipCache = false) => {
+        if (!skipCache && peaksCacheKey) {
+          getCachedPeaks(peaksCacheKey).then((cached) => {
+            if (cached) {
+              setExtractedPeaks(cached.peaks);
+              setExtractedDuration(cached.duration);
+              const objectUrl = URL.createObjectURL(mediaFile);
+              setMediaUrl(objectUrl);
+              setIsLoading(true);
+            } else {
+              runExtraction(true);
+            }
+          });
+          return;
+        }
 
-      extractPeaks(mediaFile, (percent: number) => {
-        setExtractionProgress(percent);
-      })
-        .then(({ peaks, duration }) => {
-          setExtractedPeaks([peaks]);
-          setExtractedDuration(duration);
-          setIsExtracting(false);
-          // Only create and set mediaUrl after peaks are ready
-          const objectUrl = URL.createObjectURL(mediaFile);
-          setMediaUrl(objectUrl);
+        setIsExtracting(true);
+        setExtractionProgress(0);
+
+        extractPeaks(mediaFile, (percent: number) => {
+          setExtractionProgress(percent);
         })
-        .catch((e: any) => {
-          warnDev("Peak extraction failed, falling back to dummy peaks:", e);
-          setExtractedPeaks([new Float32Array([0])]); // dummy peaks on failure
-          setExtractedDuration(undefined);
-          setIsExtracting(false);
-          const objectUrl = URL.createObjectURL(mediaFile);
-          setMediaUrl(objectUrl);
-        });
+          .then(({ peaks, duration }) => {
+            setExtractedPeaks([peaks]);
+            setExtractedDuration(duration);
+            setIsExtracting(false);
+            // Persist peaks so next load is instant
+            if (peaksCacheKey) {
+              setCachedPeaks(peaksCacheKey, peaks, duration);
+            }
+            const objectUrl = URL.createObjectURL(mediaFile);
+            setMediaUrl(objectUrl);
+          })
+          .catch((e: any) => {
+            warnDev("Peak extraction failed, falling back to dummy peaks:", e);
+            setExtractedPeaks([new Float32Array([0])]); // dummy peaks on failure
+            setExtractedDuration(undefined);
+            setIsExtracting(false);
+            const objectUrl = URL.createObjectURL(mediaFile);
+            setMediaUrl(objectUrl);
+          });
+      };
+
+      runExtraction();
     } else if (large) {
       // Fallback for large non-mp4 files
       setExtractedPeaks([new Float32Array([0])]);
@@ -142,7 +169,7 @@ export default forwardRef(function WaveformVisualizer(
         return "";
       });
     };
-  }, [mediaFile]);
+  }, [mediaFile, peaksCacheKey]);
 
   const regionPlugin = useMemo(() => {
     const rp = RegionsPlugin.create();
