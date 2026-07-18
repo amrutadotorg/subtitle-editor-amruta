@@ -100,8 +100,8 @@ npm run test         # Run all unit tests via Node test runner (tsx --test tests
 
 ### Docker
 ```bash
-docker compose --profile dev up    # Dev server on port 3000 (hot reload, source mounted)
-docker compose --profile prod up   # Prod server on port 3001 (built image)
+docker compose -f docker-compose-dev.yml --profile dev up    # Dev server on port 3000 (hot reload, source mounted)
+docker compose -f docker-compose-dev.yml --profile prod up   # Prod server on port 3001 (built image)
 ```
 
 ### Docker Deployment (Production)

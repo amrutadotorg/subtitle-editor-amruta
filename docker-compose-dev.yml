@@ -1,0 +1,28 @@
+services:
+  subtitle-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules   # anon volume - nie nadpisuje node_modules z obrazu
+      - /app/.next          # anon volume - cache buildu
+      - /home/admin/git/captions:/app/captions:ro
+    environment:
+      - NODE_ENV=development
+      - SKIP_CF_BINDINGS=true  # patrz next.config.ts fix ponizej
+    profiles: [dev]
+
+  subtitle-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    ports:
+      - "3001:3000"
+    volumes:
+      - /home/admin/git/captions:/app/captions:ro
+    environment:
+      - NODE_ENV=production
+    profiles: [prod]
