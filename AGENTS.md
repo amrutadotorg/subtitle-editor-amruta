@@ -29,7 +29,7 @@ A browser-based subtitle editor (SRT/VTT) with multi-track support, audio wavefo
 ```
 ├── app/                    # Next.js App Router pages and API routes
 │   ├── [locale]/           # i18n-routed pages (page.tsx, layout.tsx)
-│   ├── api/                # API routes (vimeo/download, load-shared)
+│   ├── api/                # API routes (vimeo/download, load-shared, load-captions)
 │   ├── faq/                # Static FAQ page
 │   ├── offline/            # PWA offline fallback page
 │   ├── globals.css         # Global styles, Tailwind config, Radix color mappings, CSS variables
@@ -106,9 +106,12 @@ docker compose --profile prod up   # Prod server on port 3001 (built image)
 
 ### Docker Deployment (Production)
 ```bash
+# Production compose file is at ~/containers/compose.yml (NOT in this repo)
+cd ~/containers
 docker compose build subtitle_editor   # Build production image
 docker compose up -d subtitle_editor   # Deploy (recreate container)
 docker restart nginx subtitle_editor   # Reload nginx proxy
+uv run --project ~/SCRIPTS/py_amr -m waf.purge_cache --host subtitle-editor.amruta.org  # Purge CF cache
 ```
 
 The image is `subtitle-editor:prod`. After deploying, users must hard-refresh (Ctrl+Shift+R) to see changes if the service worker was updated.
@@ -135,6 +138,9 @@ docker compose build subtitle_editor
 # 4. Deploy
 docker compose up -d subtitle_editor
 docker restart nginx subtitle_editor
+
+# 5. Purge Cloudflare cache
+uv run --project ~/SCRIPTS/py_amr -m waf.purge_cache --host subtitle-editor.amruta.org
 ```
 
 CI runs lint, test, build, **and** `docker build` on every Dependabot PR — green CI means the update is safe to merge. After merge, the steps above deploy the updated image.
@@ -273,6 +279,11 @@ All steps must pass. A failure in any step blocks the merge.
 - **`components/ui/`** base primitives — these are shadcn/ui scaffolding; extend via wrapper components, not by editing the base files
 - **`.wrangler/`** — Cloudflare Workers local state
 - **`tests/fixtures/`** — test fixture data
+
+## Nginx Configuration
+
+- **Config file**: `~/containers/nginx/sites/subtitle-editor.amruta.org.conf`
+- **Reload nginx**: `docker restart nginx`
 
 ## Key Files
 
