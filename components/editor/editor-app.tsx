@@ -218,59 +218,6 @@ function MainContent() {
           shouldJumpToFirstRef.current = true;
           loadSubtitleFile(file);
 
-          // Load Vimeo video if vimeo_id param is present
-          const vimeoId = searchParams.get("vimeo_id");
-          if (vimeoId) {
-            setVimeoVideoId(vimeoId);
-            getCachedFile(vimeoId).then((cachedFile) => {
-              if (cachedFile) {
-                loadMediaFile(cachedFile);
-              } else {
-                // Not cached — download from Vimeo API
-                fetch(
-                  `/api/vimeo/download?url=${encodeURIComponent(`https://vimeo.com/${vimeoId}`)}`,
-                )
-                  .then((res) => {
-                    if (!res.ok)
-                      throw new Error(`Vimeo download failed (${res.status})`);
-                    const reader = res.body!.getReader();
-                    const chunks: Uint8Array[] = [];
-                    const pump = (): Promise<void> =>
-                      reader.read().then(({ done, value }) => {
-                        if (done) return;
-                        chunks.push(value);
-                        return pump();
-                      });
-                    return pump().then(() => {
-                      const totalLen = chunks.reduce((n, c) => n + c.length, 0);
-                      const merged = new Uint8Array(totalLen);
-                      let offset = 0;
-                      for (const chunk of chunks) {
-                        merged.set(chunk, offset);
-                        offset += chunk.length;
-                      }
-                      const contentType =
-                        res.headers.get("content-type") ?? "video/mp4";
-                      const filename =
-                        res.headers
-                          .get("content-disposition")
-                          ?.match(/filename="(.+?)"/)?.[1] ??
-                        `vimeo-${vimeoId}.mp4`;
-                      const blob = new Blob([merged], { type: contentType });
-                      const file = new File([blob], filename, {
-                        type: contentType,
-                      });
-                      setCachedFile(vimeoId, file);
-                      loadMediaFile(file);
-                    });
-                  })
-                  .catch((err) =>
-                    console.error("Vimeo auto-load failed:", err),
-                  );
-              }
-            });
-          }
-
           // Clean up URL query parameters to avoid duplicate imports on re-renders
           const url = new URL(window.location.href);
           url.searchParams.delete("import");
@@ -283,8 +230,66 @@ function MainContent() {
           hasImportedRef.current = false;
         });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- loadMediaFile/setVimeoVideoId are stable; runs once on mount
   }, [loadSubtitleFile]);
+
+  // Load Vimeo video from URL query parameter (e.g. ?vimeo_id=123456789)
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const vimeoId = searchParams.get("vimeo_id");
+    if (!vimeoId) return;
+
+    setVimeoVideoId(vimeoId);
+
+    // Clean up vimeo_id from URL to avoid re-triggering on re-renders
+    const url = new URL(window.location.href);
+    url.searchParams.delete("vimeo_id");
+    window.history.replaceState({}, "", url.toString());
+
+    getCachedFile(vimeoId).then((cachedFile) => {
+      if (cachedFile) {
+        loadMediaFile(cachedFile);
+      } else {
+        // Not cached — download from Vimeo API
+        fetch(
+          `/api/vimeo/download?url=${encodeURIComponent(`https://vimeo.com/${vimeoId}`)}`,
+        )
+          .then((res) => {
+            if (!res.ok)
+              throw new Error(`Vimeo download failed (${res.status})`);
+            const reader = res.body!.getReader();
+            const chunks: Uint8Array[] = [];
+            const pump = (): Promise<void> =>
+              reader.read().then(({ done, value }) => {
+                if (done) return;
+                chunks.push(value);
+                return pump();
+              });
+            return pump().then(() => {
+              const totalLen = chunks.reduce((n, c) => n + c.length, 0);
+              const merged = new Uint8Array(totalLen);
+              let offset = 0;
+              for (const chunk of chunks) {
+                merged.set(chunk, offset);
+                offset += chunk.length;
+              }
+              const contentType =
+                res.headers.get("content-type") ?? "video/mp4";
+              const filename =
+                res.headers
+                  .get("content-disposition")
+                  ?.match(/filename="(.+?)"/)?.[1] ?? `vimeo-${vimeoId}.mp4`;
+              const blob = new Blob([merged], { type: contentType });
+              const file = new File([blob], filename, {
+                type: contentType,
+              });
+              setCachedFile(vimeoId, file);
+              loadMediaFile(file);
+            });
+          })
+          .catch((err) => console.error("Vimeo auto-load failed:", err));
+      }
+    });
+  }, [loadMediaFile, setVimeoVideoId]);
 
   // After import: jump to first subtitle (seek + scroll + focus, no auto-play)
   useEffect(() => {
