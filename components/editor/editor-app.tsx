@@ -21,6 +21,7 @@ import {
   useSubtitleState,
   useSubtitles,
 } from "@/context/subtitle";
+import { errorDev, warnDev } from "@/lib/log";
 import { SubtitleNavigationProvider } from "@/context/subtitle-navigation-context";
 import { useActiveTrackDetails } from "@/hooks/use-active-track-details";
 import { useBeforeUnloadGuard } from "@/hooks/use-beforeunload-guard";
@@ -212,7 +213,7 @@ function MainContent() {
       try {
         localStorage.removeItem("subtitle-editor:autosave:v1");
       } catch (err) {
-        console.warn("Failed to clear local session storage:", err);
+        warnDev("Failed to clear local session storage:", err);
       }
 
       fetch(
@@ -243,7 +244,7 @@ function MainContent() {
           window.history.replaceState({}, "", url.toString());
         })
         .catch((err) => {
-          console.error("Error loading shared subtitle file:", err);
+          errorDev("Error loading shared subtitle file:", err);
           hasImportedRef.current = false;
         });
     }
@@ -339,7 +340,7 @@ function MainContent() {
               setVimeoAutoLoad(null);
               return;
             }
-            console.error("Vimeo auto-load failed:", err);
+            errorDev("Vimeo auto-load failed:", err);
             setVimeoAutoLoad({ status: "error", progress: null });
           });
       }

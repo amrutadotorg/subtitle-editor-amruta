@@ -2,7 +2,7 @@
 
 ## Overview
 
-A browser-based subtitle editor (SRT/VTT) with multi-track support, audio waveform visualization, Vimeo integration, and i18n (en, de, pl, yue). Built as a Next.js PWA with React 19 and deployed via Docker.
+A browser-based subtitle editor (SRT/VTT) with multi-track support, audio waveform visualization, Vimeo integration, and i18n (13 locales: ar, bn, de, en, es, fr, hi, mr, pl, pt, ru, yue, zh). Built as a Next.js PWA with React 19 and deployed via Docker.
 
 ## Tech Stack
 
@@ -75,7 +75,7 @@ A browser-based subtitle editor (SRT/VTT) with multi-track support, audio wavefo
 │   ├── helpers/            # Test utilities (renderWithIntl, jsdom setup)
 │   └── fixtures/           # Test fixture files (gitignored by biome/eslint)
 ├── i18n/                   # next-intl request config (deep-merge fallback to en)
-├── messages/               # Locale JSON files (en.json, de.json, pl.json, yue.json)
+├── messages/               # Locale JSON files (ar, bn, de, en, es, fr, hi, mr, pl, pt, ru, yue, zh)
 ├── public/                 # Static assets (favicon, icons, manifest, og-image)
 ├── scripts/                # Build/utility scripts (scripts/icon/)
 └── docs/                   # Documentation (docs/superpowers/)

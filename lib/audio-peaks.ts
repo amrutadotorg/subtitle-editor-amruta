@@ -1,5 +1,7 @@
 import * as MP4Box from "mp4box";
 
+import { errorDev } from "@/lib/log";
+
 function getAACDescription(sampleRate: number, channels: number): ArrayBuffer {
   const sampleRates = [
     96000, 88200, 64000, 48000, 44100, 32000, 24000, 22050, 16000, 12000, 11025,
@@ -92,7 +94,7 @@ export async function extractPeaks(
       decoder = new AudioDecoder({
         output: processAudioData,
         error: (e) => {
-          console.error("AudioDecoder Error:", e);
+          errorDev("AudioDecoder Error:", e);
           reject(e);
         },
       });
@@ -105,7 +107,7 @@ export async function extractPeaks(
           description: description,
         });
       } catch (e) {
-        console.error("AudioDecoder config error", e);
+        errorDev("AudioDecoder config error", e);
         reject(e);
         return;
       }
