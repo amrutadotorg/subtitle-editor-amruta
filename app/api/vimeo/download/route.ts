@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifySsoApi } from "@/lib/sso";
 
-function extractVideoId(url: string): string | null {
+export function extractVideoId(url: string): string | null {
   // Supports:
   //   https://vimeo.com/123456789
   //   https://vimeo.com/123456789/abcdef1234

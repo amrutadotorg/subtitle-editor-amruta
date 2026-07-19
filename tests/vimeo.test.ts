@@ -1,21 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-
-// ---------------------------------------------------------------------------
-// extractVideoId — shared logic between client and API route
-// ---------------------------------------------------------------------------
-
-function extractVideoId(url: string): string | null {
-  const patterns = [
-    /vimeo\.com\/(\d+)(?:\/\S*)?$/,
-    /player\.vimeo\.com\/video\/(\d+)/,
-  ];
-  for (const pattern of patterns) {
-    const match = url.match(pattern);
-    if (match) return match[1];
-  }
-  return null;
-}
+import { extractVideoId } from "../app/api/vimeo/download/route";
 
 test("extractVideoId from standard vimeo.com URL", () => {
   assert.equal(extractVideoId("https://vimeo.com/123456789"), "123456789");
