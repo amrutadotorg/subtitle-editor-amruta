@@ -1,0 +1,22 @@
+services:
+  subtitle_editor:
+    image: subtitle-editor:prod
+    pull_policy: never
+    container_name: subtitle_editor
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "5"
+        compress: "true"
+    networks:
+      - my_network
+    env_file:
+      - .env.local
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    volumes:
+      - ../subtitle-translator-sqlpage/uploads:/app/shared_uploads:ro
+      - /home/admin/git/captions:/app/captions:ro

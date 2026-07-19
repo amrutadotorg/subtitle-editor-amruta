@@ -195,7 +195,7 @@ Posortowane: priorytet, a przy równym priorytecie — mniejszy nakład wyżej. 
 | 4 | Dodać podstawowy CSP i nagłówki bezpieczeństwa w `next.config.ts` (`headers()`) | Średni | S | - DONE
 | 5 | Wydzielić wspólną logikę `parseSsoCookie`/`parseSsoCookieApi` w `lib/sso.ts` do jednej funkcji bazowej | Średni | S | - DONE
 | 6 | Ujednolicić walidację ścieżek w `load-captions`/`load-shared` do jednej wspólnej funkcji (`resolveSafePath`) | Niski | S | - DONE
-| 7 | Zwersjonować `docker-compose.prod.yml` i konfigurację nginx (choćby w osobnym repo infra) | Średni | M |
+| 7 | Zwersjonować `docker-compose.prod.yml` i konfigurację nginx (choćby w osobnym repo infra) | Średni | M | - DONE
 | 8 | Dodać `app/api/health/route.ts` + `HEALTHCHECK` w `Dockerfile.prod` | Niski | S | - DONE
 | 9 | Wydzielić 4 `useEffect` z `editor-app.tsx` do osobnych hooków w `hooks/` | Niski | S | - DONE
 | 10 | Dodać `types/mp4box.d.ts` pokrywający używane API zamiast `any` w `lib/audio-peaks.ts` | Niski | S | - DONE
