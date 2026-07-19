@@ -39,7 +39,12 @@ import { cn, timeToSeconds } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 import type { ForwardRefExoticComponent, RefAttributes } from "react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
+
+import { useAutoRestoreVimeo } from "@/hooks/use-auto-restore-vimeo";
+import { useSharedSubtitleUrlLoader } from "@/hooks/use-shared-subtitle-url-loader";
+import { useVimeoUrlLoader } from "@/hooks/use-vimeo-url-loader";
+import { useAutoJumpToFirstSubtitle } from "@/hooks/use-auto-jump-to-first-subtitle";
 
 const VideoPlayer = dynamic<VideoPlayerProps>(
   () => import("@/components/video-player"),
@@ -111,30 +116,14 @@ function MainContent() {
   } = useLocalSession();
 
   // Auto-restore cached Vimeo video after session restore
-  const prevPendingSession = useRef(pendingLocalSession);
-  useEffect(() => {
-    const hadPending = prevPendingSession.current !== null;
-    prevPendingSession.current = pendingLocalSession;
-    if (
-      hadPending &&
-      pendingLocalSession === null &&
-      vimeoVideoId &&
-      !mediaFile
-    ) {
-      if (!skipAutoRestoreRef.current) {
-        getCachedFile(vimeoVideoId).then((file) => {
-          if (file) loadMediaFile(file);
-        });
-      }
-      skipAutoRestoreRef.current = false;
-    }
-  }, [
+  // Auto-restore cached Vimeo video after session restore
+  useAutoRestoreVimeo({
     pendingLocalSession,
     vimeoVideoId,
     mediaFile,
     loadMediaFile,
     skipAutoRestoreRef,
-  ]);
+  });
   const {
     playbackTime,
     setPlaybackTime,
@@ -202,164 +191,26 @@ function MainContent() {
   });
 
   // Load shared file from URL query parameter (e.g. ?import=final_subtitles_xyz.vtt)
-  useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search);
-    const sharedFile = searchParams.get("import");
-    const captionFile = searchParams.get("caption");
-    if ((sharedFile || captionFile) && !hasImportedRef.current) {
-      hasImportedRef.current = true;
-
-      // Clear previous auto-saved session to prevent recovery dialog from overlapping newly loaded file
-      try {
-        localStorage.removeItem("subtitle-editor:autosave:v1");
-      } catch (err) {
-        warnDev("Failed to clear local session storage:", err);
-      }
-
-      fetch(
-        captionFile
-          ? `/api/load-captions?file=${encodeURIComponent(captionFile)}`
-          : `/api/load-shared?file=${encodeURIComponent(sharedFile!)}`,
-      )
-        .then((res) => {
-          if (!res.ok) throw new Error("Failed to load shared subtitles file");
-          return res.text();
-        })
-        .then((text) => {
-          const ytid = searchParams.get("ytid");
-          const lang = searchParams.get("lang");
-          let fileName = captionFile ?? sharedFile ?? "";
-          if (ytid) {
-            fileName = lang ? `${ytid}.${lang}.vtt` : `${ytid}.vtt`;
-          }
-          const file = new File([text], fileName, { type: "text/vtt" });
-          shouldJumpToFirstRef.current = true;
-          loadSubtitleFile(file);
-
-          // Clean up URL query parameters to avoid duplicate imports on re-renders
-          const url = new URL(window.location.href);
-          url.searchParams.delete("import");
-          url.searchParams.delete("vimeo_id");
-          url.searchParams.delete("caption");
-          window.history.replaceState({}, "", url.toString());
-        })
-        .catch((err) => {
-          errorDev("Error loading shared subtitle file:", err);
-          hasImportedRef.current = false;
-        });
-    }
-  }, [loadSubtitleFile]);
+  useSharedSubtitleUrlLoader({
+    loadSubtitleFile,
+    shouldJumpToFirstRef,
+  });
 
   // Load Vimeo video from URL query parameter (e.g. ?vimeo_id=123456789)
-  useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search);
-    const vimeoId = searchParams.get("vimeo_id");
-    if (!vimeoId) return;
-
-    setVimeoVideoId(vimeoId);
-
-    // Clean up vimeo_id from URL to avoid re-triggering on re-renders
-    const url = new URL(window.location.href);
-    url.searchParams.delete("vimeo_id");
-    window.history.replaceState({}, "", url.toString());
-
-    const controller = new AbortController();
-    vimeoAbortControllerRef.current = controller;
-
-    getCachedFile(vimeoId).then((cachedFile) => {
-      if (cachedFile) {
-        loadMediaFile(cachedFile);
-      } else {
-        // Not cached — show loading overlay and download from Vimeo API
-        setVimeoAutoLoad({ status: "downloading", progress: null });
-        fetch(
-          `/api/vimeo/download?url=${encodeURIComponent(`https://vimeo.com/${vimeoId}`)}`,
-          { signal: controller.signal },
-        )
-          .then((res) => {
-            if (!res.ok)
-              throw new Error(`Vimeo download failed (${res.status})`);
-
-            const contentLength = res.headers.get("content-length");
-            const total = contentLength ? parseInt(contentLength, 10) : null;
-
-            // Decode URL-encoded filename from Content-Disposition header
-            const disposition = res.headers.get("content-disposition");
-            const rawFilename =
-              disposition?.match(/filename="(.+?)"/)?.[1] ??
-              `vimeo-${vimeoId}.mp4`;
-            const filename = decodeURIComponent(rawFilename);
-
-            setVimeoAutoLoad({
-              status: "downloading",
-              progress: total ? 0 : null,
-              filename,
-            });
-
-            const reader = res.body!.getReader();
-            const chunks: Uint8Array[] = [];
-            let received = 0;
-
-            const pump = (): Promise<void> =>
-              reader.read().then(({ done, value }) => {
-                if (done) return;
-                chunks.push(value);
-                received += value.length;
-                if (total) {
-                  setVimeoAutoLoad({
-                    status: "downloading",
-                    progress: Math.round((received / total) * 100),
-                    filename,
-                  });
-                }
-                return pump();
-              });
-
-            return pump().then(() => {
-              const totalLen = chunks.reduce((n, c) => n + c.length, 0);
-              const merged = new Uint8Array(totalLen);
-              let offset = 0;
-              for (const chunk of chunks) {
-                merged.set(chunk, offset);
-                offset += chunk.length;
-              }
-              const contentType =
-                res.headers.get("content-type") ?? "video/mp4";
-              const blob = new Blob([merged], { type: contentType });
-              const file = new File([blob], filename, {
-                type: contentType,
-              });
-              setCachedFile(vimeoId, file);
-              setVimeoAutoLoad(null);
-              loadMediaFile(file);
-            });
-          })
-          .catch((err) => {
-            if ((err as Error).name === "AbortError") {
-              // User cancelled — clear overlay silently
-              setVimeoAutoLoad(null);
-              return;
-            }
-            errorDev("Vimeo auto-load failed:", err);
-            setVimeoAutoLoad({ status: "error", progress: null });
-          });
-      }
-    });
-
-    return () => {
-      controller.abort();
-      vimeoAbortControllerRef.current = null;
-    };
-  }, [loadMediaFile, setVimeoVideoId]);
+  useVimeoUrlLoader({
+    setVimeoVideoId,
+    vimeoAbortControllerRef,
+    setVimeoAutoLoad,
+    loadMediaFile,
+  });
 
   // After import: jump to first subtitle (seek + scroll + focus, no auto-play)
-  useEffect(() => {
-    if (!shouldJumpToFirstRef.current || subtitles.length === 0) return;
-    shouldJumpToFirstRef.current = false;
-    const first = subtitles[0];
-    pendingSeekRef.current = timeToSeconds(first.startTime);
-    requestScroll(first.uuid, { instant: true });
-  }, [subtitles, requestScroll]);
+  useAutoJumpToFirstSubtitle({
+    subtitles,
+    shouldJumpToFirstRef,
+    pendingSeekRef,
+    requestScroll,
+  });
 
   useBeforeUnloadGuard(canUndoSubtitles);
   usePlaybackVisibilityCoordinator({
