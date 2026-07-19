@@ -18,11 +18,54 @@ const withPWA = withPWAInit({
   },
 });
 
+const cspHeader = `
+  default-src 'self';
+  script-src 'self' 'unsafe-eval' 'unsafe-inline';
+  style-src 'self' 'unsafe-inline';
+  img-src 'self' blob: data:;
+  media-src 'self' blob: data: https://*.vimeocdn.com https://*.vimeo.com;
+  font-src 'self';
+  object-src 'none';
+  base-uri 'self';
+  form-action 'self';
+  frame-ancestors 'none';
+  worker-src 'self' blob:;
+  connect-src 'self' https://*.vimeo.com https://api.vimeo.com;
+  upgrade-insecure-requests;
+`
+  .replace(/\s{2,}/g, " ")
+  .trim();
+
 const nextConfig: NextConfig = {
   compress: true,
   reactCompiler: true,
   output: "standalone",
   allowedDevOrigins: ["127.0.0.1", "localhost"],
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          {
+            key: "X-Content-Type-Options",
+            value: "nosniff",
+          },
+          {
+            key: "X-Frame-Options",
+            value: "DENY",
+          },
+          {
+            key: "Referrer-Policy",
+            value: "strict-origin-when-cross-origin",
+          },
+          {
+            key: "Content-Security-Policy",
+            value: cspHeader,
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default withPWA(withNextIntl(nextConfig));
