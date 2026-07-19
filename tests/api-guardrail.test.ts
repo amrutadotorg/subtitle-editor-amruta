@@ -22,6 +22,10 @@ describe("API Routes Guardrail", () => {
     const routeFiles = getAllRouteFiles(apiDir);
 
     for (const routeFile of routeFiles) {
+      if (routeFile.endsWith(path.join("app", "api", "health", "route.ts"))) {
+        continue; // Healthcheck must be public for Docker
+      }
+
       const content = fs.readFileSync(routeFile, "utf-8");
       const importsWithApiAuth = content.includes("withApiAuth");
       const usesWithApiAuth = content.includes("withApiAuth(");
