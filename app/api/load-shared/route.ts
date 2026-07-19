@@ -1,8 +1,11 @@
 import { type NextRequest, NextResponse } from "next/server";
 import fs from "node:fs";
 import path from "node:path";
+import { verifySsoApi } from "@/lib/sso";
 
 export async function GET(request: NextRequest) {
+  const ssoResponse = await verifySsoApi(request);
+  if (ssoResponse) return ssoResponse;
   const searchParams = request.nextUrl.searchParams;
   const fileName = searchParams.get("file");
 

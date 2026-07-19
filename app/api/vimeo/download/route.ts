@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { verifySsoApi } from "@/lib/sso";
 
 function extractVideoId(url: string): string | null {
   // Supports:
@@ -17,6 +18,9 @@ function extractVideoId(url: string): string | null {
 }
 
 export async function GET(request: NextRequest) {
+  const ssoResponse = await verifySsoApi(request);
+  if (ssoResponse) return ssoResponse;
+
   const token = process.env.VIMEO_ACCESS_TOKEN;
   if (!token) {
     return NextResponse.json(
