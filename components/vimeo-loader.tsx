@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { getCachedFile, setCachedFile } from "@/lib/vimeo-file-cache";
 import { IconLoader2, IconDownload } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 function extractVideoId(url: string): string | null {
   const patterns = [
@@ -33,6 +33,7 @@ interface VimeoLoaderProps {
   onOpenChange: (open: boolean) => void;
   onFileLoaded: (file: File) => void;
   onVideoId?: (videoId: string) => void;
+  initialUrl?: string;
 }
 
 export default function VimeoLoader({
@@ -40,6 +41,7 @@ export default function VimeoLoader({
   onOpenChange,
   onFileLoaded,
   onVideoId,
+  initialUrl,
 }: VimeoLoaderProps) {
   const t = useTranslations();
   const [url, setUrl] = useState("");
@@ -47,6 +49,14 @@ export default function VimeoLoader({
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState<number | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
+
+  const prevInitialUrlRef = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    if (open && initialUrl && initialUrl !== prevInitialUrlRef.current) {
+      setUrl(initialUrl);
+      prevInitialUrlRef.current = initialUrl;
+    }
+  }, [open, initialUrl]);
 
   const handleClose = useCallback(
     (nextOpen: boolean) => {

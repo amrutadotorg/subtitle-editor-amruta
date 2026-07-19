@@ -153,6 +153,18 @@ function MainContent() {
     null,
   );
   const [isVimeoOpen, setIsVimeoOpen] = useState(false);
+  const [vimeoInitialUrl, setVimeoInitialUrl] = useState<string | undefined>(
+    () => {
+      if (typeof window === "undefined") return undefined;
+      const searchParams = new URLSearchParams(window.location.search);
+      const vimeoIdUrl = searchParams.get("vimeo_id_url");
+      if (!vimeoIdUrl) return undefined;
+      const url = new URL(window.location.href);
+      url.searchParams.delete("vimeo_id_url");
+      window.history.replaceState({}, "", url.toString());
+      return `https://vimeo.com/${vimeoIdUrl}`;
+    },
+  );
   const [vimeoAutoLoad, setVimeoAutoLoad] = useState<VimeoLoadingState | null>(
     null,
   );
@@ -409,6 +421,7 @@ function MainContent() {
           bulkOffsetDisabled={bulkOffsetDisabled}
           isVimeoOpen={isVimeoOpen}
           onSetVimeoOpen={setIsVimeoOpen}
+          vimeoInitialUrl={vimeoInitialUrl}
         />
 
         <div className="flex-1 flex flex-col">

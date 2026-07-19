@@ -65,6 +65,7 @@ interface AppHeaderProps {
   bulkOffsetDisabled: boolean;
   isVimeoOpen: boolean;
   onSetVimeoOpen: (open: boolean) => void;
+  vimeoInitialUrl?: string;
 }
 
 export function AppHeader({
@@ -80,6 +81,7 @@ export function AppHeader({
   bulkOffsetDisabled,
   isVimeoOpen,
   onSetVimeoOpen,
+  vimeoInitialUrl,
 }: AppHeaderProps) {
   const t = useTranslations();
   const { tracks, activeTrackId } = useSubtitleState();
@@ -255,6 +257,7 @@ export function AppHeader({
         onOpenChange={onSetVimeoOpen}
         onFileLoaded={onSelectMediaFile}
         onVideoId={setVimeoVideoId}
+        initialUrl={vimeoInitialUrl}
       />
     </nav>
   );
