@@ -1,11 +1,10 @@
 import { type NextRequest, NextResponse } from "next/server";
 import fs from "node:fs";
 import path from "node:path";
-import { verifySsoApi } from "@/lib/sso";
+import { withApiAuth } from "@/lib/sso";
+import { resolveSafePath } from "@/lib/safe-path";
 
-export async function GET(request: NextRequest) {
-  const ssoResponse = await verifySsoApi(request);
-  if (ssoResponse) return ssoResponse;
+export const GET = withApiAuth(async (request: NextRequest) => {
   const searchParams = request.nextUrl.searchParams;
   const fileName = searchParams.get("file");
 
@@ -27,11 +26,8 @@ export async function GET(request: NextRequest) {
       ? "/app/shared_uploads"
       : path.resolve(process.cwd(), "shared_uploads");
 
-  // Resolve absolute path to ensure no hidden directory traversal
-  const filePath = path.resolve(baseDir, fileName);
-
-  // Verify that the target file path resides inside the base directory
-  if (!filePath.startsWith(baseDir)) {
+  const filePath = resolveSafePath(baseDir, fileName);
+  if (!filePath) {
     return new NextResponse("Access Denied", { status: 403 });
   }
 
@@ -53,4 +49,4 @@ export async function GET(request: NextRequest) {
     console.error("Error reading shared subtitle file:", error);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
-}
+});
