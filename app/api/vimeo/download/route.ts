@@ -1,13 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { extractVideoId } from "@/lib/vimeo-url";
-import { verifySsoApi } from "@/lib/sso";
+import { withApiAuth } from "@/lib/sso";
 
 export { extractVideoId };
 
-export async function GET(request: NextRequest) {
-  const ssoResponse = await verifySsoApi(request);
-  if (ssoResponse) return ssoResponse;
-
+export const GET = withApiAuth(async (request: NextRequest) => {
   const token = process.env.VIMEO_ACCESS_TOKEN;
   if (!token) {
     return NextResponse.json(
@@ -89,4 +86,4 @@ export async function GET(request: NextRequest) {
       ...(contentLength ? { "Content-Length": contentLength } : {}),
     },
   });
-}
+});

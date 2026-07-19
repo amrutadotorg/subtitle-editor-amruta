@@ -35,116 +35,77 @@ async function verifySignature(
   return valid;
 }
 
-async function parseSsoCookie(
-  request: NextRequest,
-): Promise<{ username: string } | { redirect: NextResponse } | null> {
-  const ssoCookie = request.cookies.get(COOKIE_NAME)?.value;
+type SsoErrorReason =
+  | "missing"
+  | "format"
+  | "data"
+  | "expired"
+  | "no_secret"
+  | "invalid_signature";
 
-  if (!ssoCookie) {
-    return { redirect: NextResponse.redirect(LOGIN_URL) };
-  }
+async function parseSsoCookieCore(
+  request: NextRequest,
+): Promise<{ username: string } | { reason: SsoErrorReason }> {
+  const ssoCookie = request.cookies.get(COOKIE_NAME)?.value;
+  if (!ssoCookie) return { reason: "missing" };
 
   const parts = ssoCookie.split("|");
-  if (parts.length !== 3) {
-    return { redirect: NextResponse.redirect(LOGIN_URL) };
-  }
+  if (parts.length !== 3) return { reason: "format" };
 
   const [username, expiresStr, signature] = parts;
-
-  if (!username || !expiresStr || !signature) {
-    return { redirect: NextResponse.redirect(LOGIN_URL) };
-  }
+  if (!username || !expiresStr || !signature) return { reason: "data" };
 
   const expires = Number.parseInt(expiresStr, 10);
   if (Number.isNaN(expires) || expires <= Math.floor(Date.now() / 1000)) {
-    return { redirect: NextResponse.redirect(LOGIN_URL) };
+    return { reason: "expired" };
   }
 
   const secret = process.env.SSO_SALT;
   if (!secret) {
     console.error("SSO_SALT environment variable is not set");
-    return { redirect: NextResponse.redirect(LOGIN_URL) };
+    return { reason: "no_secret" };
   }
 
   const payload = `${username}|${expires}`;
   const valid = await verifySignature(payload, signature, secret);
 
-  if (!valid) {
-    return { redirect: NextResponse.redirect(LOGIN_URL) };
-  }
+  if (!valid) return { reason: "invalid_signature" };
 
   return { username };
+}
+
+async function parseSsoCookie(
+  request: NextRequest,
+): Promise<{ username: string } | { redirect: NextResponse } | null> {
+  const result = await parseSsoCookieCore(request);
+  if ("reason" in result) {
+    return { redirect: NextResponse.redirect(LOGIN_URL) };
+  }
+  return { username: result.username };
 }
 
 async function parseSsoCookieApi(
   request: NextRequest,
 ): Promise<{ username: string } | { error: NextResponse } | null> {
-  const ssoCookie = request.cookies.get(COOKIE_NAME)?.value;
-
-  if (!ssoCookie) {
+  const result = await parseSsoCookieCore(request);
+  if ("reason" in result) {
+    const errorMap: Record<
+      SsoErrorReason,
+      { message: string; status: number }
+    > = {
+      missing: { message: "Authentication required", status: 401 },
+      format: { message: "Invalid SSO cookie format", status: 401 },
+      data: { message: "Invalid SSO cookie data", status: 401 },
+      expired: { message: "SSO session expired", status: 401 },
+      no_secret: { message: "SSO configuration error", status: 500 },
+      invalid_signature: { message: "Invalid SSO signature", status: 401 },
+    };
+    const err = errorMap[result.reason];
     return {
-      error: NextResponse.json(
-        { error: "Authentication required" },
-        { status: 401 },
-      ),
+      error: NextResponse.json({ error: err.message }, { status: err.status }),
     };
   }
-
-  const parts = ssoCookie.split("|");
-  if (parts.length !== 3) {
-    return {
-      error: NextResponse.json(
-        { error: "Invalid SSO cookie format" },
-        { status: 401 },
-      ),
-    };
-  }
-
-  const [username, expiresStr, signature] = parts;
-
-  if (!username || !expiresStr || !signature) {
-    return {
-      error: NextResponse.json(
-        { error: "Invalid SSO cookie data" },
-        { status: 401 },
-      ),
-    };
-  }
-
-  const expires = Number.parseInt(expiresStr, 10);
-  if (Number.isNaN(expires) || expires <= Math.floor(Date.now() / 1000)) {
-    return {
-      error: NextResponse.json(
-        { error: "SSO session expired" },
-        { status: 401 },
-      ),
-    };
-  }
-
-  const secret = process.env.SSO_SALT;
-  if (!secret) {
-    console.error("SSO_SALT environment variable is not set");
-    return {
-      error: NextResponse.json(
-        { error: "SSO configuration error" },
-        { status: 500 },
-      ),
-    };
-  }
-
-  const payload = `${username}|${expires}`;
-  const valid = await verifySignature(payload, signature, secret);
-
-  if (!valid) {
-    return {
-      error: NextResponse.json(
-        { error: "Invalid SSO signature" },
-        { status: 401 },
-      ),
-    };
-  }
-
-  return { username };
+  return { username: result.username };
 }
 
 export async function verifySso(
@@ -161,4 +122,17 @@ export async function verifySsoApi(
   const result = await parseSsoCookieApi(request);
   if (result && "error" in result) return result.error;
   return null;
+}
+
+export function withApiAuth(
+  handler: (
+    request: NextRequest,
+    ...args: any[]
+  ) => Promise<NextResponse> | NextResponse,
+) {
+  return async (request: NextRequest, ...args: any[]) => {
+    const ssoResponse = await verifySsoApi(request);
+    if (ssoResponse) return ssoResponse;
+    return handler(request, ...args);
+  };
 }

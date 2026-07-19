@@ -190,9 +190,16 @@ npm run build           # 6. Production build must succeed (catches type errors,
 - **Path aliases** — use `@/` for all imports (e.g., `@/components/...`, `@/lib/...`, `@/hooks/...`)
 - **Naming**: kebab-case for files (`subtitle-list.tsx`, `use-playback-state.ts`), PascalCase for components, camelCase for hooks and utilities
 - **Default exports** for pages and most components; named exports for hooks and utilities
+- **Hooks**: Keep complex `useEffect` logic out of components by extracting them into dedicated custom hooks in the `hooks/` directory.
+- **Types**: Avoid `any`. Provide proper type definitions (e.g., `types/mp4box.d.ts`) when consuming untyped external libraries.
 - **shadcn/ui components** in `components/ui/` — extend via cva, do not modify base primitives
 - **CSS**: Tailwind utility classes only; use `cn()` helper for conditional classes; Radix color tokens via CSS variables
 - **i18n**: Use `useTranslations()` from next-intl for all user-facing strings; keys live in `messages/*.json`
+
+### Security & Safe Paths
+- **API Security:** All API routes (`app/api/`) MUST be wrapped with `withApiAuth` from `lib/sso.ts` to ensure SSO protection.
+- **Path Traversal Protection:** When reading files from the filesystem via API, always use `resolveSafePath` from `lib/safe-path.ts` to validate the target path.
+- **Headers:** CSP and basic security headers are configured in `next.config.ts`.
 
 ### State Management
 - Global state via **split React Contexts** in `context/subtitle/` (6 contexts for granular re-renders)
@@ -264,7 +271,7 @@ When adding a new static page (like `/best-practices`) that should be publicly a
 2. Update `app/sitemap.ts` to include the new page
 3. Run the full verification workflow, then rebuild and deploy
 
-**No need to update `proxy.ts`** — SSO only applies to locale routes (`/en`, `/de`, etc.) and the root `/`. Any other path is automatically public.
+**No need to update `proxy.ts`** — SSO only applies via `proxy.ts` to locale routes (`/en`, `/de`, etc.) and the root `/`. Static pages under `app/` are intentionally public. API routes under `app/api/` are NOT covered by `proxy.ts` at all — each route handler MUST be wrapped with `withApiAuth()` explicitly.
 
 ## Git Workflow
 
