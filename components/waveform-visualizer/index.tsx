@@ -18,7 +18,7 @@ import Timeline from "wavesurfer.js/dist/plugins/timeline.esm.js";
 import {
   useSubtitleActionsContext,
   useSubtitleState,
-} from "@/context/subtitle-context";
+} from "@/context/subtitle";
 import { warnDev } from "@/lib/log";
 import { getCuePreviewSeekTime } from "@/lib/subtitle-playback";
 import { getTrackHandleColor } from "@/lib/track-colors";

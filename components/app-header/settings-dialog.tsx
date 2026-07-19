@@ -11,7 +11,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { useLocalSession, useSubtitleState } from "@/context/subtitle-context";
+import { useLocalSession, useSubtitleState } from "@/context/subtitle";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { IconMoon, IconSun, IconTrash } from "@tabler/icons-react";

@@ -5,10 +5,7 @@ import { renderHook, act, waitFor, cleanup } from "@testing-library/react";
 import { createElement } from "react";
 import type { ReactNode } from "react";
 
-import {
-  SubtitleProvider,
-  useSubtitleContext,
-} from "../context/subtitle-context";
+import { SubtitleProvider, useSubtitleContext } from "../context/subtitle";
 
 const dom = new JSDOM("<!doctype html><html><body></body></html>", {
   url: "http://localhost",

@@ -17,7 +17,7 @@ import {
   useSubtitleActionsContext,
   useSubtitleState,
   useSubtitles,
-} from "@/context/subtitle-context";
+} from "@/context/subtitle";
 import { useFindReplaceSelection } from "@/hooks/use-find-replace-selection";
 import { getFindRegexConfig } from "@/lib/find-replace";
 import {

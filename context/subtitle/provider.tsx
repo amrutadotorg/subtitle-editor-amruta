@@ -1,8 +1,6 @@
 "use client";
-import {
-  useSubtitleActions,
-  type SubtitleActions,
-} from "@/hooks/use-subtitle-actions";
+
+import { useSubtitleActions } from "@/hooks/use-subtitle-actions";
 import { useUndoableState, type UndoHistory } from "@/hooks/use-undoable-state";
 import {
   createTrackHistory,
@@ -26,102 +24,21 @@ import {
   type LocalSessionSnapshot,
 } from "@/lib/local-session";
 import { timeToSeconds } from "@/lib/utils";
-import type { Subtitle, SubtitleTrack } from "@/types/subtitle";
+import type { SubtitleTrack } from "@/types/subtitle";
 import React, {
-  createContext,
   useCallback,
-  useContext,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
-import type { ReactNode } from "react";
-
-interface SubtitleStateValue {
-  tracks: SubtitleTrack[];
-  trackCount: number;
-  hasMultipleTracks: boolean;
-  activeTrack: SubtitleTrack | null;
-  getTrackById: (id: string) => SubtitleTrack | undefined;
-  activeTrackId: string | null;
-  setActiveTrackId: (id: string | null) => void;
-  showTrackLabels: boolean;
-  setShowTrackLabels: (value: boolean) => void;
-  showSubtitleDuration: boolean;
-  setShowSubtitleDuration: (value: boolean) => void;
-  addSpaceOnMerge: boolean;
-  setAddSpaceOnMerge: (value: boolean) => void;
-  clampOverlaps: boolean;
-  setClampOverlaps: (value: boolean) => void;
-  playInBackground: boolean;
-  setPlayInBackground: (value: boolean) => void;
-  rulesMaxLineLength: number;
-  setRulesMaxLineLength: (value: number) => void;
-  rulesMaxCps: number;
-  setRulesMaxCps: (value: number) => void;
-  rulesMinDurationMs: number;
-  setRulesMinDurationMs: (value: number) => void;
-  rulesMaxDurationMs: number;
-  setRulesMaxDurationMs: (value: number) => void;
-}
-
-interface SubtitleHistoryValue {
-  undoSubtitles: () => void;
-  redoSubtitles: () => void;
-  canUndoSubtitles: boolean;
-  canRedoSubtitles: boolean;
-}
-
-type SubtitleContextType = SubtitleStateValue &
-  SubtitleActions &
-  SubtitleHistoryValue & {
-    subtitles: Subtitle[];
-  };
-
-interface LocalSessionValue {
-  pendingLocalSession: LocalSessionSnapshot | null;
-  hasLocalSession: boolean;
-  vimeoVideoId: string | null;
-  setVimeoVideoId: (id: string | null) => void;
-  restoreLocalSession: () => void;
-  discardLocalSession: () => void;
-  clearLocalSession: () => void;
-  downloadLocalSessionBackup: (snapshot?: LocalSessionSnapshot | null) => void;
-  skipAutoRestoreRef: React.MutableRefObject<boolean>;
-}
-
-interface SubtitleTimingEntry {
-  uuid: string;
-  start: number;
-  end: number;
-}
-
-interface SubtitleTimingState {
-  list: SubtitleTimingEntry[];
-  byUuid: Map<string, SubtitleTimingEntry>;
-}
-
-const SubtitleStateContext = createContext<SubtitleStateValue | undefined>(
-  undefined,
-);
-const SubtitleActionsContext = createContext<SubtitleActions | undefined>(
-  undefined,
-);
-const SubtitleHistoryContext = createContext<SubtitleHistoryValue | undefined>(
-  undefined,
-);
-const SubtitleDataContext = createContext<Subtitle[] | undefined>(undefined);
-const SubtitleTimingContext = createContext<SubtitleTimingState | undefined>(
-  undefined,
-);
-const LocalSessionContext = createContext<LocalSessionValue | undefined>(
-  undefined,
-);
-
-interface SubtitleProviderProps {
-  children: ReactNode;
-}
+import type { SubtitleProviderProps, LocalSessionValue } from "./types";
+import { SubtitleStateContext } from "./state";
+import { SubtitleActionsContext } from "./actions";
+import { SubtitleHistoryContext } from "./history";
+import { SubtitleDataContext } from "./data";
+import { SubtitleTimingContext } from "./timing";
+import { LocalSessionContext } from "./local-session";
 
 const readRecoverableLocalSession = (): LocalSessionSnapshot | null => {
   const snapshot = readLocalSessionSnapshot();
@@ -172,9 +89,9 @@ export function SubtitleProvider({ children }: SubtitleProviderProps) {
   const previousActiveTrackId = useRef<string | null>(null);
   const suppressedAutosaveSignatureRef = useRef<string | null>(null);
   const skipAutoRestoreRef = useRef(false);
-  const trackHistoriesRef = useRef<Map<string, UndoHistory<Subtitle[]>>>(
-    new Map(),
-  );
+  const trackHistoriesRef = useRef<
+    Map<string, UndoHistory<SubtitleTrack["subtitles"]>>
+  >(new Map());
 
   const {
     present: activeSubtitles,
@@ -185,7 +102,7 @@ export function SubtitleProvider({ children }: SubtitleProviderProps) {
     canRedo: canRedoSubtitles,
     getSnapshot: getHistorySnapshot,
     setSnapshot: setHistorySnapshot,
-  } = useUndoableState<Subtitle[]>([], {
+  } = useUndoableState<SubtitleTrack["subtitles"]>([], {
     isEqual: subtitlesAreEqual,
   });
 
@@ -214,7 +131,6 @@ export function SubtitleProvider({ children }: SubtitleProviderProps) {
     ],
   );
 
-  // Persist settings to localStorage independently of session autosave
   useEffect(() => {
     saveSettingsToStorage(localSessionPreferences);
   }, [localSessionPreferences]);
@@ -281,7 +197,10 @@ export function SubtitleProvider({ children }: SubtitleProviderProps) {
       return;
     }
 
-    const nextHistories = new Map<string, UndoHistory<Subtitle[]>>();
+    const nextHistories = new Map<
+      string,
+      UndoHistory<SubtitleTrack["subtitles"]>
+    >();
     const nextTracks = pendingLocalSession.tracks.map((track) => {
       const history = createTrackHistory(track.id, track.subtitles);
       nextHistories.set(track.id, history);
@@ -461,7 +380,7 @@ export function SubtitleProvider({ children }: SubtitleProviderProps) {
     [tracks],
   );
 
-  const stateValue = useMemo<SubtitleStateValue>(
+  const stateValue = useMemo(
     () => ({
       tracks,
       trackCount,
@@ -514,7 +433,7 @@ export function SubtitleProvider({ children }: SubtitleProviderProps) {
     ],
   );
 
-  const historyValue = useMemo<SubtitleHistoryValue>(
+  const historyValue = useMemo(
     () => ({
       undoSubtitles,
       redoSubtitles,
@@ -524,7 +443,7 @@ export function SubtitleProvider({ children }: SubtitleProviderProps) {
     [undoSubtitles, redoSubtitles, canUndoSubtitles, canRedoSubtitles],
   );
 
-  const timingState = useMemo<SubtitleTimingState>(() => {
+  const timingState = useMemo(() => {
     const list = activeSubtitles.map((subtitle) => ({
       uuid: subtitle.uuid,
       start: timeToSeconds(subtitle.startTime),
@@ -574,57 +493,3 @@ export function SubtitleProvider({ children }: SubtitleProviderProps) {
     </LocalSessionContext.Provider>
   );
 }
-
-function ensureContext<T>(ctx: T | undefined, name: string): T {
-  if (ctx === undefined) {
-    throw new Error(`${name} must be used within a SubtitleProvider`);
-  }
-  return ctx;
-}
-
-export const useSubtitleState = (): SubtitleStateValue => {
-  const ctx = useContext(SubtitleStateContext);
-  return ensureContext(ctx, "useSubtitleState");
-};
-
-export const useSubtitleActionsContext = (): SubtitleActions => {
-  const ctx = useContext(SubtitleActionsContext);
-  return ensureContext(ctx, "useSubtitleActionsContext");
-};
-
-export const useSubtitleHistory = (): SubtitleHistoryValue => {
-  const ctx = useContext(SubtitleHistoryContext);
-  return ensureContext(ctx, "useSubtitleHistory");
-};
-
-export const useLocalSession = (): LocalSessionValue => {
-  const ctx = useContext(LocalSessionContext);
-  return ensureContext(ctx, "useLocalSession");
-};
-
-export const useSubtitles = (): Subtitle[] => {
-  const ctx = useContext(SubtitleDataContext);
-  return ensureContext(ctx, "useSubtitles");
-};
-
-export const useSubtitleTimings = (): SubtitleTimingState => {
-  const ctx = useContext(SubtitleTimingContext);
-  return ensureContext(ctx, "useSubtitleTimings");
-};
-
-export const useSubtitleContext = (): SubtitleContextType => {
-  const state = useSubtitleState();
-  const actions = useSubtitleActionsContext();
-  const history = useSubtitleHistory();
-  const subtitles = useSubtitles();
-
-  return useMemo(
-    () => ({
-      ...state,
-      ...actions,
-      ...history,
-      subtitles,
-    }),
-    [actions, history, state, subtitles],
-  );
-};

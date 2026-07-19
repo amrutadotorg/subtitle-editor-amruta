@@ -8,7 +8,7 @@ import {
   useSubtitleActionsContext,
   useSubtitleState,
   useSubtitleTimings,
-} from "@/context/subtitle-context";
+} from "@/context/subtitle";
 import { getCuePreviewSeekTime } from "@/lib/subtitle-playback";
 import { getTrackColor, getTrackHandleColor } from "@/lib/track-colors";
 import { computeCueMetrics, type CueWarning } from "@/lib/subtitle-metrics";

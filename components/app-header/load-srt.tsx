@@ -28,7 +28,7 @@ import { Switch } from "@/components/ui/switch";
 import {
   useSubtitleActionsContext,
   useSubtitleState,
-} from "@/context/subtitle-context";
+} from "@/context/subtitle";
 import { useToast } from "@/hooks/use-toast";
 import {
   extractVttPrologue,

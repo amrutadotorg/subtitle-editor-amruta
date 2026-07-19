@@ -6,7 +6,6 @@ module.exports = [
   {
     ignores: [
       ".next/",
-      ".open-next/",
       ".vercel/",
       "node_modules/",
       "public/",
@@ -25,7 +24,7 @@ module.exports = [
       "components/local-session-recovery.tsx",
       "components/subtitle/subtitle-item-text-editor.tsx",
       "components/subtitle/subtitle-time-fields.tsx",
-      "context/subtitle-context.tsx",
+      "context/subtitle/provider.tsx",
       "hooks/use-bulk-offset-state.ts",
       "hooks/use-droppable-panel.ts",
     ],

@@ -12,7 +12,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useLocalSession, useSubtitleState } from "@/context/subtitle-context";
+import { useLocalSession, useSubtitleState } from "@/context/subtitle";
 import { getTrackHandleColor } from "@/lib/track-colors";
 import type { SubtitleTrack } from "@/types/subtitle";
 import {

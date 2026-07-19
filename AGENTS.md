@@ -14,8 +14,8 @@ A browser-based subtitle editor (SRT/VTT) with multi-track support, audio wavefo
 | Styling | Tailwind CSS 4 + `tailwindcss-animate`, Radix UI Colors, class-variance-authority (cva), clsx + tailwind-merge |
 | Component Library | shadcn/ui (New York style, Radix primitives) |
 | Icons | @tabler/icons-react |
-| State Management | React Context (6 contexts in subtitle-context.tsx), custom hooks, useReducer via `use-undoable-state` |
-| i18n | next-intl (4 locales: en, de, pl, yue), deep-merged fallback to English |
+| State Management | React Context (6 contexts in `context/subtitle/`), custom hooks, useReducer via `use-undoable-state` |
+| i18n | next-intl (13 locales: ar, bn, de, en, es, fr, hi, mr, pl, pt, ru, yue, zh), deep-merged fallback to English |
 | Animation | motion (Framer Motion successor) |
 | Video/Audio | wavesurfer.js 7 + @wavesurfer/react, mp4box for MP4 parsing |
 | Testing | Node test runner (`tsx --test`), @testing-library/react, jsdom |
@@ -50,7 +50,16 @@ A browser-based subtitle editor (SRT/VTT) with multi-track support, audio wavefo
 │   ├── logo.tsx            # SVG brand mark
 │   └── ...                 # Various utility UI components
 ├── context/                # React Context providers
-│   ├── subtitle-context.tsx # Main state: tracks, undo/redo, local session, settings (6 contexts)
+│   ├── subtitle/           # Core state: 6 contexts split into separate files
+│   │   ├── types.ts        # Shared interfaces and ensureContext helper
+│   │   ├── state.tsx       # SubtitleStateContext + useSubtitleState
+│   │   ├── actions.tsx     # SubtitleActionsContext + useSubtitleActionsContext
+│   │   ├── history.tsx     # SubtitleHistoryContext + useSubtitleHistory
+│   │   ├── data.tsx        # SubtitleDataContext + useSubtitles
+│   │   ├── timing.tsx      # SubtitleTimingContext + useSubtitleTimings
+│   │   ├── local-session.tsx # LocalSessionContext + useLocalSession
+│   │   ├── provider.tsx    # SubtitleProvider (all shared state)
+│   │   └── index.tsx       # Barrel re-exports + useSubtitleContext
 │   └── subtitle-navigation-context.tsx
 ├── hooks/                  # Custom React hooks (use-subtitle-actions, use-undoable-state, etc.)
 ├── lib/                    # Pure utility functions and business logic
@@ -170,7 +179,6 @@ npm run build           # 6. Production build must succeed (catches type errors,
 - **`.env.local`** contains:
   - `VIMEO_ACCESS_TOKEN` — Vimeo API access token for video import
   - `SSO_SALT` — HMAC secret for SSO cookie verification
-- **`.dev.vars`** — Cloudflare Workers local dev bindings (NEXTJS_ENV, SSO_SALT)
 - No other env vars required for local dev; the app runs fully client-side after SSO verification
 
 ## Coding Guidelines & Best Practices
@@ -187,7 +195,7 @@ npm run build           # 6. Production build must succeed (catches type errors,
 - **i18n**: Use `useTranslations()` from next-intl for all user-facing strings; keys live in `messages/*.json`
 
 ### State Management
-- Global state via **split React Contexts** in `subtitle-context.tsx` (6 contexts for granular re-renders)
+- Global state via **split React Contexts** in `context/subtitle/` (6 contexts for granular re-renders)
 - **Undo/redo** via custom `useUndoableState` hook with per-track history
 - **Local session** persistence via localStorage (autosave with 750ms debounce)
 - **Settings** persisted independently from session state
@@ -230,7 +238,7 @@ import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 // 2. Internal components/hooks/lib (all via @/ alias)
 import { AppHeader } from "@/components/app-header";
-import { useSubtitleState } from "@/context/subtitle-context";
+import { useSubtitleState } from "@/context/subtitle";
 import { cn } from "@/lib/utils";
 // 3. Types
 import type { Subtitle } from "@/types/subtitle";
@@ -244,7 +252,7 @@ import { useEffect, useRef, useState } from "react";
 - **`scratch.js`** in project root — ad-hoc MP4 debugging script, not part of the build; safe to ignore
 - **`components.json`** references `tailwind.config.ts` which does not exist (Tailwind v4 uses CSS-based config in `globals.css`); this is a stale shadcn/ui config artifact — do not create a `tailwind.config.ts`
 - **React Compiler** is enabled (`reactCompiler: true`) — this is intentional and must remain enabled
-- **ESLint rule `react-hooks/set-state-in-effect`** is disabled for 10 specific files (legitimate pattern for autosave); do not re-enable without understanding the autosave architecture
+- **ESLint rule `react-hooks/set-state-in-effect`** is disabled for 11 specific files (legitimate pattern for autosave); do not re-enable without understanding the autosave architecture
 - **`fast-xml-parser`** is pinned in overrides to 5.7.1 — do not upgrade
 - **2-line subtitle limit** — the editor enforces a maximum of 2 lines per subtitle (industry best practice); splitting into separate cues is expected behavior, not a bug
 
@@ -272,11 +280,10 @@ When adding a new static page (like `/best-practices`) that should be publicly a
 Triggers on push/PR to `main`. Steps, in order:
 
 1. `npm run lint` — ESLint (zero warnings)
-2. `npm run format` — Biome auto-format
-3. `npm run format:check` — Biome format verification
-4. `npm run test` — Node test runner
-5. `npm run knip` — Unused code detection
-6. `npm run build` — Next.js production build
+2. `npm run format:check` — Biome format verification
+3. `npm run test` — Node test runner
+4. `npm run knip` — Unused code detection
+5. `npm run build` — Next.js production build
 
 All steps must pass. A failure in any step blocks the merge.
 
@@ -288,7 +295,6 @@ All steps must pass. A failure in any step blocks the merge.
 - **`tsconfig.tsbuildinfo`** — TypeScript incremental build cache
 - **`messages/*.json`** — locale files; add keys via the i18n pipeline, not arbitrary edits
 - **`components/ui/`** base primitives — these are shadcn/ui scaffolding; extend via wrapper components, not by editing the base files
-- **`.wrangler/`** — Cloudflare Workers local state
 - **`tests/fixtures/`** — test fixture data
 
 ## Nginx Configuration
@@ -307,7 +313,7 @@ All steps must pass. A failure in any step blocks the merge.
 | `next.config.ts` | Next.js config: PWA, i18n plugin, standalone output, React Compiler |
 | `proxy.ts` | Middleware: SSO verification (locale routes only) + next-intl locale routing |
 | `app/best-practices/page.tsx` | Static "Top 10 Subtitling Best Practices" page |
-| `context/subtitle-context.tsx` | Core state management (6 contexts, undo/redo, local session) |
+| `context/subtitle/` | Core state management (6 contexts split into separate files, undo/redo, local session) |
 | `components/editor/editor-app.tsx` | Main editor client component |
 | `lib/locales.ts` | Locale definitions and validation |
 | `lib/utils.ts` | cn(), time formatting utilities |

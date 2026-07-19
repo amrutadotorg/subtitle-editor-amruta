@@ -9,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useLocalSession } from "@/context/subtitle-context";
+import { useLocalSession } from "@/context/subtitle";
 import { IconDownload, IconRestore, IconTrash } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";

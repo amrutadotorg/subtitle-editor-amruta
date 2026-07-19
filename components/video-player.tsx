@@ -1,6 +1,6 @@
 "use client";
 
-import { useSubtitles } from "@/context/subtitle-context"; // Import context
+import { useSubtitles } from "@/context/subtitle"; // Import context
 import {
   detectBrowserMediaSupport,
   type BrowserMediaSupport,

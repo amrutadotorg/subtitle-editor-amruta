@@ -20,7 +20,7 @@ import {
   useSubtitleHistory,
   useSubtitleState,
   useSubtitles,
-} from "@/context/subtitle-context";
+} from "@/context/subtitle";
 import { SubtitleNavigationProvider } from "@/context/subtitle-navigation-context";
 import { useActiveTrackDetails } from "@/hooks/use-active-track-details";
 import { useBeforeUnloadGuard } from "@/hooks/use-beforeunload-guard";

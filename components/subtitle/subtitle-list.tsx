@@ -3,7 +3,7 @@ import {
   useSubtitles,
   useSubtitleState,
   useSubtitleTimings,
-} from "@/context/subtitle-context";
+} from "@/context/subtitle";
 import { parseSRT, parseVTT } from "@/lib/subtitle-operations";
 import type { Subtitle } from "@/types/subtitle";
 import { AnimatePresence } from "motion/react";

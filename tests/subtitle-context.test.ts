@@ -8,7 +8,7 @@ import {
   SubtitleProvider,
   useLocalSession,
   useSubtitleContext,
-} from "../context/subtitle-context";
+} from "../context/subtitle";
 import {
   LOCAL_SESSION_STORAGE_KEY,
   createLocalSessionSnapshot,

@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useSubtitles, useSubtitleState } from "@/context/subtitle-context";
+import { useSubtitles, useSubtitleState } from "@/context/subtitle";
 import { useSubtitleNavigation } from "@/context/subtitle-navigation-context";
 import {
   computeTrackMetrics,

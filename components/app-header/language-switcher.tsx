@@ -17,7 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useSubtitleHistory } from "@/context/subtitle-context";
+import { useSubtitleHistory } from "@/context/subtitle";
 import { localeConfig, locales } from "@/lib/locales";
 import { IconLanguage } from "@tabler/icons-react";
 import { useLocale, useTranslations } from "next-intl";

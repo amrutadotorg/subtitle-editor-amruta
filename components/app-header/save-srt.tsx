@@ -9,7 +9,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useSubtitleState } from "@/context/subtitle-context";
+import { useSubtitleState } from "@/context/subtitle";
 import {
   buildCsvContent,
   buildPlainTextContent,
