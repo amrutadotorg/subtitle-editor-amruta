@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { extractVideoId } from "../app/api/vimeo/download/route";
+import { extractVideoId } from "../lib/vimeo-url";
 
 test("extractVideoId from standard vimeo.com URL", () => {
   assert.equal(extractVideoId("https://vimeo.com/123456789"), "123456789");
