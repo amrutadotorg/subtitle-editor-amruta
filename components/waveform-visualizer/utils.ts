@@ -26,25 +26,37 @@ const createSubtitleRegionContent = (
     justify-content:space-between;
   `;
 
-  content.innerHTML = `
-    <div style="display: flex;
-                justify-content: space-between;
-                flex-wrap:wrap;
-                padding-inline-start: 1rem;
-                padding-inline-end: 1rem;
-                padding-top: 0.3rem;
-                color: ${headerColor};">
-      <em>${startTime}</em>
-      <em>${endTime}</em>
-    </div>
-    <div style="padding-inline-start: 1rem;
-                padding-inline-end: 1rem;
-                padding-bottom: 1rem;
-                font-size: 1rem;
-                color: var(--color-foreground, #262626);">
-      <span>${text}</span>
-    </div>
-`;
+  const header = document.createElement("div");
+  header.style.cssText = `
+    display: flex;
+    justify-content: space-between;
+    flex-wrap:wrap;
+    padding-inline-start: 1rem;
+    padding-inline-end: 1rem;
+    padding-top: 0.3rem;
+    color: ${headerColor};
+  `;
+  const startEm = document.createElement("em");
+  startEm.textContent = startTime;
+  const endEm = document.createElement("em");
+  endEm.textContent = endTime;
+  header.appendChild(startEm);
+  header.appendChild(endEm);
+
+  const textDiv = document.createElement("div");
+  textDiv.style.cssText = `
+    padding-inline-start: 1rem;
+    padding-inline-end: 1rem;
+    padding-bottom: 1rem;
+    font-size: 1rem;
+    color: var(--color-foreground, #262626);
+  `;
+  const textSpan = document.createElement("span");
+  textSpan.textContent = text;
+  textDiv.appendChild(textSpan);
+
+  content.appendChild(header);
+  content.appendChild(textDiv);
 
   return content;
 };

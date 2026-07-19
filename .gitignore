@@ -49,7 +49,5 @@ scratch.js
 /public/workbox-*.js
 /public/fallback-*.js
 
-.open-next
-.wrangler
 # Superpowers brainstorming companion (local mockups)
 .superpowers/

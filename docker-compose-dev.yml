@@ -12,7 +12,6 @@ services:
       - /home/admin/git/captions:/app/captions:ro
     environment:
       - NODE_ENV=development
-      - SKIP_CF_BINDINGS=true  # patrz next.config.ts fix ponizej
     profiles: [dev]
 
   subtitle-prod:

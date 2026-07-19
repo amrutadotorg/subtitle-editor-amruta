@@ -6,7 +6,6 @@ A fork of [subtitle-editor](https://github.com/laubonghaudoi/subtitle-editor) by
 
 - **Vimeo integration** — import videos directly from Vimeo via API proxy (`/api/vimeo/*`)
 - **SSO authentication** — HMAC-signed SSO cookie verification for access control (`proxy.ts`)
-- **Cloudflare deployment** — ready for Cloudflare Workers/Pages with `wrangler` support
 - **Additional locales** — added Arabic (ar), Bengali (bn), German (de), Spanish (es), French (fr), Hindi (hi), Marathi (mr), Polish (pl), Portuguese (pt), Russian (ru), Cantonese (yue), and Chinese (zh) translations
 - **Large file support (1GB+)** — streaming MP4 box parser with chunked mdat processing (5MB chunks) via mp4box + Web AudioDecoder; avoids loading entire file into memory
 - **Docker deployment** — production Dockerfile with multi-stage builds and nginx reverse proxy
@@ -43,7 +42,6 @@ I talked about my design principles in the [FAQ](https://subtitle-editor.org/faq
 - Tabler icons
 - Motion (Framer Motion successor)
 - Docker + nginx reverse proxy
-- Cloudflare Workers support
 
 ## Local Development
 
