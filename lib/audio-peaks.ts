@@ -1,4 +1,11 @@
 import * as MP4Box from "mp4box";
+import type {
+  MP4File,
+  MP4AudioTrack,
+  MP4Sample,
+  MP4ArrayBuffer,
+  MP4Info,
+} from "mp4box";
 
 import { errorDev } from "@/lib/log";
 
@@ -22,8 +29,8 @@ export async function extractPeaks(
   onProgress?: (percent: number) => void,
 ): Promise<{ peaks: Float32Array; duration: number }> {
   return new Promise(async (resolve, reject) => {
-    let mp4box: any = MP4Box.createFile();
-    let audioTrack: any = null;
+    let mp4box: MP4File = MP4Box.createFile();
+    let audioTrack: MP4AudioTrack | null = null;
     let decoder: AudioDecoder | null = null;
     let durationSeconds = 0;
 
@@ -75,9 +82,9 @@ export async function extractPeaks(
       audioData.close();
     };
 
-    mp4box.onReady = (info: any) => {
+    mp4box.onReady = (info: MP4Info) => {
       durationSeconds = info.duration / info.timescale;
-      audioTrack = info.audioTracks[0];
+      audioTrack = (info.audioTracks[0] as MP4AudioTrack | undefined) ?? null;
       if (!audioTrack) {
         reject(new Error("No audio track found in the file."));
         return;
@@ -116,8 +123,8 @@ export async function extractPeaks(
       mp4box.start();
     };
 
-    mp4box.onSamples = (id: number, user: any, samples: any[]) => {
-      if (!decoder) return;
+    mp4box.onSamples = (id: number, user: any, samples: MP4Sample[]) => {
+      if (!decoder || !audioTrack) return;
       for (const sample of samples) {
         const chunk = new EncodedAudioChunk({
           type: sample.is_sync ? "key" : "delta",
@@ -133,8 +140,8 @@ export async function extractPeaks(
       }
     };
 
-    mp4box.onError = (e: any) => {
-      reject(e);
+    mp4box.onError = (e: string) => {
+      reject(new Error(e));
     };
 
     const readNextMdatChunk = () => {
@@ -170,7 +177,7 @@ export async function extractPeaks(
       reader.onload = (e) => {
         const buffer = e.target?.result as ArrayBuffer;
         if (buffer.byteLength > 0) {
-          const buf = buffer as any;
+          const buf = buffer as MP4ArrayBuffer;
           buf.fileStart = mdatCursor;
           mp4box.appendBuffer(buf);
           mdatCursor += buffer.byteLength;
@@ -227,7 +234,7 @@ export async function extractPeaks(
         // Read this non-mdat box entirely and append to mp4box
         const boxBlob = file.slice(offset, offset + size);
         const boxBuffer = await boxBlob.arrayBuffer();
-        const buf = boxBuffer as any;
+        const buf = boxBuffer as MP4ArrayBuffer;
         buf.fileStart = offset;
         mp4box.appendBuffer(buf);
       }
