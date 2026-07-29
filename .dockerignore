@@ -1,0 +1,17 @@
+node_modules/
+.next/
+.git/
+.github/
+.vscode/
+.wrangler/
+.opencode/
+.DS_Store
+*.log
+audit.log
+Dockerfile*
+docker-compose*.yml
+TODO*.md
+README.md
+AGENTS.md
+scratch.js
+tests/
