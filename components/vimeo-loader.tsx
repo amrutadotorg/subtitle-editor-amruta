@@ -15,18 +15,7 @@ import { getCachedFile, setCachedFile } from "@/lib/vimeo-file-cache";
 import { IconLoader2, IconDownload } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
-
-function extractVideoId(url: string): string | null {
-  const patterns = [
-    /vimeo\.com\/(\d+)(?:\/\S*)?$/,
-    /player\.vimeo\.com\/video\/(\d+)/,
-  ];
-  for (const pattern of patterns) {
-    const match = url.match(pattern);
-    if (match) return match[1];
-  }
-  return null;
-}
+import { extractVideoId } from "@/lib/vimeo-url";
 
 interface VimeoLoaderProps {
   open: boolean;
