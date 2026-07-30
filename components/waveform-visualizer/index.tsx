@@ -23,10 +23,9 @@ import { warnDev } from "@/lib/log";
 import { getCuePreviewSeekTime } from "@/lib/subtitle-playback";
 import { getTrackHandleColor } from "@/lib/track-colors";
 import { useWaveformRegions } from "./use-waveform-regions";
+import { useWaveformPeaks } from "./use-waveform-peaks";
 import type { BulkOffsetPreviewState } from "@/components/bulk-offset/drawer";
 import { useTheme } from "next-themes";
-import { extractPeaks } from "@/lib/audio-peaks";
-import { getCachedPeaks, setCachedPeaks } from "@/lib/waveform-peaks-cache";
 
 interface WaveformVisualizerProps {
   mediaFile: File | null;
@@ -58,7 +57,6 @@ export default forwardRef(function WaveformVisualizer(
   }>,
 ) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [mediaUrl, setMediaUrl] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const { resolvedTheme } = useTheme();
   const theme: "light" | "dark" = resolvedTheme === "dark" ? "dark" : "light";
@@ -76,100 +74,17 @@ export default forwardRef(function WaveformVisualizer(
   } = useSubtitleState();
   const { updateSubtitleTimeByUuidAction } = useSubtitleActionsContext();
 
-  const [isLargeFile, setIsLargeFile] = useState(false);
-  const [extractedPeaks, setExtractedPeaks] = useState<
-    Float32Array[] | undefined
-  >(undefined);
-  const [extractedDuration, setExtractedDuration] = useState<
-    number | undefined
-  >(undefined);
-  const [extractionProgress, setExtractionProgress] = useState(0);
-  const [isExtracting, setIsExtracting] = useState(false);
-
-  /****************************************************************
-   *  Load media file into wavesurfer
-   * */
-  useEffect(() => {
-    if (!mediaFile) {
-      setMediaUrl("");
-      setExtractedPeaks(undefined);
-      setExtractedDuration(undefined);
-      return;
-    }
-
-    const large = mediaFile.size > 100 * 1024 * 1024;
-
-    // We only try to extract using mp4box for mp4/mov/m4a files
-    const isMp4 = mediaFile.name.toLowerCase().match(/\.(mp4|m4a|mov)$/);
-
-    if (large && isMp4) {
-      // Check IndexedDB for cached peaks first
-      const runExtraction = (skipCache = false) => {
-        if (!skipCache && peaksCacheKey) {
-          getCachedPeaks(peaksCacheKey).then((cached) => {
-            if (cached) {
-              setExtractedPeaks(cached.peaks);
-              setExtractedDuration(cached.duration);
-              const objectUrl = URL.createObjectURL(mediaFile);
-              setMediaUrl(objectUrl);
-              setIsLoading(true);
-            } else {
-              runExtraction(true);
-            }
-          });
-          return;
-        }
-
-        setIsExtracting(true);
-        setExtractionProgress(0);
-
-        extractPeaks(mediaFile, (percent: number) => {
-          setExtractionProgress(percent);
-        })
-          .then(({ peaks, duration }) => {
-            setExtractedPeaks([peaks]);
-            setExtractedDuration(duration);
-            setIsExtracting(false);
-            // Persist peaks so next load is instant
-            if (peaksCacheKey) {
-              setCachedPeaks(peaksCacheKey, peaks, duration);
-            }
-            const objectUrl = URL.createObjectURL(mediaFile);
-            setMediaUrl(objectUrl);
-          })
-          .catch((e: any) => {
-            warnDev("Peak extraction failed, falling back to dummy peaks:", e);
-            setExtractedPeaks([new Float32Array([0])]); // dummy peaks on failure
-            setExtractedDuration(undefined);
-            setIsExtracting(false);
-            const objectUrl = URL.createObjectURL(mediaFile);
-            setMediaUrl(objectUrl);
-          });
-      };
-
-      runExtraction();
-    } else if (large) {
-      // Fallback for large non-mp4 files
-      setExtractedPeaks([new Float32Array([0])]);
-      setExtractedDuration(undefined);
-      const objectUrl = URL.createObjectURL(mediaFile);
-      setMediaUrl(objectUrl);
-    } else {
-      setExtractedPeaks(undefined);
-      setExtractedDuration(undefined);
-      const objectUrl = URL.createObjectURL(mediaFile);
-      setMediaUrl(objectUrl);
-    }
-
-    setIsLoading(true);
-
-    return () => {
-      setMediaUrl((currentUrl) => {
-        if (currentUrl) URL.revokeObjectURL(currentUrl);
-        return "";
-      });
-    };
-  }, [mediaFile, peaksCacheKey]);
+  const {
+    mediaUrl,
+    extractedPeaks,
+    extractedDuration,
+    extractionProgress,
+    isExtracting,
+  } = useWaveformPeaks({
+    mediaFile,
+    peaksCacheKey,
+    setIsLoading,
+  });
 
   const regionPlugin = useMemo(() => {
     const rp = RegionsPlugin.create();
