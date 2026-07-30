@@ -253,6 +253,7 @@ export function SubtitleProvider({ children }: SubtitleProviderProps) {
       discardLocalSession,
       clearLocalSession,
       downloadLocalSessionBackup,
+      skipAutoRestoreRef,
     ],
   );
 

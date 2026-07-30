@@ -27,6 +27,9 @@ module.exports = [
       "context/subtitle/provider.tsx",
       "hooks/use-bulk-offset-state.ts",
       "hooks/use-droppable-panel.ts",
+      "hooks/use-local-session-orchestration.ts",
+      "hooks/use-track-history-sync.ts",
+      "components/waveform-visualizer/use-waveform-peaks.ts",
     ],
     rules: {
       "react-hooks/set-state-in-effect": "off",
