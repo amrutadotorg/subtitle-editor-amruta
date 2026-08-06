@@ -40,7 +40,7 @@ test("analyzeRegexSource detects zero-length enabling features", () => {
 });
 
 test("applyRegexReplacement expands numbered and named captures", () => {
-  const regex = /(?<greeting>hello) (world)/i;
+  const regex = new RegExp("(?<greeting>hello) (world)", "i");
   const { result, changed } = applyRegexReplacement(
     "Hello world!",
     regex,

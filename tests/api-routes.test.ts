@@ -40,6 +40,19 @@ function futureExpiry(): number {
   return Math.floor(Date.now() / 1000) + 3600;
 }
 
+function setNodeEnv(value: string): void {
+  Object.defineProperty(process.env, "NODE_ENV", {
+    value,
+    configurable: true,
+    enumerable: true,
+    writable: true,
+  });
+}
+
+function deleteNodeEnv(): void {
+  Reflect.deleteProperty(process.env, "NODE_ENV");
+}
+
 function makeRequest(url: string, cookie?: string): NextRequest {
   const headers: Record<string, string> = {};
   if (cookie !== undefined) {
@@ -68,9 +81,9 @@ test.afterEach(() => {
     process.env.VIMEO_ACCESS_TOKEN = origToken;
   }
   if (origNodeEnv === undefined) {
-    delete process.env.NODE_ENV;
+    deleteNodeEnv();
   } else {
-    process.env.NODE_ENV = origNodeEnv;
+    setNodeEnv(origNodeEnv);
   }
 });
 
@@ -227,7 +240,7 @@ test("load-captions: returns 400 for filename with spaces", async () => {
 
 test("load-captions: returns 404 for valid filename that does not exist", async () => {
   process.env.SSO_SALT = TEST_SECRET;
-  process.env.NODE_ENV = "test";
+  setNodeEnv("test");
   const cookie = await makeValidCookie("user", TEST_SECRET, futureExpiry());
   const res = await loadCaptionsGet(
     makeRequest(
@@ -295,7 +308,7 @@ test("load-shared: returns 400 for invalid characters in filename", async () => 
 
 test("load-shared: accepts .srt extension (allowed)", async () => {
   process.env.SSO_SALT = TEST_SECRET;
-  process.env.NODE_ENV = "test";
+  setNodeEnv("test");
   const cookie = await makeValidCookie("user", TEST_SECRET, futureExpiry());
   const res = await loadSharedGet(
     makeRequest(
@@ -311,7 +324,7 @@ test("load-shared: accepts .srt extension (allowed)", async () => {
 
 test("load-shared: accepts subdirectory/filename.vtt format", async () => {
   process.env.SSO_SALT = TEST_SECRET;
-  process.env.NODE_ENV = "test";
+  setNodeEnv("test");
   const cookie = await makeValidCookie("user", TEST_SECRET, futureExpiry());
   const res = await loadSharedGet(
     makeRequest(
@@ -327,7 +340,7 @@ test("load-shared: accepts subdirectory/filename.vtt format", async () => {
 
 test("load-shared: returns 404 for valid filename that does not exist", async () => {
   process.env.SSO_SALT = TEST_SECRET;
-  process.env.NODE_ENV = "test";
+  setNodeEnv("test");
   const cookie = await makeValidCookie("user", TEST_SECRET, futureExpiry());
   const res = await loadSharedGet(
     makeRequest(
