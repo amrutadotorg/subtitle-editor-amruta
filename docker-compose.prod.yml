@@ -3,6 +3,7 @@ services:
     image: subtitle-editor:prod
     pull_policy: never
     container_name: subtitle_editor
+    mem_limit: 1g
     restart: unless-stopped
     logging:
       driver: "json-file"
