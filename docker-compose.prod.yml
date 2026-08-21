@@ -18,6 +18,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.prod
+    labels:
+      diun.enable: "false"
     volumes:
       - ../subtitle-translator-sqlpage/uploads:/app/shared_uploads:ro
       - /home/admin/git/captions:/app/captions:ro
