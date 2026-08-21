@@ -117,6 +117,7 @@ docker compose -f docker-compose-dev.yml --profile prod up   # Prod server on po
 ```bash
 # Production compose file is at ~/containers/compose.yml (NOT in this repo)
 cd ~/containers
+docker compose config -q                # validate merged config (run from ~/containers!)
 docker compose build subtitle_editor   # Build production image
 docker compose up -d subtitle_editor   # Deploy (recreate container)
 docker restart nginx subtitle_editor   # Reload nginx proxy
