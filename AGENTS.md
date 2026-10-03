@@ -155,6 +155,27 @@ uv run --project ~/SCRIPTS/py_amr -m waf.purge_cache --host subtitle-editor.amru
 
 CI runs lint, test, build, **and** `docker build` on every Dependabot PR — green CI means the update is safe to merge. After merge, the steps above deploy the updated image.
 
+### Accepted risk: `braces` npm audit highs
+
+`npm audit` and `~/SCRIPTS/py_amr/scripts/check_updates.py` report 6 highs here
+(`braces`, `micromatch`, `fast-glob`, `@ducanh2912/next-pwa`, `@next/eslint-plugin-next`,
+`eslint-config-next`) that all stem from **one** advisory with **no patched release**:
+
+- [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm) (CVE-2026-93687) —
+  `braces <=3.0.3` stack-exhaustion DoS via deeply nested brace patterns.
+  Published 2026-09-18, last updated 2026-10-02, **patched versions: none**.
+- Chain: `braces` → `micromatch` → `fast-glob` → either `@ducanh2912/next-pwa`
+  (prod dep, used only from `next.config.ts` at `next build`) or
+  `@next/eslint-plugin-next` → `eslint-config-next` (dev dep).
+
+**Accepted 2026-10-03** — these are Node-side build/lint tooling, not code shipped in the
+browser bundle, and the pattern input is local build config, not request data. Do **not**
+try to clear it with `npm audit fix --force`: it only offers downgrades
+(`@ducanh2912/next-pwa@6.1.0`, `eslint-config-next@14.2.35`), which is a regression.
+
+Revisit only when `braces` publishes a release > 3.0.3 (`npm view braces version`), or when
+`@ducanh2912/next-pwa` / Next.js drop the dependency.
+
 ## Verification Workflow
 
 Before considering any change complete, an agent **must** run:
@@ -262,6 +283,7 @@ import { useEffect, useRef, useState } from "react";
 - **React Compiler** is enabled (`reactCompiler: true`) — this is intentional and must remain enabled
 - **ESLint rule `react-hooks/set-state-in-effect`** is disabled for 11 specific files (legitimate pattern for autosave); do not re-enable without understanding the autosave architecture
 - **`fast-xml-parser`** is pinned in overrides to 5.7.1 — do not upgrade
+- **`npm audit` reports 6 highs (braces chain) — accepted, not actionable** — see [Accepted risk: `braces` npm audit highs](#accepted-risk-braces-npm-audit-highs); no patched `braces` release exists, and `npm audit fix --force` would only downgrade
 - **2-line subtitle limit** — the editor enforces a maximum of 2 lines per subtitle (industry best practice); splitting into separate cues is expected behavior, not a bug
 
 ## Adding New Public Static Pages
