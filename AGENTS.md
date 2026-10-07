@@ -164,17 +164,30 @@ CI runs lint, test, build, **and** `docker build` on every Dependabot PR — gre
 - [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm) (CVE-2026-93687) —
   `braces <=3.0.3` stack-exhaustion DoS via deeply nested brace patterns.
   Published 2026-09-18, last updated 2026-10-02, **patched versions: none**.
+  Re-verified 2026-10-07: `npm view braces dist-tags` still `{ latest: '3.0.3' }`.
+  Third-party DB claims of a `3.0.4` fix do **not** exist on the npm registry.
 - Chain: `braces` → `micromatch` → `fast-glob` → either `@ducanh2912/next-pwa`
   (prod dep, used only from `next.config.ts` at `next build`) or
   `@next/eslint-plugin-next` → `eslint-config-next` (dev dep).
 
-**Accepted 2026-10-03** — these are Node-side build/lint tooling, not code shipped in the
+**Accepted 2026-10-03, re-confirmed 2026-10-07** — these are Node-side build/lint tooling, not code shipped in the
 browser bundle, and the pattern input is local build config, not request data. Do **not**
 try to clear it with `npm audit fix --force`: it only offers downgrades
 (`@ducanh2912/next-pwa@6.1.0`, `eslint-config-next@14.2.35`), which is a regression.
 
 Revisit only when `braces` publishes a release > 3.0.3 (`npm view braces version`), or when
 `@ducanh2912/next-pwa` / Next.js drop the dependency.
+
+### Resolved: `sharp` npm audit high (2026-10-07)
+
+`npm audit` flagged `sharp <0.35.5` ([GHSA-wq5f-xc86-pv6w](https://github.com/advisories/GHSA-wq5f-xc86-pv6w),
+CVE-2026-96889, librsvg use-after-free) plus a derived `next` entry (`via: sharp`).
+Fixed by bumping the `overrides.sharp` pin `0.35.4` → `0.35.5` (Next `16.3.8`
+declares `sharp: ^0.35.4` as optional peer, so `0.35.5` satisfies it).
+After `npm install`, audit dropped from 8 highs to the 6 `braces`-chain highs above.
+Direct in-repo `sharp` usage is build-time only (`scripts/icon/render.mjs`, trusted local
+SVGs), but Next Image Optimization can process untrusted images in production, so the
+upgrade was warranted rather than accepted.
 
 ## Verification Workflow
 
@@ -283,7 +296,7 @@ import { useEffect, useRef, useState } from "react";
 - **React Compiler** is enabled (`reactCompiler: true`) — this is intentional and must remain enabled
 - **ESLint rule `react-hooks/set-state-in-effect`** is disabled for 11 specific files (legitimate pattern for autosave); do not re-enable without understanding the autosave architecture
 - **`fast-xml-parser`** is pinned in overrides to 5.7.1 — do not upgrade
-- **`npm audit` reports 6 highs (braces chain) — accepted, not actionable** — see [Accepted risk: `braces` npm audit highs](#accepted-risk-braces-npm-audit-highs); no patched `braces` release exists, and `npm audit fix --force` would only downgrade
+- **`npm audit` reports 6 highs (braces chain) — accepted, not actionable** — see [Accepted risk: `braces` npm audit highs](#accepted-risk-braces-npm-audit-highs); no patched `braces` release exists (re-verified 2026-10-07, registry latest still `3.0.3`), and `npm audit fix --force` would only downgrade. The `sharp` high (GHSA-wq5f-xc86-pv6w) was fixed 2026-10-07 via override `0.35.5` — see [Resolved: `sharp` npm audit high](#resolved-sharp-npm-audit-high-2026-10-07).
 - **2-line subtitle limit** — the editor enforces a maximum of 2 lines per subtitle (industry best practice); splitting into separate cues is expected behavior, not a bug
 
 ## Adding New Public Static Pages

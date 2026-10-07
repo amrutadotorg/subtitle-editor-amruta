@@ -78,7 +78,7 @@
       "picomatch": "2.3.2"
     },
     "serialize-javascript": "7.0.5",
-    "sharp": "0.35.4"
+    "sharp": "0.35.5"
   },
   "allowScripts": {
     "@parcel/watcher@2.6.0": true,
