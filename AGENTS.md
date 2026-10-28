@@ -131,7 +131,7 @@ The image is `subtitle-editor:prod`. After deploying, users must hard-refresh (C
 Dependabot is configured via `.github/dependabot.yml` with two ecosystems:
 
 - **npm** — weekly PRs grouped by patch/minor (major gets separate PR)
-- **docker** — weekly PRs for base image updates (`node:24-alpine`)
+- **docker** — weekly PRs for base image updates (`node:24.22.1-alpine`)
 
 ### Deployment workflow after Dependabot PR merge
 
