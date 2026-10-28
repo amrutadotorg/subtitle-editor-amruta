@@ -170,6 +170,26 @@ from a single advisory that has since been **withdrawn**:
 Do **not** attempt `npm audit fix --force` for this chain — it only offers downgrades
 (`@ducanh2912/next-pwa@6.1.0`, `eslint-config-next@14.2.35`), which is a regression.
 
+### Accepted risk: `deepmerge` npm audit low (2026-10-28)
+
+`npm audit` reports 5 lows that all trace to one advisory in `deepmerge`:
+
+- [GHSA-gcqx-w48m-w2h4](https://github.com/advisories/GHSA-gcqx-w48m-w2h4) (CVE-2026-93753) —
+  prototype-poisoning guard bypass in `mergeObject()` (`deepmerge >=4.2.0 <=4.3.1`),
+  **no patched versions**. GitHub scores it **Low (2.7)**.
+- Chain: `deepmerge` → `@rollup/plugin-node-resolve` → `workbox-build` →
+  `workbox-webpack-plugin` / `@ducanh2912/next-pwa`.
+
+Upstream has **declined to fix** ([TehShrike/deepmerge#273](https://github.com/TehShrike/deepmerge/issues/273),
+closed; the maintainer dismisses it as "cve slop"). `latest` is still `4.3.1`, and the
+only "fix" `npm audit fix --force` offers is a breaking downgrade of
+`@ducanh2912/next-pwa` to `6.1.0`. The whole chain is **build-time only** (Workbox
+generates the service worker during `next build`); the merge inputs are local plugin
+options, never untrusted request data, so there is no reachable attack path in this app.
+
+Accept documented 2026-10-28. Revisit if `deepmerge` publishes a release > 4.3.1 or the
+advisory is withdrawn.
+
 ### Resolved: `sharp` npm audit high (2026-10-07)
 
 `npm audit` flagged `sharp <0.35.5` ([GHSA-wq5f-xc86-pv6w](https://github.com/advisories/GHSA-wq5f-xc86-pv6w),
@@ -288,7 +308,7 @@ import { useEffect, useRef, useState } from "react";
 - **React Compiler** is enabled (`reactCompiler: true`) — this is intentional and must remain enabled
 - **ESLint rule `react-hooks/set-state-in-effect`** is disabled for 11 specific files (legitimate pattern for autosave); do not re-enable without understanding the autosave architecture
 - **`fast-xml-parser`** is pinned in overrides to 5.7.1 — do not upgrade
-- **`npm audit` reports 0 vulnerabilities** — the former 6 `braces`-chain highs were cleared by the advisory's withdrawal (2026-10-23); see [Resolved: `braces` npm audit highs](#resolved-braces-npm-audit-highs-2026-10-23). The `sharp` high (GHSA-wq5f-xc86-pv6w) was fixed 2026-10-07 via override `0.35.5` — see [Resolved: `sharp` npm audit high](#resolved-sharp-npm-audit-high-2026-10-07).
+- **`npm audit` reports 5 lows from the `deepmerge` chain — accepted, not actionable** — see [Accepted risk: `deepmerge` npm audit low](#accepted-risk-deepmerge-npm-audit-low-2026-10-28); no upstream fix exists (maintainer declined, advisory is Low/2.7, build-time only). The former 6 `braces`-chain highs were cleared by that advisory's withdrawal (2026-10-23) — see [Resolved: `braces` npm audit highs](#resolved-braces-npm-audit-highs-2026-10-23). The `sharp` high (GHSA-wq5f-xc86-pv6w) was fixed 2026-10-07 via override `0.35.5` — see [Resolved: `sharp` npm audit high](#resolved-sharp-npm-audit-high-2026-10-07).
 - **2-line subtitle limit** — the editor enforces a maximum of 2 lines per subtitle (industry best practice); splitting into separate cues is expected behavior, not a bug
 
 ## Adding New Public Static Pages
