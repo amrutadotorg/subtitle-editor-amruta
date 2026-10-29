@@ -12,7 +12,9 @@ services:
         max-file: "5"
         compress: "true"
     networks:
-      - my_network
+      my_network:
+        # Static IP: nginx caches upstream IPs at config load.
+        ipv4_address: 192.168.1.109
     env_file:
       - .env.local
     build:
