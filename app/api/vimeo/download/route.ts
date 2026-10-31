@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { extractVideoId } from "@/lib/vimeo-url";
 import { withApiAuth } from "@/lib/sso";
 
-export { extractVideoId };
-
 export const GET = withApiAuth(async (request: NextRequest) => {
   const token = process.env.VIMEO_ACCESS_TOKEN;
   if (!token) {
