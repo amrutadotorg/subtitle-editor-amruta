@@ -190,6 +190,24 @@ options, never untrusted request data, so there is no reachable attack path in t
 Accept documented 2026-10-28. Revisit if `deepmerge` publishes a release > 4.3.1 or the
 advisory is withdrawn.
 
+### Resolved: `minimatch` DoS CVE-2026-118764 (2026-10-31)
+
+[minimatch <11.0.1](https://github.com/advisories/GHSA-g3hv-75wg-m249) (Moderate 6.9)
+amplifies attacker-supplied glob patterns during preprocessing
+(`optimizationLevel >= 2`) and then processes the result quadratically — CPU/memory
+exhaustion. No 10.x patch exists, and every dependent still pins `minimatch ^10`
+(`eslint`, `@eslint/eslintrc`, `@eslint/config-array`, `eslint-plugin-import`,
+`eslint-plugin-jsx-a11y`, `eslint-plugin-react`, `typescript-eslint`, and `glob@7`
+inside `workbox-build`).
+
+`overrides.minimatch` bumped `^10.2.5` → `^11.0.3`. Note that `glob@7.2.3`
+(workbox-build 7.1.1, which is what `@ducanh2912/next-pwa@10.2.9` pulls) officially
+declares `minimatch ^3`; the override is safe in practice because `next build` here runs
+on Turbopack, where the next-pwa webpack plugin never executes — see
+[Service worker is not generated under Turbopack](#service-worker-not-generated-under-turbopack).
+Verified after the change: `eslint --max-warnings=0`, `next build` and 196 tests pass;
+audit dropped from 18 moderate to 0 moderate (5 lows from the `deepmerge` chain remain).
+
 ### Resolved: `sharp` npm audit high (2026-10-07)
 
 `npm audit` flagged `sharp <0.35.5` ([GHSA-wq5f-xc86-pv6w](https://github.com/advisories/GHSA-wq5f-xc86-pv6w),
@@ -310,6 +328,21 @@ import { useEffect, useRef, useState } from "react";
 - **`fast-xml-parser`** is pinned in overrides to 5.7.1 — do not upgrade
 - **`npm audit` reports 5 lows from the `deepmerge` chain — accepted, not actionable** — see [Accepted risk: `deepmerge` npm audit low](#accepted-risk-deepmerge-npm-audit-low-2026-10-28); no upstream fix exists (maintainer declined, advisory is Low/2.7, build-time only). The former 6 `braces`-chain highs were cleared by that advisory's withdrawal (2026-10-23) — see [Resolved: `braces` npm audit highs](#resolved-braces-npm-audit-highs-2026-10-23). The `sharp` high (GHSA-wq5f-xc86-pv6w) was fixed 2026-10-07 via override `0.35.5` — see [Resolved: `sharp` npm audit high](#resolved-sharp-npm-audit-high-2026-10-07).
 - **2-line subtitle limit** — the editor enforces a maximum of 2 lines per subtitle (industry best practice); splitting into separate cues is expected behavior, not a bug
+
+## Service worker is not generated under Turbopack
+
+`next build` runs on **Turbopack** (Next 16 default), but `@ducanh2912/next-pwa`
+hooks into the **webpack** build. Result: `public/sw.js` and `public/workbox-*.js`
+are **never produced**, while `components/service-worker-register.tsx` keeps
+registering `/sw.js` → production returns **404** for it.
+
+Verified 2026-10-31 against the deployed image (`/app/public/sw.js` absent,
+`https://subtitle-editor.amruta.org/sw.js` → 404). Consequence: no offline/PWA
+caching; the app works normally otherwise.
+
+Do not "fix" this by hand-writing a worker — options are (a) `next build --webpack`,
+(b) migrate to `@serwist/next` (Turbopack-capable), or (c) drop the PWA registration
+if offline support is not wanted.
 
 ## Adding New Public Static Pages
 
