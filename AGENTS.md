@@ -202,11 +202,10 @@ inside `workbox-build`).
 
 `overrides.minimatch` bumped `^10.2.5` → `^11.0.3`. Note that `glob@7.2.3`
 (workbox-build 7.1.1, which is what `@ducanh2912/next-pwa@10.2.9` pulls) officially
-declares `minimatch ^3`; the override is safe in practice because `next build` here runs
-on Turbopack, where the next-pwa webpack plugin never executes — see
-[Service worker is not generated under Turbopack](#service-worker-not-generated-under-turbopack).
-Verified after the change: `eslint --max-warnings=0`, `next build` and 196 tests pass;
-audit dropped from 18 moderate to 0 moderate (5 lows from the `deepmerge` chain remain).
+declares `minimatch ^3`; the override is safe in practice — it was verified by a full
+production build (`next build --webpack`, which does run workbox-build and emits
+`public/sw.js` with 67 precache entries), plus `eslint --max-warnings=0` and 196 tests.
+Audit dropped from 18 moderate to 0 moderate (5 lows from the `deepmerge` chain remain).
 
 ### Resolved: `sharp` npm audit high (2026-10-07)
 
@@ -329,20 +328,28 @@ import { useEffect, useRef, useState } from "react";
 - **`npm audit` reports 5 lows from the `deepmerge` chain — accepted, not actionable** — see [Accepted risk: `deepmerge` npm audit low](#accepted-risk-deepmerge-npm-audit-low-2026-10-28); no upstream fix exists (maintainer declined, advisory is Low/2.7, build-time only). The former 6 `braces`-chain highs were cleared by that advisory's withdrawal (2026-10-23) — see [Resolved: `braces` npm audit highs](#resolved-braces-npm-audit-highs-2026-10-23). The `sharp` high (GHSA-wq5f-xc86-pv6w) was fixed 2026-10-07 via override `0.35.5` — see [Resolved: `sharp` npm audit high](#resolved-sharp-npm-audit-high-2026-10-07).
 - **2-line subtitle limit** — the editor enforces a maximum of 2 lines per subtitle (industry best practice); splitting into separate cues is expected behavior, not a bug
 
-## Service worker is not generated under Turbopack
+## PWA build uses webpack (not Turbopack)
 
-`next build` runs on **Turbopack** (Next 16 default), but `@ducanh2912/next-pwa`
-hooks into the **webpack** build. Result: `public/sw.js` and `public/workbox-*.js`
-are **never produced**, while `components/service-worker-register.tsx` keeps
-registering `/sw.js` → production returns **404** for it.
+`npm run build` is **`next build --webpack`** — deliberately. Next 16 builds with
+Turbopack by default, but `@ducanh2912/next-pwa` hooks the **webpack** build only; under
+Turbopack no `public/sw.js` was emitted, `/sw.js` returned 404, and the client kept
+registering it (silent loss of offline mode). Fixed 2026-10-31.
 
-Verified 2026-10-31 against the deployed image (`/app/public/sw.js` absent,
-`https://subtitle-editor.amruta.org/sw.js` → 404). Consequence: no offline/PWA
-caching; the app works normally otherwise.
+- `npm run dev` stays on Turbopack — the PWA plugin is disabled in development anyway
+  (`disable: process.env.NODE_ENV === "development"`).
+- `public/sw.js` and `public/workbox-*.js` are **generated at build time** and
+  git-ignored; never commit them.
+- The webpack build type-checks Next's generated route types, so a route file may only
+  export HTTP handlers (+ `config`/`dynamic`/…). The stray
+  `export { extractVideoId }` in `app/api/vimeo/download/route.ts` violated that and was
+  removed — import from `@/lib/vimeo-url` instead.
+- nginx already serves `/sw.js`, `/workbox-*.js` and `/manifest.json` with
+  `no-cache, no-store` (`nginx/sites/subtitle-editor.amruta.org.conf`), so a new worker is
+  picked up immediately. `public/_headers` is a Cloudflare-Pages artifact and is unused
+  here.
 
-Do not "fix" this by hand-writing a worker — options are (a) `next build --webpack`,
-(b) migrate to `@serwist/next` (Turbopack-capable), or (c) drop the PWA registration
-if offline support is not wanted.
+If build time becomes a problem, the alternative is migrating to `@serwist/next`
+(Turbopack-capable) rather than dropping the flag blindly.
 
 ## Adding New Public Static Pages
 
