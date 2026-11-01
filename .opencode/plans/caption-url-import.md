@@ -37,7 +37,7 @@ Plan zakłada format `{id}.{lang}.vtt` gdzie `lang` to dokładnie **2 znaki** (`
 
 **Poprawka:**
 ```typescript
-path.resolve(process.cwd(), "../../git/captions")
+path.resolve(process.cwd(), "../../git/captions");
 // = /home/admin/git/captions ✅
 ```
 
@@ -53,11 +53,11 @@ subtitle-dev:
     - .:/app
     - /app/node_modules
     - /app/.next
-    - /home/admin/git/captions:/app/captions:ro    # DODAJ
+    - /home/admin/git/captions:/app/captions:ro # DODAJ
 
 subtitle-prod:
   volumes:
-    - /home/admin/git/captions:/app/captions:ro     # DODAJ
+    - /home/admin/git/captions:/app/captions:ro # DODAJ
 ```
 
 ### `app/api/load-captions/route.ts` — NOWY (z poprawkami)
@@ -132,7 +132,7 @@ Linia ~200 — wybrać endpoint:
 const fetchUrl = captionFile
   ? `/api/load-captions?file=${encodeURIComponent(captionFile)}`
   : `/api/load-shared?file=${encodeURIComponent(sharedFile!)}`;
-fetch(fetchUrl)
+fetch(fetchUrl);
 ```
 
 Linia ~208 — użyć captionFile jeśli dostępna:
@@ -144,7 +144,7 @@ Linia ~271 — dodać cleanup:
 ```typescript
 url.searchParams.delete("import");
 url.searchParams.delete("vimeo_id");
-url.searchParams.delete("caption");  // DODAJ
+url.searchParams.delete("caption"); // DODAJ
 ```
 
 ---

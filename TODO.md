@@ -238,18 +238,18 @@ Szacowany nakład: S
 
 Posortowane: priorytet, a przy równym priorytecie — mniejszy nakład wyżej.
 
-| # | Działanie | Priorytet | Nakład |
-|---|---|---|---|
-| 1 | ~~Naprawić matcher middleware (proxy.ts), by SSO obejmowało też /api, LUB dodać jawną weryfikację SSO w każdym route handlerze~~ | Krytyczny | S |
-| 2 | ~~Usunąć innerHTML z interpolowanym tekstem napisów w waveform-visualizer/utils.ts (użyć textContent)~~ | Krytyczny | S |
-| 3 | ~~Dodać rate limiting na /api/vimeo/download (obrona w głąb, niezależnie od #1)~~ | Wysoki | S |
-| 4 | ~~Dodać testy integracyjne dla proxy.ts i trzech route'ów API (bez cookie / złe HMAC / poprawne HMAC)~~ | Wysoki | M |
-| 5 | ~~Wydzielić extractVideoId do lib/ i zaimportować w route.ts oraz w teście zamiast duplikować~~ | Średni | S |
-| 6 | ~~Usunąć krok `npm run format` (auto-fix) z CI, zostawić tylko `format:check` jako realną bramkę~~ | Średni | S |
-| 7 | ~~Uporządkować martwe odwołania do Cloudflare Workers (README, AGENTS.md, docker-compose) zgodnie z faktycznym Docker+nginx~~ | Średni | S |
-| 8 | ~~Ujednolicić logowanie w komponentach klienckich do warnDev/errorDev (editor-app.tsx, audio-peaks.ts)~~ | Niski | S |
-| 9 | ~~Zsynchronizować AGENTS.md z rzeczywistością (liczba locale, liczba plików z wyłączoną regułą ESLint)~~ | Niski | S |
-| 10 | ~~Rozbić context/subtitle-context.tsx na osobne pliki per kontekst, zachowując istniejący podział logiczny~~ | Niski | M |
+| #   | Działanie                                                                                                                        | Priorytet | Nakład |
+| --- | -------------------------------------------------------------------------------------------------------------------------------- | --------- | ------ |
+| 1   | ~~Naprawić matcher middleware (proxy.ts), by SSO obejmowało też /api, LUB dodać jawną weryfikację SSO w każdym route handlerze~~ | Krytyczny | S      |
+| 2   | ~~Usunąć innerHTML z interpolowanym tekstem napisów w waveform-visualizer/utils.ts (użyć textContent)~~                          | Krytyczny | S      |
+| 3   | ~~Dodać rate limiting na /api/vimeo/download (obrona w głąb, niezależnie od #1)~~                                                | Wysoki    | S      |
+| 4   | ~~Dodać testy integracyjne dla proxy.ts i trzech route'ów API (bez cookie / złe HMAC / poprawne HMAC)~~                          | Wysoki    | M      |
+| 5   | ~~Wydzielić extractVideoId do lib/ i zaimportować w route.ts oraz w teście zamiast duplikować~~                                  | Średni    | S      |
+| 6   | ~~Usunąć krok `npm run format` (auto-fix) z CI, zostawić tylko `format:check` jako realną bramkę~~                               | Średni    | S      |
+| 7   | ~~Uporządkować martwe odwołania do Cloudflare Workers (README, AGENTS.md, docker-compose) zgodnie z faktycznym Docker+nginx~~    | Średni    | S      |
+| 8   | ~~Ujednolicić logowanie w komponentach klienckich do warnDev/errorDev (editor-app.tsx, audio-peaks.ts)~~                         | Niski     | S      |
+| 9   | ~~Zsynchronizować AGENTS.md z rzeczywistością (liczba locale, liczba plików z wyłączoną regułą ESLint)~~                         | Niski     | S      |
+| 10  | ~~Rozbić context/subtitle-context.tsx na osobne pliki per kontekst, zachowując istniejący podział logiczny~~                     | Niski     | M      |
 
 ---
 

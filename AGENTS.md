@@ -6,23 +6,23 @@ A browser-based subtitle editor (SRT/VTT) with multi-track support, audio wavefo
 
 ## Tech Stack
 
-| Category | Technology |
-|---|---|
-| Framework | Next.js 16 (App Router, Turbopack dev, standalone output) |
-| UI Library | React 19.2, React DOM 19.2, React Compiler enabled (`reactCompiler: true` in next.config) |
-| Language | TypeScript 6 (strict mode) |
-| Styling | Tailwind CSS 4 + `tailwindcss-animate`, Radix UI Colors, class-variance-authority (cva), clsx + tailwind-merge |
-| Component Library | shadcn/ui (New York style, Radix primitives) |
-| Icons | @tabler/icons-react |
-| State Management | React Context (6 contexts in `context/subtitle/`), custom hooks, useReducer via `use-undoable-state` |
-| i18n | next-intl (13 locales: ar, bn, de, en, es, fr, hi, mr, pl, pt, ru, yue, zh), deep-merged fallback to English |
-| Animation | motion (Framer Motion successor) |
-| Video/Audio | wavesurfer.js 7 + @wavesurfer/react, mp4box for MP4 parsing |
-| Testing | Node test runner (`tsx --test`), @testing-library/react, jsdom |
-| Linting | ESLint 9 (eslint-config-next/core-web-vitals), Biome 2 (formatter only, linter disabled) |
-| PWA | @ducanh2912/next-pwa (service worker, offline fallback) |
-| Runtime | Node.js 24 (.nvmrc) |
-| Docker | docker-compose with dev and prod profiles |
+| Category          | Technology                                                                                                     |
+| ----------------- | -------------------------------------------------------------------------------------------------------------- |
+| Framework         | Next.js 16 (App Router, Turbopack dev, standalone output)                                                      |
+| UI Library        | React 19.2, React DOM 19.2, React Compiler enabled (`reactCompiler: true` in next.config)                      |
+| Language          | TypeScript 6 (strict mode)                                                                                     |
+| Styling           | Tailwind CSS 4 + `tailwindcss-animate`, Radix UI Colors, class-variance-authority (cva), clsx + tailwind-merge |
+| Component Library | shadcn/ui (New York style, Radix primitives)                                                                   |
+| Icons             | @tabler/icons-react                                                                                            |
+| State Management  | React Context (6 contexts in `context/subtitle/`), custom hooks, useReducer via `use-undoable-state`           |
+| i18n              | next-intl (13 locales: ar, bn, de, en, es, fr, hi, mr, pl, pt, ru, yue, zh), deep-merged fallback to English   |
+| Animation         | motion (Framer Motion successor)                                                                               |
+| Video/Audio       | wavesurfer.js 7 + @wavesurfer/react, mp4box for MP4 parsing                                                    |
+| Testing           | Node test runner (`tsx --test`), @testing-library/react, jsdom                                                 |
+| Linting           | ESLint 9 (eslint-config-next/core-web-vitals), Biome 2 (formatter only, linter disabled)                       |
+| PWA               | @ducanh2912/next-pwa (service worker, offline fallback)                                                        |
+| Runtime           | Node.js 26 (.nvmrc)                                                                                            |
+| Docker            | docker-compose with dev and prod profiles                                                                      |
 
 ## Directory Structure
 
@@ -84,17 +84,20 @@ A browser-based subtitle editor (SRT/VTT) with multi-track support, audio wavefo
 ## Commands
 
 ### Development
+
 ```bash
 npm run dev          # Start Next.js dev server with Turbopack
 ```
 
 ### Build & Production
+
 ```bash
 npm run build        # Production build (Next.js standalone output)
 npm run start        # Start production server
 ```
 
 ### Code Quality
+
 ```bash
 npm run lint         # ESLint with max-warnings=0 (zero tolerance)
 npm run format       # Biome auto-format entire codebase
@@ -103,17 +106,20 @@ npm run knip         # Detect unused files, exports, dependencies, and types
 ```
 
 ### Testing
+
 ```bash
 npm run test         # Run all unit tests via Node test runner (tsx --test tests/**/*.test.ts)
 ```
 
 ### Docker
+
 ```bash
 docker compose -f docker-compose-dev.yml --profile dev up    # Dev server on port 3000 (hot reload, source mounted)
 docker compose -f docker-compose-dev.yml --profile prod up   # Prod server on port 3001 (built image)
 ```
 
 ### Docker Deployment (Production)
+
 ```bash
 # Production compose file is at ~/containers/compose.yml (NOT in this repo)
 cd ~/containers
@@ -131,7 +137,7 @@ The image is `subtitle-editor:prod`. After deploying, users must hard-refresh (C
 Dependabot is configured via `.github/dependabot.yml` with two ecosystems:
 
 - **npm** — weekly PRs grouped by patch/minor (major gets separate PR)
-- **docker** — weekly PRs for base image updates (`node:24.22.2-alpine`)
+- **docker** — weekly PRs for base image updates (`node:26.13.0-alpine`)
 
 ### Deployment workflow after Dependabot PR merge
 
@@ -239,7 +245,7 @@ npm run build           # 6. Production build must succeed (catches type errors,
 
 ## Environment Setup
 
-- **Node.js 24** (required; `.nvmrc` specifies version)
+- **Node.js 26** (required; `.nvmrc` specifies version)
 - **`.env.local`** contains:
   - `VIMEO_ACCESS_TOKEN` — Vimeo API access token for video import
   - `SSO_SALT` — HMAC secret for SSO cookie verification
@@ -248,6 +254,7 @@ npm run build           # 6. Production build must succeed (catches type errors,
 ## Coding Guidelines & Best Practices
 
 ### Component Conventions
+
 - **TypeScript throughout** — strict mode enabled, no `.js`/`.jsx` files
 - **Functional components only** — no class components
 - **Client components** marked with `"use client"` at top of file
@@ -261,11 +268,13 @@ npm run build           # 6. Production build must succeed (catches type errors,
 - **i18n**: Use `useTranslations()` from next-intl for all user-facing strings; keys live in `messages/*.json`
 
 ### Security & Safe Paths
+
 - **API Security:** All API routes (`app/api/`) MUST be wrapped with `withApiAuth` from `lib/sso.ts` to ensure SSO protection.
 - **Path Traversal Protection:** When reading files from the filesystem via API, always use `resolveSafePath` from `lib/safe-path.ts` to validate the target path.
 - **Headers:** CSP and basic security headers are configured in `next.config.ts`.
 
 ### State Management
+
 - Global state via **split React Contexts** in `context/subtitle/` (6 contexts for granular re-renders)
 - **Undo/redo** via custom `useUndoableState` hook with per-track history
 - **Local session** persistence via localStorage (autosave with 750ms debounce)
@@ -303,6 +312,7 @@ export default function BottomInstructions() {
 ```
 
 ### Import Order Convention
+
 ```tsx
 // 1. External libraries
 import { useTranslations } from "next-intl";
@@ -399,20 +409,20 @@ All steps must pass. A failure in any step blocks the merge.
 
 ## Key Files
 
-| File | Purpose |
-|---|---|
-| `app/layout.tsx` | Root layout: fonts, ThemeProvider, Toaster, PWA meta, SEO |
-| `app/[locale]/layout.tsx` | Locale layout: i18n provider, metadata per locale |
-| `app/[locale]/page.tsx` | Main page entry (server component → ResponsiveEditorEntry) |
-| `app/globals.css` | Tailwind v4 config, Radix color mappings, CSS custom properties |
-| `next.config.ts` | Next.js config: PWA, i18n plugin, standalone output, React Compiler |
-| `proxy.ts` | Middleware: SSO verification (locale routes only) + next-intl locale routing |
-| `app/best-practices/page.tsx` | Static "Top 10 Subtitling Best Practices" page |
-| `context/subtitle/` | Core state management (6 contexts split into separate files, undo/redo, local session) |
-| `components/editor/editor-app.tsx` | Main editor client component |
-| `lib/locales.ts` | Locale definitions and validation |
-| `lib/utils.ts` | cn(), time formatting utilities |
-| `types/subtitle.ts` | Subtitle and SubtitleTrack interfaces |
-| `tsconfig.json` | TypeScript config (strict, path aliases, bundler resolution) |
-| `biome.json` | Biome formatter config (space indent, width 2) |
-| `eslint.config.js` | ESLint config (core-web-vitals, file-specific rule overrides) |
+| File                               | Purpose                                                                                |
+| ---------------------------------- | -------------------------------------------------------------------------------------- |
+| `app/layout.tsx`                   | Root layout: fonts, ThemeProvider, Toaster, PWA meta, SEO                              |
+| `app/[locale]/layout.tsx`          | Locale layout: i18n provider, metadata per locale                                      |
+| `app/[locale]/page.tsx`            | Main page entry (server component → ResponsiveEditorEntry)                             |
+| `app/globals.css`                  | Tailwind v4 config, Radix color mappings, CSS custom properties                        |
+| `next.config.ts`                   | Next.js config: PWA, i18n plugin, standalone output, React Compiler                    |
+| `proxy.ts`                         | Middleware: SSO verification (locale routes only) + next-intl locale routing           |
+| `app/best-practices/page.tsx`      | Static "Top 10 Subtitling Best Practices" page                                         |
+| `context/subtitle/`                | Core state management (6 contexts split into separate files, undo/redo, local session) |
+| `components/editor/editor-app.tsx` | Main editor client component                                                           |
+| `lib/locales.ts`                   | Locale definitions and validation                                                      |
+| `lib/utils.ts`                     | cn(), time formatting utilities                                                        |
+| `types/subtitle.ts`                | Subtitle and SubtitleTrack interfaces                                                  |
+| `tsconfig.json`                    | TypeScript config (strict, path aliases, bundler resolution)                           |
+| `biome.json`                       | Biome formatter config (space indent, width 2)                                         |
+| `eslint.config.js`                 | ESLint config (core-web-vitals, file-specific rule overrides)                          |

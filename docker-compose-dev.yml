@@ -7,8 +7,8 @@ services:
       - "3000:3000"
     volumes:
       - .:/app
-      - /app/node_modules   # anon volume - nie nadpisuje node_modules z obrazu
-      - /app/.next          # anon volume - cache buildu
+      - /app/node_modules # anon volume - nie nadpisuje node_modules z obrazu
+      - /app/.next # anon volume - cache buildu
       - /home/admin/git/captions:/app/captions:ro
     environment:
       - NODE_ENV=development

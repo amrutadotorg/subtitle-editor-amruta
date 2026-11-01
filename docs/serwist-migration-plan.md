@@ -64,15 +64,15 @@ Oczekiwane przed migracją: 1 plik `sw.js` + 1 `workbox-*.js`, 67 precache, 0 mo
 
 ### T0.2 — Inwentaryzacja punktów styku (potwierdź, nie zmieniaj)
 
-| Plik | Rola |
-| --- | --- |
-| `next.config.ts` | `withPWAInit`, `fallbacks.document: "/offline"`, `workboxOptions.runtimeCaching` |
-| `components/service-worker-register.tsx` | ręczna rejestracja `/sw.js` (używa `window.workbox` jeśli jest) |
-| `app/layout.tsx:101` | `<ServiceWorkerRegister />` |
-| `public/manifest.json` | manifest PWA (zostaje bez zmian) |
-| `proxy.ts` | matcher `/((?!_next|api|.*\..*).*)` — `.js` omija SSO (potwierdź) |
-| `nginx/sites/subtitle-editor.amruta.org.conf` | reguła no-cache `^/(sw\.js\|workbox-[^/]+\.js\|manifest\.json)$` |
-| `.gitignore` | `/public/sw.js`, `/public/workbox-*.js` — **przeszkoda dla tombstone (T4.1)** |
+| Plik                                          | Rola                                                                             |
+| --------------------------------------------- | -------------------------------------------------------------------------------- |
+| `next.config.ts`                              | `withPWAInit`, `fallbacks.document: "/offline"`, `workboxOptions.runtimeCaching` |
+| `components/service-worker-register.tsx`      | ręczna rejestracja `/sw.js` (używa `window.workbox` jeśli jest)                  |
+| `app/layout.tsx:101`                          | `<ServiceWorkerRegister />`                                                      |
+| `public/manifest.json`                        | manifest PWA (zostaje bez zmian)                                                 |
+| `proxy.ts`                                    | matcher `/((?!_next                                                              | api | ._\.._).*)`—`.js` omija SSO (potwierdź) |
+| `nginx/sites/subtitle-editor.amruta.org.conf` | reguła no-cache `^/(sw\.js\|workbox-[^/]+\.js\|manifest\.json)$`                 |
+| `.gitignore`                                  | `/public/sw.js`, `/public/workbox-*.js` — **przeszkoda dla tombstone (T4.1)**    |
 
 ### T0.3 — Sprawdź, czy `@serwist/turbopack` wspiera twoją wersję Next
 
@@ -151,14 +151,14 @@ declare const self: ServiceWorkerGlobalScope;
 
 const serwist = new Serwist({
   precacheEntries: self.__SW_MANIFEST,
-  skipWaiting: true,          // odpowiednik dotychczasowego skipWaiting
+  skipWaiting: true, // odpowiednik dotychczasowego skipWaiting
   clientsClaim: true,
   navigationPreload: true,
   runtimeCaching: defaultCache,
   fallbacks: {
     entries: [
       {
-        url: "/offline",       // NIE zmieniaj na /~offline, mamy własną trasę
+        url: "/offline", // NIE zmieniaj na /~offline, mamy własną trasę
         matcher({ request }) {
           return request.destination === "document";
         },
@@ -418,14 +418,14 @@ Jeśli po T4.4 cokolwiek jest nie tak:
 
 ## Ryzyka i punkty decyzyjne
 
-| Ryzyko | Prawd. | Wpływ | Mitygacja |
-| --- | --- | --- | --- |
-| `esbuild` nie działa w obrazie alpine (musl) | średnie | build/deploy | T3.2: `useNativeEsbuild: false` + `esbuild-wasm` |
-| Route handler w `output: "standalone"` nie serwuje SW w prod | średnie | brak PWA | T4.4 wykrywa; fallback: serwuj SW jako plik statyczny z `public/` generowany w buildzie |
-| Stary SW nigdy się nie odświeży | wysokie (bez T4.1) | stare assety z cache | Tombstone T4.1, obowiązkowy |
-| `runtimeCaching` z next-pwa nie mapuje się 1:1 na `defaultCache` | średnie | inny cache mediów | T3.6 + test odtwarzania Vimeo/audio po deployu |
-| `@serwist/next` (webpack) zamiast turbopack wciągnie `glob@13` | niskie (nie używamy) | audyt | T3.5: `npm ls glob` musi być puste |
-| Precache > limit rozmiaru (domyślnie 2 MB/plik) | niskie | brak części precache | sprawdź ostrzeżenia w logu builda |
+| Ryzyko                                                           | Prawd.               | Wpływ                | Mitygacja                                                                               |
+| ---------------------------------------------------------------- | -------------------- | -------------------- | --------------------------------------------------------------------------------------- |
+| `esbuild` nie działa w obrazie alpine (musl)                     | średnie              | build/deploy         | T3.2: `useNativeEsbuild: false` + `esbuild-wasm`                                        |
+| Route handler w `output: "standalone"` nie serwuje SW w prod     | średnie              | brak PWA             | T4.4 wykrywa; fallback: serwuj SW jako plik statyczny z `public/` generowany w buildzie |
+| Stary SW nigdy się nie odświeży                                  | wysokie (bez T4.1)   | stare assety z cache | Tombstone T4.1, obowiązkowy                                                             |
+| `runtimeCaching` z next-pwa nie mapuje się 1:1 na `defaultCache` | średnie              | inny cache mediów    | T3.6 + test odtwarzania Vimeo/audio po deployu                                          |
+| `@serwist/next` (webpack) zamiast turbopack wciągnie `glob@13`   | niskie (nie używamy) | audyt                | T3.5: `npm ls glob` musi być puste                                                      |
+| Precache > limit rozmiaru (domyślnie 2 MB/plik)                  | niskie               | brak części precache | sprawdź ostrzeżenia w logu builda                                                       |
 
 ## Otwarte decyzje (podejmij przed Fazą 4)
 
@@ -440,12 +440,12 @@ Jeśli po T4.4 cokolwiek jest nie tak:
 
 ## Ściągawka: stan obecny vs docelowy
 
-| Aspekt | Dziś | Po migracji |
-| --- | --- | --- |
-| Build | `next build --webpack` (24.9 s kompilacji) | `next build` (Turbopack, ~12 s) |
-| Worker | generowany `public/sw.js` (workbox 7) | `app/sw.ts` → `/serwist/sw.js` |
-| Konfiguracja cache | `workboxOptions.runtimeCaching` (import z next-pwa) | `runtimeCaching: defaultCache` + własne reguły w `sw.ts` |
-| Rejestracja | `components/service-worker-register.tsx` | `SerwistProvider` w `app/layout.tsx` |
-| `glob@7`/`workbox-build` | obecne (override `minimatch` konieczny) | brak |
-| nginx no-cache | `^/(sw\.js\|workbox-…\|manifest\.json)$` | `^/(serwist/sw\.js\|sw\.js\|workbox-…\|manifest\.json)$` |
-| Stary klient | — | `/sw.js` tombstone wyrejestrowuje + czyści cache |
+| Aspekt                   | Dziś                                                | Po migracji                                              |
+| ------------------------ | --------------------------------------------------- | -------------------------------------------------------- |
+| Build                    | `next build --webpack` (24.9 s kompilacji)          | `next build` (Turbopack, ~12 s)                          |
+| Worker                   | generowany `public/sw.js` (workbox 7)               | `app/sw.ts` → `/serwist/sw.js`                           |
+| Konfiguracja cache       | `workboxOptions.runtimeCaching` (import z next-pwa) | `runtimeCaching: defaultCache` + własne reguły w `sw.ts` |
+| Rejestracja              | `components/service-worker-register.tsx`            | `SerwistProvider` w `app/layout.tsx`                     |
+| `glob@7`/`workbox-build` | obecne (override `minimatch` konieczny)             | brak                                                     |
+| nginx no-cache           | `^/(sw\.js\|workbox-…\|manifest\.json)$`            | `^/(serwist/sw\.js\|sw\.js\|workbox-…\|manifest\.json)$` |
+| Stary klient             | —                                                   | `/sw.js` tombstone wyrejestrowuje + czyści cache         |
