@@ -57,6 +57,7 @@ export interface VideoPlayerProps {
 
 export interface VideoPlayerHandle {
   resumePlayback: () => void;
+  getCurrentTime: () => number | undefined;
 }
 
 const VideoPlayer = forwardRef(function VideoPlayer(
@@ -145,8 +146,13 @@ const VideoPlayer = forwardRef(function VideoPlayer(
     }
   }, []);
 
+  const getCurrentTime = useCallback(() => {
+    return playerRef.current?.currentTime;
+  }, []);
+
   useImperativeHandle(ref, () => ({
     resumePlayback,
+    getCurrentTime,
   }));
 
   useEffect(() => {

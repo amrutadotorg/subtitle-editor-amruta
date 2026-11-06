@@ -39,7 +39,7 @@ import { cn, timeToSeconds } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 import type { ForwardRefExoticComponent, RefAttributes } from "react";
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 import { useAutoRestoreVimeo } from "@/hooks/use-auto-restore-vimeo";
 import { useSharedSubtitleUrlLoader } from "@/hooks/use-shared-subtitle-url-loader";
@@ -219,6 +219,17 @@ function MainContent() {
     setIsPlaying,
     videoPlayerRef,
     waveformRef,
+    onTimeSync: useCallback(
+      (time: number) => {
+        setPlaybackTime(time);
+        waveformRef.current?.setWaveformTime(time);
+        if (typeof document !== "undefined") {
+          (document.activeElement as HTMLElement | null)?.blur?.();
+        }
+        setEditingSubtitleUuid(null);
+      },
+      [setPlaybackTime, setEditingSubtitleUuid],
+    ),
   });
 
   const {
