@@ -62,4 +62,3 @@ test("SubtitleItem row does not have tabIndex and does not seek on focus", () =>
   assert.equal(seeks[0], 300.000001); // 05:00.000001 cue preview seek time
   assert.equal(scrolledToRegion, "test-sub-630");
 });
-
