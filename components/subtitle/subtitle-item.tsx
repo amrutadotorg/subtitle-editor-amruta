@@ -195,22 +195,10 @@ const SubtitleItem = memo(function SubtitleItem({
           id={`subtitle-${subtitle.uuid}`}
           data-current={isCurrent ? "true" : undefined}
           style={currentRowStyle}
-          tabIndex={-1}
           onPointerDown={() => onPrepareSubtitleInteraction(subtitle.uuid)}
-          onClick={() => onScrollToRegion(subtitle.uuid)}
-          onFocus={() => {
-            if (isPlaying) {
-              return;
-            }
+          onClick={() => {
+            onScrollToRegion(subtitle.uuid);
             setPlaybackTime(previewStartSeconds);
-          }}
-          onKeyDown={(e) => {
-            if (e.key === "Tab") {
-              e.preventDefault();
-              setPlaybackTime(previewStartSeconds);
-              setIsPlaying(true);
-              resumePlayback();
-            }
           }}
           className={`subtitle-row px-4 py-2 border-b border-b-black dark:border-b-white cursor-pointer grid gap-4 items-center ${
             showSubtitleDuration
