@@ -193,7 +193,9 @@ function MainContent() {
       workspaceKey,
       isPlaying,
       playbackTime,
-      hasMedia: Boolean(mediaFile || vimeoVideoId),
+      mediaKey: mediaFile
+        ? `${mediaFile.name}:${mediaFile.size}`
+        : (vimeoVideoId ?? null),
       trackId: activeTrackId,
       subtitleTimings,
       resumeTarget,
@@ -355,6 +357,8 @@ function MainContent() {
                     if (waveformRef.current) {
                       waveformRef.current.scrollToRegion(uuid);
                     }
+                    recordInteraction(uuid);
+                    clearResumeHighlight();
                   }}
                   onTimeJump={jumpBy}
                   jumpDuration={jumpDuration}

@@ -20,7 +20,8 @@ interface UseResumeCursorParams {
   workspaceKey: string;
   isPlaying: boolean;
   playbackTime: number;
-  hasMedia: boolean;
+  /** Identity of the loaded media (file name/size or Vimeo id); null when none. */
+  mediaKey: string | null;
   trackId: string | null;
   /** Timings of the ACTIVE track only (provider derives them from activeSubtitles). */
   subtitleTimings: SubtitleTimingEntry[];
@@ -47,7 +48,7 @@ export function useResumeCursor({
   workspaceKey,
   isPlaying,
   playbackTime,
-  hasMedia,
+  mediaKey,
   trackId,
   subtitleTimings,
   resumeTarget,
@@ -61,6 +62,11 @@ export function useResumeCursor({
   const [resumeUuid, setResumeUuid] = useState<string | null>(null);
   const [suppressed, setSuppressed] = useState(false);
   const suppressedRef = useRef(false);
+  // Passive playback-time changes only become a position once the user has
+  // actually played or interacted. Without this, loading a media file (which
+  // reports time 0) or the post-import jump to cue #1 would overwrite the
+  // remembered cue.
+  const engagedRef = useRef(false);
   const suppressionTimeoutRef = useRef<number | null>(null);
   const latestCandidateRef = useRef<ResumeCandidate | null>(null);
   const writeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -69,6 +75,18 @@ export function useResumeCursor({
   useEffect(() => {
     workspaceKeyRef.current = workspaceKey;
   }, [workspaceKey]);
+
+  // Swapping the media (or its absence) invalidates the engagement state: the
+  // player will report time 0 and must not be mistaken for "paused at cue #1".
+  useEffect(() => {
+    engagedRef.current = false;
+  }, [mediaKey]);
+
+  useEffect(() => {
+    if (isPlaying) {
+      engagedRef.current = true;
+    }
+  }, [isPlaying]);
 
   const flush = useCallback(() => {
     if (writeTimeoutRef.current !== null) {
@@ -104,6 +122,7 @@ export function useResumeCursor({
       const index = subtitleTimings.findIndex((entry) => entry.uuid === uuid);
       if (index < 0) return;
 
+      engagedRef.current = true;
       const entry = subtitleTimings[index];
       queue({
         uuid: entry.uuid,
@@ -123,8 +142,8 @@ export function useResumeCursor({
     // from the transient state of this same commit.
     if (!enabled || resumeTarget || suppressedRef.current || suppressed) return;
     if (isPlaying) return;
-    // An empty editor must not claim "cue #1" before a session is restored.
-    if (playbackTime === 0 && !hasMedia) return;
+    // Media load / post-import jump: not a deliberate pause.
+    if (!engagedRef.current) return;
 
     const index = findActiveSubtitleIndex(subtitleTimings, playbackTime, -1);
     if (index < 0) return;
@@ -144,7 +163,6 @@ export function useResumeCursor({
     suppressed,
     isPlaying,
     playbackTime,
-    hasMedia,
     subtitleTimings,
     trackId,
     queue,
@@ -157,6 +175,7 @@ export function useResumeCursor({
     const uuid = resolveResumeUuid(resumeTarget, subtitleTimings);
 
     suppressedRef.current = true;
+    engagedRef.current = false;
     setSuppressed(true);
     if (suppressionTimeoutRef.current !== null) {
       window.clearTimeout(suppressionTimeoutRef.current);
