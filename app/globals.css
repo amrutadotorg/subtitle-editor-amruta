@@ -665,6 +665,12 @@
   .subtitle-row:hover {
     background-color: var(--subtitle-row-hover-bg);
   }
+
+  /* last place from the previous session: dashed outline, visible in dark mode too */
+  .subtitle-row[data-resume="true"] {
+    outline: 2px dashed var(--iris-9);
+    outline-offset: -2px;
+  }
 }
 
 /* RTL support */

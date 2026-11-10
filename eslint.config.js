@@ -28,6 +28,7 @@ module.exports = [
       "hooks/use-bulk-offset-state.ts",
       "hooks/use-droppable-panel.ts",
       "hooks/use-local-session-orchestration.ts",
+      "hooks/use-resume-cursor.ts",
       "hooks/use-track-history-sync.ts",
       "components/waveform-visualizer/use-waveform-peaks.ts",
     ],

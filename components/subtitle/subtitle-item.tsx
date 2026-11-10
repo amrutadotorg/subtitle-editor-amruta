@@ -36,6 +36,7 @@ interface SubtitleItemProps {
   setPlaybackTime: (time: number) => void;
   setEditingSubtitleUuid: React.Dispatch<React.SetStateAction<string | null>>;
   onPrepareSubtitleInteraction: (uuid: string) => void;
+  isResumeTarget?: boolean;
 }
 
 const SubtitleItem = memo(function SubtitleItem({
@@ -52,6 +53,7 @@ const SubtitleItem = memo(function SubtitleItem({
   setPlaybackTime,
   setEditingSubtitleUuid,
   onPrepareSubtitleInteraction,
+  isResumeTarget = false,
 }: SubtitleItemProps) {
   const {
     updateSubtitleStartTimeAction,
@@ -194,6 +196,7 @@ const SubtitleItem = memo(function SubtitleItem({
         <div
           id={`subtitle-${subtitle.uuid}`}
           data-current={isCurrent ? "true" : undefined}
+          data-resume={isResumeTarget ? "true" : undefined}
           style={currentRowStyle}
           onPointerDown={() => onPrepareSubtitleInteraction(subtitle.uuid)}
           onClick={() => {
@@ -206,7 +209,12 @@ const SubtitleItem = memo(function SubtitleItem({
               : "grid-cols-[1rem_7rem_1fr]"
           }`}
         >
-          <div className="text-sm font-mono">{subtitle.id}</div>
+          <div className="text-sm font-mono">
+            {subtitle.id}
+            {isResumeTarget ? (
+              <span className="sr-only">{t("localSession.resumeMarker")}</span>
+            ) : null}
+          </div>
 
           <SubtitleTimeFields
             subtitle={subtitle}

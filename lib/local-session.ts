@@ -1,3 +1,7 @@
+import {
+  parseResumeCandidate,
+  type ResumeCandidate,
+} from "@/lib/last-position";
 import type { Subtitle, SubtitleTrack } from "@/types/subtitle";
 
 export const LOCAL_SESSION_STORAGE_KEY = "subtitle-editor:autosave:v1";
@@ -24,6 +28,12 @@ export interface LocalSessionSnapshot {
   activeTrackId: string | null;
   preferences: LocalSessionPreferences;
   vimeoVideoId?: string;
+  /**
+   * Portable copy of the last worked-on cue. The authoritative record lives in
+   * `subtitle-editor:position:v1` (see `lib/last-position.ts`); this field only
+   * makes the snapshot (and its backup file) self-contained.
+   */
+  lastPosition?: ResumeCandidate;
 }
 
 interface CreateLocalSessionSnapshotInput {
@@ -31,6 +41,7 @@ interface CreateLocalSessionSnapshotInput {
   activeTrackId: string | null;
   preferences: LocalSessionPreferences;
   vimeoVideoId?: string;
+  lastPosition?: ResumeCandidate;
   now?: () => number;
   appVersion?: string;
 }
@@ -41,12 +52,11 @@ interface LocalSessionSignatureInput {
   preferences: LocalSessionPreferences;
 }
 
-interface LocalSessionStorage {
+export interface LocalSessionStorage {
   getItem: (key: string) => string | null;
   setItem: (key: string, value: string) => void;
   removeItem: (key: string) => void;
 }
-
 export function saveSettingsToStorage(
   preferences: LocalSessionPreferences,
   storage: LocalSessionStorage = globalThis.localStorage,
@@ -114,6 +124,11 @@ const normalizeActiveTrackId = (
   return tracks[0]?.id ?? null;
 };
 
+/**
+ * `lastPosition` is intentionally NOT part of the signature — see plan
+ * 2026-11-09 (section "Architektura"). Including it would serialise the whole
+ * session on every cue click; the position lives in its own storage key.
+ */
 export function getLocalSessionSignature({
   tracks,
   activeTrackId,
@@ -159,6 +174,7 @@ export function createLocalSessionSnapshot({
   activeTrackId,
   preferences,
   vimeoVideoId,
+  lastPosition,
   now = Date.now,
   appVersion,
 }: CreateLocalSessionSnapshotInput): LocalSessionSnapshot {
@@ -171,6 +187,7 @@ export function createLocalSessionSnapshot({
     activeTrackId: normalizeActiveTrackId(clonedTracks, activeTrackId),
     preferences: { ...preferences },
     vimeoVideoId,
+    lastPosition: lastPosition ? { ...lastPosition } : undefined,
   };
 }
 
@@ -336,6 +353,7 @@ export function parseLocalSessionSnapshot(
         typeof parsed.vimeoVideoId === "string"
           ? parsed.vimeoVideoId
           : undefined,
+      lastPosition: parseResumeCandidate(parsed.lastPosition) ?? undefined,
     };
   } catch {
     return null;

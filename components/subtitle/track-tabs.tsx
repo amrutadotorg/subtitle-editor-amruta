@@ -26,6 +26,7 @@ interface TrackTabsProps {
   onScrollToRegion: (uuid: string) => void;
   onTimeJump: (seconds: number) => void;
   jumpDuration: number;
+  resumeUuid: string | null;
   onLoadSubtitleFile: (file: File) => Promise<void>;
   onStartFromScratch: () => void;
 }
@@ -45,6 +46,7 @@ export default function TrackTabs({
   onScrollToRegion,
   onTimeJump,
   jumpDuration,
+  resumeUuid,
   onLoadSubtitleFile,
   onStartFromScratch,
 }: TrackTabsProps) {
@@ -143,6 +145,7 @@ export default function TrackTabs({
             setEditingSubtitleUuid={setEditingSubtitleUuid}
             onTimeJump={onTimeJump}
             jumpDuration={jumpDuration}
+            resumeUuid={activeTrackId === track.id ? resumeUuid : null}
           />
         </TabsContent>
       ))}

@@ -174,3 +174,93 @@ test("storage helpers use the autosave namespace and tolerate clearing", () => {
 
   assert.equal(readLocalSessionSnapshot(adapter), null);
 });
+
+const lastPosition = {
+  uuid: "cue-1",
+  trackId: "track-1",
+  cueIndex: 0,
+  cueStart: 1,
+  time: 1.5,
+  updatedAt: 1234,
+};
+
+test("session snapshots keep an optional lastPosition round-trip", () => {
+  const snapshot = createLocalSessionSnapshot({
+    tracks,
+    activeTrackId: "track-1",
+    preferences,
+    lastPosition,
+    now: () => 1234,
+  });
+
+  assert.deepEqual(snapshot.lastPosition, lastPosition);
+
+  const parsed = parseLocalSessionSnapshot(JSON.stringify(snapshot));
+  assert.deepEqual(parsed?.lastPosition, lastPosition);
+});
+
+test("snapshots without lastPosition still parse (backwards compatible)", () => {
+  const snapshot = createLocalSessionSnapshot({
+    tracks,
+    activeTrackId: "track-1",
+    preferences,
+    now: () => 1234,
+  });
+  const { lastPosition: _omitted, ...legacy } = snapshot;
+
+  const parsed = parseLocalSessionSnapshot(JSON.stringify(legacy));
+  assert.ok(parsed);
+  assert.equal(parsed.lastPosition, undefined);
+  assert.equal(parsed.tracks[0].id, "track-1");
+});
+
+test("an invalid lastPosition is dropped without rejecting the snapshot", () => {
+  const snapshot = createLocalSessionSnapshot({
+    tracks,
+    activeTrackId: "track-1",
+    preferences,
+    now: () => 1234,
+  });
+
+  const parsed = parseLocalSessionSnapshot(
+    JSON.stringify({
+      ...snapshot,
+      lastPosition: { uuid: 7, cueIndex: "zero" },
+    }),
+  );
+
+  assert.ok(parsed);
+  assert.equal(parsed.lastPosition, undefined);
+  assert.equal(parsed.tracks[0].subtitles.length, 1);
+});
+
+test("lastPosition does not affect getLocalSessionSignature", () => {
+  const first = createLocalSessionSnapshot({
+    tracks,
+    activeTrackId: "track-1",
+    preferences,
+    lastPosition,
+    now: () => 1234,
+  });
+  const second = createLocalSessionSnapshot({
+    tracks,
+    activeTrackId: "track-1",
+    preferences,
+    lastPosition: {
+      ...lastPosition,
+      uuid: "cue-other",
+      time: 99,
+      updatedAt: 9999,
+    },
+    now: () => 5000,
+  });
+
+  const signature = (snapshot: typeof first) =>
+    getLocalSessionSignature({
+      tracks: snapshot.tracks,
+      activeTrackId: snapshot.activeTrackId,
+      preferences: snapshot.preferences,
+    });
+
+  assert.equal(signature(first), signature(second));
+});

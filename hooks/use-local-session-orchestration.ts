@@ -17,6 +17,14 @@ import {
   type LocalSessionSnapshot,
 } from "@/lib/local-session";
 import { createTrackHistory, EMPTY_HISTORY } from "@/lib/subtitle-history";
+import {
+  buildWorkspaceKey,
+  clearLastPosition,
+  readFreshestLastPosition,
+  resolveResumeCandidate,
+  selectResumeTrackId,
+  type ResumeCandidate,
+} from "@/lib/last-position";
 import type { Subtitle, SubtitleTrack } from "@/types/subtitle";
 
 const readRecoverableLocalSession = (): LocalSessionSnapshot | null => {
@@ -45,6 +53,8 @@ interface LocalSessionOrchestrationResult {
   clearLocalSession: () => void;
   downloadLocalSessionBackup: (snapshot?: LocalSessionSnapshot | null) => void;
   skipAutoRestoreRef: MutableRefObject<boolean>;
+  resumeTarget: ResumeCandidate | null;
+  clearResumeTarget: () => void;
 }
 
 export function useLocalSessionOrchestration({
@@ -70,6 +80,20 @@ export function useLocalSessionOrchestration({
   }, []);
   const suppressedAutosaveSignatureRef = useRef<string | null>(null);
   const skipAutoRestoreRef = useRef(false);
+  const [resumeTarget, setResumeTarget] = useState<ResumeCandidate | null>(
+    null,
+  );
+  const clearResumeTarget = useCallback(() => setResumeTarget(null), []);
+
+  const currentWorkspaceKeys = useMemo(
+    () =>
+      vimeoVideoId
+        ? [buildWorkspaceKey({ vimeoVideoId, trackName: null })]
+        : tracks.map((track) =>
+            buildWorkspaceKey({ vimeoVideoId: null, trackName: track.name }),
+          ),
+    [tracks, vimeoVideoId],
+  );
 
   useEffect(() => {
     saveSettingsToStorage(preferences);
@@ -82,8 +106,10 @@ export function useLocalSessionOrchestration({
         activeTrackId,
         preferences,
         vimeoVideoId: vimeoVideoId ?? undefined,
+        lastPosition:
+          readFreshestLastPosition(currentWorkspaceKeys) ?? undefined,
       }),
-    [activeTrackId, preferences, tracks, vimeoVideoId],
+    [activeTrackId, currentWorkspaceKeys, preferences, tracks, vimeoVideoId],
   );
   const currentLocalSessionSignature = useMemo(
     () =>
@@ -156,15 +182,40 @@ export function useLocalSessionOrchestration({
         ? pendingLocalSession.activeTrackId
         : (nextTracks[0]?.id ?? null);
 
+    const restoredWorkspaceKeys = pendingLocalSession.vimeoVideoId
+      ? [
+          buildWorkspaceKey({
+            vimeoVideoId: pendingLocalSession.vimeoVideoId,
+            trackName: null,
+          }),
+        ]
+      : nextTracks.map((track) =>
+          buildWorkspaceKey({ vimeoVideoId: null, trackName: track.name }),
+        );
+    const mergedPosition = resolveResumeCandidate(
+      readFreshestLastPosition(restoredWorkspaceKeys),
+      pendingLocalSession.lastPosition,
+      pendingLocalSession.savedAt,
+    );
+    // The stored position wins over the snapshot's active track, but only when
+    // that track still exists and still contains the remembered cue.
+    const resumeTrackId = selectResumeTrackId(
+      nextTracks,
+      mergedPosition,
+      nextActiveTrackId,
+    );
+    const finalActiveTrackId = resumeTrackId ?? nextActiveTrackId;
+
     trackHistoriesRef.current = nextHistories;
     setTracks(nextTracks);
-    setActiveTrackId(nextActiveTrackId);
+    setActiveTrackId(finalActiveTrackId);
     restoreSettings(pendingLocalSession.preferences);
     setHistorySnapshot(
-      nextActiveTrackId
-        ? (nextHistories.get(nextActiveTrackId) ?? EMPTY_HISTORY)
+      finalActiveTrackId
+        ? (nextHistories.get(finalActiveTrackId) ?? EMPTY_HISTORY)
         : EMPTY_HISTORY,
     );
+    setResumeTarget(mergedPosition);
     suppressedAutosaveSignatureRef.current = null;
     setPendingLocalSession(null);
     setHasLocalSession(true);
@@ -180,15 +231,21 @@ export function useLocalSessionOrchestration({
 
   const discardLocalSession = useCallback(() => {
     clearLocalSessionSnapshot();
+    for (const workspaceKey of currentWorkspaceKeys) {
+      clearLastPosition(workspaceKey);
+    }
     suppressedAutosaveSignatureRef.current = null;
     skipAutoRestoreRef.current = true;
+    setResumeTarget(null);
     setPendingLocalSession(null);
     setHasLocalSession(false);
-  }, []);
+  }, [currentWorkspaceKeys]);
 
   const clearLocalSession = useCallback(() => {
     suppressedAutosaveSignatureRef.current = currentLocalSessionSignature;
     clearLocalSessionSnapshot();
+    clearLastPosition();
+    setResumeTarget(null);
     setPendingLocalSession(null);
     setHasLocalSession(false);
   }, [currentLocalSessionSignature]);
@@ -226,5 +283,7 @@ export function useLocalSessionOrchestration({
     clearLocalSession,
     downloadLocalSessionBackup,
     skipAutoRestoreRef,
+    resumeTarget,
+    clearResumeTarget,
   };
 }

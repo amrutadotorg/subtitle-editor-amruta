@@ -20,8 +20,10 @@ import {
   useSubtitleHistory,
   useSubtitleState,
   useSubtitles,
+  useSubtitleTimings,
 } from "@/context/subtitle";
 import { errorDev, warnDev } from "@/lib/log";
+import { buildWorkspaceKey } from "@/lib/last-position";
 import { SubtitleNavigationProvider } from "@/context/subtitle-navigation-context";
 import { useActiveTrackDetails } from "@/hooks/use-active-track-details";
 import { useBeforeUnloadGuard } from "@/hooks/use-beforeunload-guard";
@@ -30,6 +32,7 @@ import { useDroppablePanel } from "@/hooks/use-droppable-panel";
 import { useMediaFile } from "@/hooks/use-media-file";
 import { usePendingScroll } from "@/hooks/use-pending-scroll";
 import { usePlaybackState } from "@/hooks/use-playback-state";
+import { useResumeCursor } from "@/hooks/use-resume-cursor";
 import { useSubtitleFileLoader } from "@/hooks/use-subtitle-file-loader";
 import { useSubtitleShortcuts } from "@/hooks/use-subtitle-shortcuts";
 import { usePlaybackVisibilityCoordinator } from "@/hooks/use-visibility-playback";
@@ -39,7 +42,7 @@ import { cn, timeToSeconds } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 import type { ForwardRefExoticComponent, RefAttributes } from "react";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 
 import { useAutoRestoreVimeo } from "@/hooks/use-auto-restore-vimeo";
 import { useSharedSubtitleUrlLoader } from "@/hooks/use-shared-subtitle-url-loader";
@@ -113,6 +116,8 @@ function MainContent() {
     setVimeoVideoId,
     pendingLocalSession,
     skipAutoRestoreRef,
+    resumeTarget,
+    clearResumeTarget,
   } = useLocalSession();
 
   // Auto-restore cached Vimeo video after session restore
@@ -138,6 +143,7 @@ function MainContent() {
     jumpBy,
   } = usePlaybackState();
   const { requestScroll } = usePendingScroll(subtitleListRef);
+  const { list: subtitleTimings } = useSubtitleTimings();
 
   const [editingSubtitleUuid, setEditingSubtitleUuid] = useState<string | null>(
     null,
@@ -171,6 +177,34 @@ function MainContent() {
     allowSubtitleDrop,
     bulkOffsetDisabled,
   } = useActiveTrackDetails(tracks, activeTrackId);
+
+  const workspaceKey = useMemo(
+    () =>
+      buildWorkspaceKey({
+        vimeoVideoId,
+        trackName: activeTrack?.name ?? null,
+      }),
+    [activeTrack?.name, vimeoVideoId],
+  );
+
+  const { resumeUuid, recordInteraction, clearResumeHighlight } =
+    useResumeCursor({
+      enabled: pendingLocalSession === null && subtitles.length > 0,
+      workspaceKey,
+      isPlaying,
+      playbackTime,
+      hasMedia: Boolean(mediaFile || vimeoVideoId),
+      trackId: activeTrackId,
+      subtitleTimings,
+      resumeTarget,
+      clearResumeTarget,
+      setPlaybackTime,
+      pendingSeekRef,
+      requestScroll,
+      editingSubtitleUuid,
+      activeTrackId,
+    });
+
   const {
     isBulkOffsetOpen,
     toggleBulkOffset,
@@ -265,6 +299,8 @@ function MainContent() {
   const navigateToSubtitle = (uuid: string) => {
     subtitleListRef.current?.scrollToSubtitle(uuid, { instant: true });
     waveformRef.current?.scrollToRegion(uuid);
+    recordInteraction(uuid);
+    clearResumeHighlight();
   };
 
   return (
@@ -322,6 +358,7 @@ function MainContent() {
                   }}
                   onTimeJump={jumpBy}
                   jumpDuration={jumpDuration}
+                  resumeUuid={resumeUuid}
                   onLoadSubtitleFile={loadSubtitleFile}
                   onStartFromScratch={handleStartFromScratch}
                 />

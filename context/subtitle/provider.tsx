@@ -120,6 +120,8 @@ export function SubtitleProvider({ children }: SubtitleProviderProps) {
     clearLocalSession,
     downloadLocalSessionBackup,
     skipAutoRestoreRef,
+    resumeTarget,
+    clearResumeTarget,
   } = useLocalSessionOrchestration({
     tracks,
     activeTrackId,
@@ -243,6 +245,8 @@ export function SubtitleProvider({ children }: SubtitleProviderProps) {
       clearLocalSession,
       downloadLocalSessionBackup,
       skipAutoRestoreRef,
+      resumeTarget,
+      clearResumeTarget,
     }),
     [
       pendingLocalSession,
@@ -254,6 +258,8 @@ export function SubtitleProvider({ children }: SubtitleProviderProps) {
       clearLocalSession,
       downloadLocalSessionBackup,
       skipAutoRestoreRef,
+      resumeTarget,
+      clearResumeTarget,
     ],
   );
 

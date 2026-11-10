@@ -1,4 +1,5 @@
 import type { SubtitleActions } from "@/hooks/use-subtitle-actions";
+import type { ResumeCandidate } from "@/lib/last-position";
 import type { LocalSessionSnapshot } from "@/lib/local-session";
 import type { Subtitle, SubtitleTrack } from "@/types/subtitle";
 import type { ReactNode } from "react";
@@ -54,9 +55,11 @@ export interface LocalSessionValue {
   clearLocalSession: () => void;
   downloadLocalSessionBackup: (snapshot?: LocalSessionSnapshot | null) => void;
   skipAutoRestoreRef: React.MutableRefObject<boolean>;
+  resumeTarget: ResumeCandidate | null;
+  clearResumeTarget: () => void;
 }
 
-interface SubtitleTimingEntry {
+export interface SubtitleTimingEntry {
   uuid: string;
   start: number;
   end: number;

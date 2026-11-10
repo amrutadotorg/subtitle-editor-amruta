@@ -32,6 +32,7 @@ interface SubtitleListProps {
   setEditingSubtitleUuid: React.Dispatch<React.SetStateAction<string | null>>;
   onTimeJump: (seconds: number) => void;
   jumpDuration: number;
+  resumeUuid: string | null;
 }
 
 export interface SubtitleListRef {
@@ -54,6 +55,7 @@ const SubtitleList = forwardRef<SubtitleListRef, SubtitleListProps>(
       setEditingSubtitleUuid,
       onTimeJump,
       jumpDuration,
+      resumeUuid,
     },
     ref,
   ) => {
@@ -227,6 +229,7 @@ const SubtitleList = forwardRef<SubtitleListRef, SubtitleListProps>(
                 resumePlayback={resumePlayback}
                 setIsPlaying={setIsPlaying}
                 setPlaybackTime={setPlaybackTime}
+                isResumeTarget={resumeUuid === subtitle.uuid}
               />
             );
           })}

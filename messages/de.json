@@ -182,7 +182,8 @@
     "clear": "Autosave löschen",
     "noAutosave": "Kein Autosave",
     "clearedTitle": "Autosave gelöscht",
-    "clearedDescription": "Der lokale Autosave-Snapshot wurde aus diesem Browser entfernt."
+    "clearedDescription": "Der lokale Autosave-Snapshot wurde aus diesem Browser entfernt.",
+    "resumeMarker": "Zuletzt bearbeitete Stelle"
   },
   "subtitle": {
     "newSubtitle": "Neuer Untertitel",

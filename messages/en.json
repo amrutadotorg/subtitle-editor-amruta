@@ -182,7 +182,8 @@
     "clear": "Clear autosave",
     "noAutosave": "No autosave",
     "clearedTitle": "Autosave cleared",
-    "clearedDescription": "The local autosave snapshot was removed from this browser."
+    "clearedDescription": "The local autosave snapshot was removed from this browser.",
+    "resumeMarker": "Last place you worked"
   },
   "subtitle": {
     "newSubtitle": "New subtitle",

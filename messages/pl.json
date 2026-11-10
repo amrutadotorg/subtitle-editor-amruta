@@ -182,7 +182,8 @@
     "clear": "Wyczyść autozapis",
     "noAutosave": "Brak autozapisu",
     "clearedTitle": "Autozapis wyczyszczony",
-    "clearedDescription": "Lokalna migawka autozapisu została usunięta z tej przeglądarki."
+    "clearedDescription": "Lokalna migawka autozapisu została usunięta z tej przeglądarki.",
+    "resumeMarker": "Miejsce, w którym skończyłeś"
   },
   "subtitle": {
     "newSubtitle": "Nowy napis",

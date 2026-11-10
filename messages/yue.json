@@ -182,7 +182,8 @@
     "clear": "清除自動儲存",
     "noAutosave": "冇自動儲存",
     "clearedTitle": "已清除自動儲存",
-    "clearedDescription": "已經由呢個瀏覽器移除本機自動儲存快照。"
+    "clearedDescription": "已經由呢個瀏覽器移除本機自動儲存快照。",
+    "resumeMarker": "上次做到嘅位置"
   },
   "subtitle": {
     "newSubtitle": "新字幕",

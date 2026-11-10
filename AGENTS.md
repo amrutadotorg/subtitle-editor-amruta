@@ -347,7 +347,7 @@ npm run build           # 6. Production build must succeed (catches type errors,
 
 - Global state via **split React Contexts** in `context/subtitle/` (6 contexts for granular re-renders)
 - **Undo/redo** via custom `useUndoableState` hook with per-track history
-- **Local session** persistence via localStorage (autosave with 750ms debounce)
+- **Local session** persistence via localStorage (autosave with 750ms debounce). The last-worked cue position (pause/interaction) is kept in `subtitle-editor:position:v1` and added to the snapshot as `lastPosition`; it is deliberately NOT part of `getLocalSessionSignature()` (see `lib/last-position.ts`).
 - **Settings** persisted independently from session state
 
 ### Representative Code Pattern
@@ -403,7 +403,7 @@ import { useEffect, useRef, useState } from "react";
 - **`scratch.js`** in project root — ad-hoc MP4 debugging script, not part of the build; safe to ignore
 - **`components.json`** references `tailwind.config.ts` which does not exist (Tailwind v4 uses CSS-based config in `globals.css`); this is a stale shadcn/ui config artifact — do not create a `tailwind.config.ts`
 - **React Compiler** is enabled (`reactCompiler: true`) — this is intentional and must remain enabled
-- **ESLint rule `react-hooks/set-state-in-effect`** is disabled for 11 specific files (legitimate pattern for autosave); do not re-enable without understanding the autosave architecture
+- **ESLint rule `react-hooks/set-state-in-effect`** is disabled for 12 specific files (legitimate pattern for autosave/restore); do not re-enable without understanding the autosave architecture
 - **`fast-xml-parser`** is pinned in overrides to 5.7.1 — do not upgrade
 - **`npm audit` reports 5 lows from the `deepmerge` chain — accepted, not actionable** — see [Accepted risk: `deepmerge` npm audit low](#accepted-risk-deepmerge-npm-audit-low-2026-10-28); no upstream fix exists (maintainer declined, advisory is Low/2.7, build-time only). The former 6 `braces`-chain highs were cleared by that advisory's withdrawal (2026-10-23) — see [Resolved: `braces` npm audit highs](#resolved-braces-npm-audit-highs-2026-10-23). The `sharp` high (GHSA-wq5f-xc86-pv6w) was fixed 2026-10-07 via override `0.35.5` — see [Resolved: `sharp` npm audit high](#resolved-sharp-npm-audit-high-2026-10-07).
 - **2-line subtitle limit** — the editor enforces a maximum of 2 lines per subtitle (industry best practice); splitting into separate cues is expected behavior, not a bug
