@@ -57,7 +57,6 @@
     "supportedFormatsNote": "Cette liste est détectée à partir de la prise en charge HTML native des supports par votre navigateur. Le chargement réel dépend des codecs du fichier.",
     "supportedFormatsUnsupported": "Les manifestes de streaming (.m3u8, .mpd) et le format FLV ne sont pas pris en charge par cette application.",
     "subtitles": "Sous-titres",
-    "loadFromVimeo": "Ou charger une vidéo Vimeo (Amruta.org uniquement)",
     "supportInfo": "Pour obtenir de l'aide ou signaler un bug, veuillez envoyer un e-mail à help@amruta.org"
   },
   "findReplace": {
@@ -275,19 +274,5 @@
     "regionSummary": "Sous-titre de {start} à {end} sur la piste {track}",
     "regionAnnouncement": "Sous-titre sélectionné de {start} à {end} sur la piste {track}.",
     "untitledTrack": "Piste sans titre"
-  },
-  "vimeoLoader": {
-    "title": "Charger depuis Vimeo",
-    "description": "Collez une URL de vidéo Vimeo (Amruta.org) pour la télécharger et la charger comme support.",
-    "urlLabel": "URL Vimeo",
-    "load": "Charger",
-    "buttonLabel": "Charger depuis Vimeo",
-    "invalidUrl": "Impossible d'extraire l'ID de la vidéo depuis cette URL",
-    "errorForbidden": "Seules les vidéos Amruta.org sont prises en charge",
-    "errorNotFound": "Vidéo introuvable sur Vimeo",
-    "errorGeneric": "Impossible de charger la vidéo depuis Vimeo",
-    "autoLoadDownloading": "Chargement de la vidéo Vimeo…",
-    "autoLoadError": "Échec du chargement de la vidéo Vimeo. Veuillez essayer de la charger manuellement.",
-    "autoLoadRetry": "Charger manuellement"
   }
 }

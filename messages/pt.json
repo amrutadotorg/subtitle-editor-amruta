@@ -57,7 +57,6 @@
     "supportedFormatsNote": "Esta lista é detectada a partir do suporte nativo de mídia HTML do seu navegador. O carregamento real depende dos codecs dentro do arquivo.",
     "supportedFormatsUnsupported": "Manifestos de streaming (.m3u8, .mpd) e FLV não são suportados por este aplicativo no momento.",
     "subtitles": "Legendas",
-    "loadFromVimeo": "Ou carregue um vídeo do Vimeo (apenas Amruta.org)",
     "supportInfo": "Para obter suporte ou reportar um bug, envie um e-mail para help@amruta.org"
   },
   "findReplace": {
@@ -275,19 +274,5 @@
     "regionSummary": "Legenda de {start} a {end} na faixa {track}",
     "regionAnnouncement": "Legenda selecionada de {start} a {end} na faixa {track}.",
     "untitledTrack": "Faixa sem título"
-  },
-  "vimeoLoader": {
-    "title": "Carregar do Vimeo",
-    "description": "Cole a URL de um vídeo do Vimeo do Amruta.org para baixar e carregar como mídia.",
-    "urlLabel": "URL do Vimeo",
-    "load": "Carregar",
-    "buttonLabel": "Carregar do Vimeo",
-    "invalidUrl": "Não foi possível extrair o ID do vídeo desta URL",
-    "errorForbidden": "Apenas vídeos do Amruta.org são suportados",
-    "errorNotFound": "Vídeo não encontrado no Vimeo",
-    "errorGeneric": "Não foi possível carregar o vídeo do Vimeo",
-    "autoLoadDownloading": "Carregando vídeo do Vimeo…",
-    "autoLoadError": "Falha ao carregar o vídeo do Vimeo. Tente carregá-lo manualmente.",
-    "autoLoadRetry": "Carregar manualmente"
   }
 }

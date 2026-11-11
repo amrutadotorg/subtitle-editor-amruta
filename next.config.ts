@@ -23,14 +23,14 @@ const cspHeader = `
   script-src 'self' 'unsafe-eval' 'unsafe-inline';
   style-src 'self' 'unsafe-inline';
   img-src 'self' blob: data:;
-  media-src 'self' blob: data: https://*.vimeocdn.com https://*.vimeo.com;
+  media-src 'self' blob: data:;
   font-src 'self';
   object-src 'none';
   base-uri 'self';
   form-action 'self';
   frame-ancestors 'none';
   worker-src 'self' blob:;
-  connect-src 'self' https://*.vimeo.com https://api.vimeo.com;
+  connect-src 'self';
   upgrade-insecure-requests;
 `
   .replace(/\s{2,}/g, " ")

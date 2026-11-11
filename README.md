@@ -4,7 +4,6 @@ A fork of [subtitle-editor](https://github.com/laubonghaudoi/subtitle-editor) by
 
 ### What's changed from the original
 
-- **Vimeo integration** — import videos directly from Vimeo via API proxy (`/api/vimeo/*`)
 - **SSO authentication** — HMAC-signed SSO cookie verification for access control (`proxy.ts`)
 - **Additional locales** — added Arabic (ar), Bengali (bn), German (de), Spanish (es), French (fr), Hindi (hi), Marathi (mr), Polish (pl), Portuguese (pt), Russian (ru), Cantonese (yue), and Chinese (zh) translations
 - **Large file support (1GB+)** — streaming MP4 box parser with chunked mdat processing (5MB chunks) via mp4box + Web AudioDecoder; avoids loading entire file into memory
@@ -49,7 +48,6 @@ I talked about my design principles in the [FAQ](https://subtitle-editor.org/faq
 
 - **Node.js 26** (see `.nvmrc`)
 - **`.env.local`** with:
-  - `VIMEO_ACCESS_TOKEN` — Vimeo API access token
   - `SSO_SALT` — HMAC secret for SSO cookie verification
 
 ### Setup

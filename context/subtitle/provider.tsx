@@ -113,8 +113,6 @@ export function SubtitleProvider({ children }: SubtitleProviderProps) {
   const {
     pendingLocalSession,
     hasLocalSession,
-    vimeoVideoId,
-    setVimeoVideoId,
     restoreLocalSession,
     discardLocalSession,
     clearLocalSession,
@@ -238,8 +236,6 @@ export function SubtitleProvider({ children }: SubtitleProviderProps) {
     () => ({
       pendingLocalSession,
       hasLocalSession,
-      vimeoVideoId,
-      setVimeoVideoId,
       restoreLocalSession,
       discardLocalSession,
       clearLocalSession,
@@ -251,8 +247,6 @@ export function SubtitleProvider({ children }: SubtitleProviderProps) {
     [
       pendingLocalSession,
       hasLocalSession,
-      vimeoVideoId,
-      setVimeoVideoId,
       restoreLocalSession,
       discardLocalSession,
       clearLocalSession,

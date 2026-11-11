@@ -25,18 +25,7 @@ import {
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-import {
-  IconBrandVimeo,
-  IconUpload,
-  IconAlertCircle,
-  IconX,
-} from "@tabler/icons-react";
-
-export interface VimeoLoadingState {
-  status: "downloading" | "error";
-  progress: number | null; // 0-100, null = indeterminate
-  filename?: string;
-}
+import { IconUpload } from "@tabler/icons-react";
 
 export interface VideoPlayerProps {
   mediaFile: File | null;
@@ -49,10 +38,6 @@ export interface VideoPlayerProps {
   isPlaying: boolean;
   playbackRate: number;
   playInBackground: boolean;
-  onOpenVimeo?: () => void;
-  vimeoLoadingState?: VimeoLoadingState | null;
-  /** Called when the user cancels an in-progress Vimeo auto-load (Cancel button or ESC) */
-  onVimeoLoadCancel?: () => void;
 }
 
 export interface VideoPlayerHandle {
@@ -72,9 +57,6 @@ const VideoPlayer = forwardRef(function VideoPlayer(
     isPlaying,
     playbackRate,
     playInBackground,
-    onOpenVimeo,
-    vimeoLoadingState,
-    onVimeoLoadCancel,
   }: VideoPlayerProps,
   ref: ForwardedRef<VideoPlayerHandle>,
 ) {
@@ -89,6 +71,10 @@ const VideoPlayer = forwardRef(function VideoPlayer(
   const playerRef = useRef<HTMLVideoElement | null>(null);
   const vttObjectUrlRef = useRef<string | null>(null);
   const timeToRestore = useRef<number | null>(null); // Ref to store time before remount
+  const previousMediaUrlRef = useRef<string>("");
+  const initialSeekDoneRef = useRef(false);
+  const seekTimeRef = useRef(seekTime);
+  seekTimeRef.current = seekTime;
 
   const setVideoRef = useCallback((element: HTMLVideoElement | null) => {
     playerRef.current = element;
@@ -109,15 +95,6 @@ const VideoPlayer = forwardRef(function VideoPlayer(
       ),
     );
   }, []);
-
-  useEffect(() => {
-    if (!vimeoLoadingState || !onVimeoLoadCancel) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onVimeoLoadCancel();
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [vimeoLoadingState, onVimeoLoadCancel]);
 
   const resumePlayback = useCallback(() => {
     const playerInstance = playerRef.current;
@@ -202,6 +179,17 @@ const VideoPlayer = forwardRef(function VideoPlayer(
   }, [mediaFile]);
 
   useEffect(() => {
+    // The captions blob is recreated for the same media whenever the cues
+    // change, so this effect runs far more often than the media itself
+    // changes. Only a same-media rerun may carry the current position over to
+    // the remounted <video>.
+    const mediaChanged = previousMediaUrlRef.current !== mediaUrl;
+    previousMediaUrlRef.current = mediaUrl;
+
+    if (mediaChanged) {
+      initialSeekDoneRef.current = false;
+    }
+
     if (!mediaUrl) {
       setVttUrl(null);
       if (vttObjectUrlRef.current) {
@@ -215,8 +203,13 @@ const VideoPlayer = forwardRef(function VideoPlayer(
     const blob = new Blob([vttString], { type: "text/vtt" });
     const objectUrl = URL.createObjectURL(blob);
 
-    if (playerRef.current) {
+    // A fresh media URL mounts a new <video> at time 0; reading it here would
+    // overwrite the pending seek target (e.g. the restored resume position),
+    // and `seekTime` does not change, so it would never be re-applied.
+    if (!mediaChanged && playerRef.current) {
       timeToRestore.current = playerRef.current.currentTime ?? null;
+    } else if (mediaChanged && typeof seekTimeRef.current === "number") {
+      timeToRestore.current = seekTimeRef.current;
     }
 
     if (vttObjectUrlRef.current) {
@@ -236,16 +229,24 @@ const VideoPlayer = forwardRef(function VideoPlayer(
 
   const handleLoadedMetadata = useCallback(
     (event: SyntheticEvent<HTMLVideoElement>) => {
-      playerRef.current = event.currentTarget;
-      if (timeToRestore.current !== null) {
-        event.currentTarget.currentTime = timeToRestore.current;
-        timeToRestore.current = null;
+      const player = event.currentTarget;
+      playerRef.current = player;
+      const target = timeToRestore.current ?? seekTime;
+      timeToRestore.current = null;
+      if (Number.isFinite(target) && target > 0) {
+        if (Math.abs(player.currentTime - target) > 0.1) {
+          player.currentTime = target;
+        } else {
+          initialSeekDoneRef.current = true;
+        }
+      } else {
+        initialSeekDoneRef.current = true;
       }
-      if (Number.isFinite(event.currentTarget.duration)) {
-        onDuration(event.currentTarget.duration);
+      if (Number.isFinite(player.duration)) {
+        onDuration(player.duration);
       }
     },
-    [onDuration],
+    [onDuration, seekTime],
   );
 
   const renderSupportedFormats = useCallback(
@@ -277,72 +278,6 @@ const VideoPlayer = forwardRef(function VideoPlayer(
   if (!mediaUrl) {
     return (
       <div className="relative flex flex-col items-center justify-center h-full text-muted-foreground">
-        {/* Vimeo auto-load overlay */}
-        {vimeoLoadingState && (
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-background/90 backdrop-blur-sm gap-4 px-8">
-            {onVimeoLoadCancel && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute top-4 right-4"
-                onClick={onVimeoLoadCancel}
-              >
-                <IconX size={20} />
-              </Button>
-            )}
-            {vimeoLoadingState.status === "downloading" ? (
-              <>
-                <IconBrandVimeo
-                  size={36}
-                  className="text-iris-700 dark:text-iris-300 animate-pulse"
-                />
-                <p className="text-base font-medium text-center">
-                  {t("vimeoLoader.autoLoadDownloading")}
-                  {vimeoLoadingState.filename && (
-                    <span className="block text-sm text-muted-foreground mt-1 truncate max-w-xs">
-                      {vimeoLoadingState.filename}
-                    </span>
-                  )}
-                </p>
-                <div className="w-full max-w-sm space-y-1">
-                  <div className="h-2 rounded-full bg-muted overflow-hidden">
-                    {vimeoLoadingState.progress !== null ? (
-                      <div
-                        className="h-full rounded-full bg-iris-700 dark:bg-iris-400 transition-all duration-200"
-                        style={{ width: `${vimeoLoadingState.progress}%` }}
-                      />
-                    ) : (
-                      <div className="h-full rounded-full bg-iris-700 dark:bg-iris-400 animate-[progress-indeterminate_1.5s_ease-in-out_infinite]" />
-                    )}
-                  </div>
-                  {vimeoLoadingState.progress !== null && (
-                    <p className="text-xs text-muted-foreground text-end tabular-nums">
-                      {vimeoLoadingState.progress}%
-                    </p>
-                  )}
-                </div>
-              </>
-            ) : (
-              <>
-                <IconAlertCircle size={36} className="text-red-500" />
-                <p className="text-base font-medium text-center text-foreground">
-                  {t("vimeoLoader.autoLoadError")}
-                </p>
-                {onOpenVimeo && (
-                  <Button
-                    variant="outline"
-                    onClick={onOpenVimeo}
-                    className="gap-2"
-                  >
-                    <IconBrandVimeo size={16} />
-                    {t("vimeoLoader.autoLoadRetry")}
-                  </Button>
-                )}
-              </>
-            )}
-          </div>
-        )}
-
         <Label className="cursor-pointer inline-flex items-center text-xl hover:text-accent-ink underline">
           <IconUpload size={24} className="mr-2" />
           {t("videoPlayer.loadFile")}
@@ -386,18 +321,6 @@ const VideoPlayer = forwardRef(function VideoPlayer(
           <p className="text-muted-foreground">
             {t("videoPlayer.supportedFormatsUnsupported")}
           </p>
-          {onOpenVimeo && (
-            <div className="flex justify-center w-full mt-4">
-              <Button
-                variant="link"
-                className="text-xl hover:text-accent-ink underline"
-                onClick={onOpenVimeo}
-              >
-                <IconBrandVimeo size={20} />
-                <span>{t("videoPlayer.loadFromVimeo")}</span>
-              </Button>
-            </div>
-          )}
         </div>
         <p className="text-muted-foreground text-sm mt-4 text-center">
           {(() => {
@@ -435,12 +358,16 @@ const VideoPlayer = forwardRef(function VideoPlayer(
         controls={false}
         controlsList="nodownload"
         onTimeUpdate={(event) => {
+          if (!initialSeekDoneRef.current) {
+            return;
+          }
           const player = event.currentTarget;
           if (!player.seeking) {
             onProgress(player.currentTime);
           }
         }}
         onSeeked={(event) => {
+          initialSeekDoneRef.current = true;
           onProgress(event.currentTarget.currentTime);
         }}
         onPlay={() => onPlayPause(true)}

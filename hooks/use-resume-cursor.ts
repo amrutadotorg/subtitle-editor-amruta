@@ -20,7 +20,7 @@ interface UseResumeCursorParams {
   workspaceKey: string;
   isPlaying: boolean;
   playbackTime: number;
-  /** Identity of the loaded media (file name/size or Vimeo id); null when none. */
+  /** Identity of the loaded media (file name/size); null when none. */
   mediaKey: string | null;
   trackId: string | null;
   /** Timings of the ACTIVE track only (provider derives them from activeSubtitles). */
@@ -80,7 +80,10 @@ export function useResumeCursor({
   // player will report time 0 and must not be mistaken for "paused at cue #1".
   useEffect(() => {
     engagedRef.current = false;
-  }, [mediaKey]);
+    if (resumeUuid) {
+      requestScroll(resumeUuid, { instant: true });
+    }
+  }, [mediaKey, resumeUuid, requestScroll]);
 
   useEffect(() => {
     if (isPlaying) {

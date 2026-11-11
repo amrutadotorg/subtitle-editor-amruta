@@ -27,7 +27,6 @@ export interface LocalSessionSnapshot {
   tracks: SubtitleTrack[];
   activeTrackId: string | null;
   preferences: LocalSessionPreferences;
-  vimeoVideoId?: string;
   /**
    * Portable copy of the last worked-on cue. The authoritative record lives in
    * `subtitle-editor:position:v1` (see `lib/last-position.ts`); this field only
@@ -40,7 +39,6 @@ interface CreateLocalSessionSnapshotInput {
   tracks: SubtitleTrack[];
   activeTrackId: string | null;
   preferences: LocalSessionPreferences;
-  vimeoVideoId?: string;
   lastPosition?: ResumeCandidate;
   now?: () => number;
   appVersion?: string;
@@ -173,7 +171,6 @@ export function createLocalSessionSnapshot({
   tracks,
   activeTrackId,
   preferences,
-  vimeoVideoId,
   lastPosition,
   now = Date.now,
   appVersion,
@@ -186,7 +183,6 @@ export function createLocalSessionSnapshot({
     tracks: clonedTracks,
     activeTrackId: normalizeActiveTrackId(clonedTracks, activeTrackId),
     preferences: { ...preferences },
-    vimeoVideoId,
     lastPosition: lastPosition ? { ...lastPosition } : undefined,
   };
 }
@@ -349,10 +345,6 @@ export function parseLocalSessionSnapshot(
         parsed.activeTrackId,
       ),
       preferences,
-      vimeoVideoId:
-        typeof parsed.vimeoVideoId === "string"
-          ? parsed.vimeoVideoId
-          : undefined,
       lastPosition: parseResumeCandidate(parsed.lastPosition) ?? undefined,
     };
   } catch {

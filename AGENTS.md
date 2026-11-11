@@ -2,7 +2,7 @@
 
 ## Overview
 
-A browser-based subtitle editor (SRT/VTT) with multi-track support, audio waveform visualization, Vimeo integration, and i18n (13 locales: ar, bn, de, en, es, fr, hi, mr, pl, pt, ru, yue, zh). Built as a Next.js PWA with React 19 and deployed via Docker.
+A browser-based subtitle editor (SRT/VTT) with multi-track support, audio waveform visualization, and i18n (13 locales: ar, bn, de, en, es, fr, hi, mr, pl, pt, ru, yue, zh). Built as a Next.js PWA with React 19 and deployed via Docker.
 
 ## Tech Stack
 
@@ -29,7 +29,7 @@ A browser-based subtitle editor (SRT/VTT) with multi-track support, audio wavefo
 ```
 ├── app/                    # Next.js App Router pages and API routes
 │   ├── [locale]/           # i18n-routed pages (page.tsx, layout.tsx)
-│   ├── api/                # API routes (vimeo/download, load-shared, load-captions)
+│   ├── api/                # API routes (load-shared, load-captions)
 │   ├── best-practices/     # Static subtitling best practices page
 │   ├── offline/            # PWA offline fallback page
 │   ├── globals.css         # Global styles, Tailwind config, Radix color mappings, CSS variables
@@ -46,7 +46,6 @@ A browser-based subtitle editor (SRT/VTT) with multi-track support, audio wavefo
 │   ├── waveform-visualizer/ # Waveform display and region handling
 │   ├── theme-provider.tsx  # next-themes ThemeProvider wrapper
 │   ├── video-player.tsx    # Video player (wavesurfer-backed)
-│   ├── vimeo-loader.tsx    # Vimeo video loader
 │   ├── logo.tsx            # SVG brand mark
 │   └── ...                 # Various utility UI components
 ├── context/                # React Context providers
@@ -317,7 +316,6 @@ npm run build           # 6. Production build must succeed (catches type errors,
 
 - **Node.js 26** (required; `.nvmrc` specifies version)
 - **`.env.local`** contains:
-  - `VIMEO_ACCESS_TOKEN` — Vimeo API access token for video import
   - `SSO_SALT` — HMAC secret for SSO cookie verification
 - No other env vars required for local dev; the app runs fully client-side after SSO verification
 
@@ -420,9 +418,7 @@ registering it (silent loss of offline mode). Fixed 2026-10-31.
 - `public/sw.js` and `public/workbox-*.js` are **generated at build time** and
   git-ignored; never commit them.
 - The webpack build type-checks Next's generated route types, so a route file may only
-  export HTTP handlers (+ `config`/`dynamic`/…). The stray
-  `export { extractVideoId }` in `app/api/vimeo/download/route.ts` violated that and was
-  removed — import from `@/lib/vimeo-url` instead.
+  export HTTP handlers (+ `config`/`dynamic`/…).
 - nginx already serves `/sw.js`, `/workbox-*.js` and `/manifest.json` with
   `no-cache, no-store` (`nginx/sites/subtitle-editor.amruta.org.conf`), so a new worker is
   picked up immediately. `public/_headers` is a Cloudflare-Pages artifact and is unused
@@ -496,3 +492,13 @@ All steps must pass. A failure in any step blocks the merge.
 | `tsconfig.json`                    | TypeScript config (strict, path aliases, bundler resolution)                           |
 | `biome.json`                       | Biome formatter config (space indent, width 2)                                         |
 | `eslint.config.js`                 | ESLint config (core-web-vitals, file-specific rule overrides)                          |
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+## This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

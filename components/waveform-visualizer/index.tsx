@@ -35,7 +35,7 @@ interface WaveformVisualizerProps {
   onPlayPause: (playing: boolean) => void;
   onRegionClick?: (uuid: string, opts?: { crossTrack?: boolean }) => void;
   previewOffsets?: Record<string, BulkOffsetPreviewState>;
-  /** Stable key used to look up / store peak data in IndexedDB (e.g. vimeoVideoId) */
+  /** Stable key used to look up / store peak data in IndexedDB when available */
   peaksCacheKey?: string | null;
 }
 

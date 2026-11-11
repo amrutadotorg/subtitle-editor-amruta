@@ -53,18 +53,18 @@ test("writeLastPosition and readLastPosition round-trip per workspace key", () =
     true,
   );
   assert.equal(
-    writeLastPosition("vimeo:123", candidate({ uuid: "cue-b" }), adapter),
+    writeLastPosition("track:spanish", candidate({ uuid: "cue-b" }), adapter),
     true,
   );
 
   assert.ok(store.has(LAST_POSITION_STORAGE_KEY));
   assert.equal(readLastPosition("track:english", adapter)?.uuid, "cue-a");
-  assert.equal(readLastPosition("vimeo:123", adapter)?.uuid, "cue-b");
+  assert.equal(readLastPosition("track:spanish", adapter)?.uuid, "cue-b");
   assert.equal(readLastPosition("track:missing", adapter), null);
 
   assert.equal(clearLastPosition("track:english", adapter), true);
   assert.equal(readLastPosition("track:english", adapter), null);
-  assert.equal(readLastPosition("vimeo:123", adapter)?.uuid, "cue-b");
+  assert.equal(readLastPosition("track:spanish", adapter)?.uuid, "cue-b");
 
   assert.equal(clearLastPosition(undefined, adapter), true);
   assert.equal(store.has(LAST_POSITION_STORAGE_KEY), false);
@@ -162,19 +162,13 @@ test("pruneLastPositionStore drops stale entries and keeps 10 newest", () => {
   assert.equal(keys.includes("key-10"), false);
 });
 
-test("buildWorkspaceKey prefers vimeo ids and normalises track names", () => {
+test("buildWorkspaceKey normalises track names", () => {
   assert.equal(
-    buildWorkspaceKey({ vimeoVideoId: " 123456 ", trackName: "Whatever" }),
-    "vimeo:123456",
-  );
-  assert.equal(
-    buildWorkspaceKey({ vimeoVideoId: null, trackName: " My File.VTT " }),
+    buildWorkspaceKey({ trackName: " My File.VTT " }),
     "track:my file.vtt",
   );
-  assert.equal(
-    buildWorkspaceKey({ vimeoVideoId: null, trackName: "   " }),
-    "track:untitled",
-  );
+  assert.equal(buildWorkspaceKey({ trackName: "   " }), "track:untitled");
+  assert.equal(buildWorkspaceKey({ trackName: null }), "track:untitled");
 });
 
 test("resolveResumeCandidate picks the fresher record", () => {

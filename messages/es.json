@@ -57,7 +57,6 @@
     "supportedFormatsNote": "Esta lista se detecta a partir del soporte multimedia nativo de HTML de tu navegador. La carga real depende de los códecs del archivo.",
     "supportedFormatsUnsupported": "Los manifiestos de streaming (.m3u8, .mpd) y FLV no son compatibles con esta aplicación.",
     "subtitles": "Subtítulos",
-    "loadFromVimeo": "O carga un video de Vimeo (solo Amruta.org)",
     "supportInfo": "Para obtener soporte o reportar un error, por favor envíe un correo a help@amruta.org"
   },
   "findReplace": {
@@ -275,19 +274,5 @@
     "regionSummary": "Subtítulo de {start} a {end} en la pista {track}",
     "regionAnnouncement": "Subtítulo seleccionado de {start} a {end} en la pista {track}.",
     "untitledTrack": "Pista sin título"
-  },
-  "vimeoLoader": {
-    "title": "Cargar desde Vimeo",
-    "description": "Pega una URL de video de Vimeo (Amruta.org) para descargarlo y cargarlo como medio.",
-    "urlLabel": "URL de Vimeo",
-    "load": "Cargar",
-    "buttonLabel": "Cargar desde Vimeo",
-    "invalidUrl": "No se pudo extraer el ID del video de esta URL",
-    "errorForbidden": "Solo se admiten videos de Amruta.org",
-    "errorNotFound": "Video no encontrado en Vimeo",
-    "errorGeneric": "No se pudo cargar el video desde Vimeo",
-    "autoLoadDownloading": "Cargando video de Vimeo…",
-    "autoLoadError": "No se pudo cargar el video de Vimeo. Intente cargarlo manualmente.",
-    "autoLoadRetry": "Cargar manualmente"
   }
 }

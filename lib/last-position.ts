@@ -37,17 +37,10 @@ const getDefaultStorage = (): LocalSessionStorage | null => {
 };
 
 export function buildWorkspaceKey({
-  vimeoVideoId,
   trackName,
 }: {
-  vimeoVideoId: string | null;
   trackName: string | null;
 }): string {
-  const trimmedVideoId = vimeoVideoId?.trim();
-  if (trimmedVideoId) {
-    return `vimeo:${trimmedVideoId}`;
-  }
-
   const normalizedName = (trackName ?? "")
     .trim()
     .toLowerCase()

@@ -48,8 +48,6 @@ export type SubtitleContextType = SubtitleStateValue &
 export interface LocalSessionValue {
   pendingLocalSession: LocalSessionSnapshot | null;
   hasLocalSession: boolean;
-  vimeoVideoId: string | null;
-  setVimeoVideoId: (id: string | null) => void;
   restoreLocalSession: () => void;
   discardLocalSession: () => void;
   clearLocalSession: () => void;

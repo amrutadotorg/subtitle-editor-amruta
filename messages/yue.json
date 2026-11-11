@@ -57,7 +57,6 @@
     "supportedFormatsNote": "呢個清單係根據你瀏覽器原生 HTML 媒體支援偵測出嚟。實際上讀唔讀到要睇個音檔案入面用咩 codec。",
     "supportedFormatsUnsupported": "目前未支援串流 manifest（.m3u8、.mpd）同 FLV。",
     "subtitles": "字幕",
-    "loadFromVimeo": "或者載入 Vimeo 影片（僅限 Amruta.org）",
     "supportInfo": "如需技術支援或報告問題，請電郵至 help@amruta.org"
   },
   "findReplace": {
@@ -272,19 +271,5 @@
     "regionSummary": "{start} 至 {end} 嘅字幕，喺第 {track} 條軌",
     "regionAnnouncement": "已揀咗由 {start} 至 {end} 嘅字幕，喺第 {track} 條軌。",
     "untitledTrack": "未命名嘅軌"
-  },
-  "vimeoLoader": {
-    "title": "從 Vimeo 載入",
-    "description": "貼上 Amruta.org Vimeo 影片 URL 以下載並載入為媒體。",
-    "urlLabel": "Vimeo URL",
-    "load": "載入",
-    "buttonLabel": "從 Vimeo 載入",
-    "invalidUrl": "無法從此 URL 提取影片 ID",
-    "errorForbidden": "僅支援 Amruta.org 的影片連結",
-    "errorNotFound": "在 Vimeo 上找不到該影片",
-    "errorGeneric": "無法從 Vimeo 載入影片",
-    "autoLoadDownloading": "正在載入 Vimeo 影片…",
-    "autoLoadError": "無法載入 Vimeo 影片。請嘗試手動載入。",
-    "autoLoadRetry": "手動載入"
   }
 }

@@ -57,7 +57,6 @@
     "supportedFormatsNote": "এই তালিকা আপনার ব্রাউজারের নেটিভ HTML মিডিয়া সমর্থন থেকে শনাক্ত। প্রকৃত লোডিং ফাইলের কোডেকের উপর নির্ভর করে।",
     "supportedFormatsUnsupported": "এই অ্যাপ বর্তমানে স্ট্রিমিং ম্যানিফেস্ট (.m3u8, .mpd) এবং FLV সমর্থন করে না।",
     "subtitles": "উপশিরোনাম",
-    "loadFromVimeo": "অথবা Vimeo ভিডিও লোড করুন (শুধুমাত্র Amruta.org)",
     "supportInfo": "সহায়তার জন্য বা বাগ রিপোর্ট করতে, অনুগ্রহ করে help@amruta.org-এ ইমেইল করুন"
   },
   "findReplace": {
@@ -275,19 +274,5 @@
     "regionSummary": "ট্র্যাক {track} এ {start} থেকে {end} পর্যন্ত উপশিরোনাম",
     "regionAnnouncement": "ট্র্যাক {track} এ {start} থেকে {end} পর্যন্ত উপশিরোনাম নির্বাচিত।",
     "untitledTrack": "শিরোনামহীন ট্র্যাক"
-  },
-  "vimeoLoader": {
-    "title": "Vimeo থেকে লোড করুন",
-    "description": "মিডিয়া হিসেবে ডাউনলোড ও লোড করতে Amruta.org Vimeo ভিডিও URL পেস্ট করুন।",
-    "urlLabel": "Vimeo URL",
-    "load": "লোড করুন",
-    "buttonLabel": "Vimeo থেকে লোড করুন",
-    "invalidUrl": "এই URL থেকে ভিডিও ID বের করা যায়নি",
-    "errorForbidden": "শুধুমাত্র Amruta.org ভিডিও সমর্থিত",
-    "errorNotFound": "Vimeo-তে ভিডিও পাওয়া যায়নি",
-    "errorGeneric": "Vimeo থেকে ভিডিও লোড করা যায়নি",
-    "autoLoadDownloading": "Vimeo ভিডিও লোড হচ্ছে…",
-    "autoLoadError": "Vimeo ভিডিও লোড করতে ব্যর্থ হয়েছে। অনুগ্রহ করে এটি ম্যানুয়ালি লোড করার চেষ্টা করুন।",
-    "autoLoadRetry": "ম্যানুয়ালি লোড করুন"
   }
 }

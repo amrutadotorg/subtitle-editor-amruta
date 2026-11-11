@@ -264,3 +264,21 @@ test("lastPosition does not affect getLocalSessionSignature", () => {
 
   assert.equal(signature(first), signature(second));
 });
+
+test("snapshots with legacy vimeoVideoId still parse and field is ignored", () => {
+  const snapshot = createLocalSessionSnapshot({
+    tracks,
+    activeTrackId: "track-1",
+    preferences,
+    now: () => 1234,
+  });
+  const parsed = parseLocalSessionSnapshot(
+    JSON.stringify({
+      ...snapshot,
+      vimeoVideoId: "12345",
+    }),
+  );
+  assert.ok(parsed);
+  assert.equal(parsed.tracks[0].id, "track-1");
+  assert.equal(parsed.tracks[0].subtitles.length, 1);
+});

@@ -57,7 +57,6 @@
     "supportedFormatsNote": "此列表基于浏览器的原生 HTML 媒体支持检测。实际加载还取决于文件中的编解码器。",
     "supportedFormatsUnsupported": "本应用暂不支持流媒体清单文件（.m3u8、.mpd）和 FLV 格式。",
     "subtitles": "字幕",
-    "loadFromVimeo": "或加载 Vimeo 视频（仅限 Amruta.org）",
     "supportInfo": "如需帮助或报告问题，请发送邮件至 help@amruta.org"
   },
   "findReplace": {
@@ -275,19 +274,5 @@
     "regionSummary": "{start} 至 {end} 的字幕，位于轨道 {track}",
     "regionAnnouncement": "已选中 {start} 至 {end} 的字幕，位于轨道 {track}。",
     "untitledTrack": "未命名轨道"
-  },
-  "vimeoLoader": {
-    "title": "从 Vimeo 加载",
-    "description": "粘贴 Amruta.org 的 Vimeo 视频 URL 以下载并加载为媒体。",
-    "urlLabel": "Vimeo URL",
-    "load": "加载",
-    "buttonLabel": "从 Vimeo 加载",
-    "invalidUrl": "无法从此 URL 中提取视频 ID",
-    "errorForbidden": "仅支持 Amruta.org 的视频",
-    "errorNotFound": "在 Vimeo 上未找到该视频",
-    "errorGeneric": "无法从 Vimeo 加载视频",
-    "autoLoadDownloading": "正在加载 Vimeo 视频…",
-    "autoLoadError": "无法加载 Vimeo 视频。请尝试手动加载。",
-    "autoLoadRetry": "手动加载"
   }
 }

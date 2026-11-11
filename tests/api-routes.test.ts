@@ -1,7 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { NextRequest } from "next/server";
-import { GET as vimeoGet } from "../app/api/vimeo/download/route";
 import { GET as loadCaptionsGet } from "../app/api/load-captions/route";
 import { GET as loadSharedGet } from "../app/api/load-shared/route";
 
@@ -66,7 +65,6 @@ function makeRequest(url: string, cookie?: string): NextRequest {
 // ---------------------------------------------------------------------------
 
 const origSalt = process.env.SSO_SALT;
-const origToken = process.env.VIMEO_ACCESS_TOKEN;
 const origNodeEnv = process.env.NODE_ENV;
 
 test.afterEach(() => {
@@ -75,86 +73,11 @@ test.afterEach(() => {
   } else {
     process.env.SSO_SALT = origSalt;
   }
-  if (origToken === undefined) {
-    delete process.env.VIMEO_ACCESS_TOKEN;
-  } else {
-    process.env.VIMEO_ACCESS_TOKEN = origToken;
-  }
   if (origNodeEnv === undefined) {
     deleteNodeEnv();
   } else {
     setNodeEnv(origNodeEnv);
   }
-});
-
-// ===========================================================================
-// /api/vimeo/download
-// ===========================================================================
-
-test("vimeo/download: returns 401 without SSO cookie", async () => {
-  process.env.SSO_SALT = TEST_SECRET;
-  const res = await vimeoGet(
-    makeRequest(
-      "http://localhost:3000/api/vimeo/download?url=https://vimeo.com/123",
-    ),
-  );
-  assert.equal(res.status, 401);
-  const body = await res.json();
-  assert.equal(body.error, "Authentication required");
-});
-
-test("vimeo/download: returns 500 when VIMEO_ACCESS_TOKEN is not set", async () => {
-  process.env.SSO_SALT = TEST_SECRET;
-  delete process.env.VIMEO_ACCESS_TOKEN;
-  const cookie = await makeValidCookie("user", TEST_SECRET, futureExpiry());
-  const res = await vimeoGet(
-    makeRequest(
-      "http://localhost:3000/api/vimeo/download?url=https://vimeo.com/123",
-      cookie,
-    ),
-  );
-  assert.equal(res.status, 500);
-  const body = await res.json();
-  assert.equal(body.error, "Vimeo token not configured");
-});
-
-test("vimeo/download: returns 400 when url param is missing", async () => {
-  process.env.SSO_SALT = TEST_SECRET;
-  process.env.VIMEO_ACCESS_TOKEN = "fake-token";
-  const cookie = await makeValidCookie("user", TEST_SECRET, futureExpiry());
-  const res = await vimeoGet(
-    makeRequest("http://localhost:3000/api/vimeo/download", cookie),
-  );
-  assert.equal(res.status, 400);
-  const body = await res.json();
-  assert.equal(body.error, "Missing 'url' query parameter");
-});
-
-test("vimeo/download: returns 400 for invalid Vimeo URL", async () => {
-  process.env.SSO_SALT = TEST_SECRET;
-  process.env.VIMEO_ACCESS_TOKEN = "fake-token";
-  const cookie = await makeValidCookie("user", TEST_SECRET, futureExpiry());
-  const res = await vimeoGet(
-    makeRequest(
-      "http://localhost:3000/api/vimeo/download?url=https://youtube.com/watch?v=abc",
-      cookie,
-    ),
-  );
-  assert.equal(res.status, 400);
-  const body = await res.json();
-  assert.equal(body.error, "Could not extract video ID from URL");
-});
-
-test("vimeo/download: returns 400 for empty string url param", async () => {
-  process.env.SSO_SALT = TEST_SECRET;
-  process.env.VIMEO_ACCESS_TOKEN = "fake-token";
-  const cookie = await makeValidCookie("user", TEST_SECRET, futureExpiry());
-  const res = await vimeoGet(
-    makeRequest("http://localhost:3000/api/vimeo/download?url=", cookie),
-  );
-  assert.equal(res.status, 400);
-  const body = await res.json();
-  assert.equal(body.error, "Missing 'url' query parameter");
 });
 
 // ===========================================================================

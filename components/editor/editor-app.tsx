@@ -11,7 +11,6 @@ import TrackTabs from "@/components/subtitle/track-tabs";
 import type {
   VideoPlayerHandle,
   VideoPlayerProps,
-  VimeoLoadingState,
 } from "@/components/video-player";
 import {
   SubtitleProvider,
@@ -37,16 +36,13 @@ import { useSubtitleFileLoader } from "@/hooks/use-subtitle-file-loader";
 import { useSubtitleShortcuts } from "@/hooks/use-subtitle-shortcuts";
 import { usePlaybackVisibilityCoordinator } from "@/hooks/use-visibility-playback";
 import { isMediaFile, isSubtitleFile } from "@/lib/file-utils";
-import { getCachedFile, setCachedFile } from "@/lib/vimeo-file-cache";
 import { cn, timeToSeconds } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 import type { ForwardRefExoticComponent, RefAttributes } from "react";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { useAutoRestoreVimeo } from "@/hooks/use-auto-restore-vimeo";
 import { useSharedSubtitleUrlLoader } from "@/hooks/use-shared-subtitle-url-loader";
-import { useVimeoUrlLoader } from "@/hooks/use-vimeo-url-loader";
 import { useAutoJumpToFirstSubtitle } from "@/hooks/use-auto-jump-to-first-subtitle";
 
 const VideoPlayer = dynamic<VideoPlayerProps>(
@@ -112,23 +108,11 @@ function MainContent() {
     loadMediaFile,
   } = useMediaFile(t("buttons.loadMedia"));
   const {
-    vimeoVideoId,
-    setVimeoVideoId,
     pendingLocalSession,
     skipAutoRestoreRef,
     resumeTarget,
     clearResumeTarget,
   } = useLocalSession();
-
-  // Auto-restore cached Vimeo video after session restore
-  // Auto-restore cached Vimeo video after session restore
-  useAutoRestoreVimeo({
-    pendingLocalSession,
-    vimeoVideoId,
-    mediaFile,
-    loadMediaFile,
-    skipAutoRestoreRef,
-  });
   const {
     playbackTime,
     setPlaybackTime,
@@ -148,23 +132,16 @@ function MainContent() {
   const [editingSubtitleUuid, setEditingSubtitleUuid] = useState<string | null>(
     null,
   );
-  const [isVimeoOpen, setIsVimeoOpen] = useState(false);
-  const [vimeoInitialUrl, setVimeoInitialUrl] = useState<string | undefined>(
-    () => {
-      if (typeof window === "undefined") return undefined;
-      const searchParams = new URLSearchParams(window.location.search);
-      const vimeoIdUrl = searchParams.get("vimeo_id_url");
-      if (!vimeoIdUrl) return undefined;
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const searchParams = new URLSearchParams(window.location.search);
+    if (searchParams.has("vimeo_id") || searchParams.has("vimeo_id_url")) {
       const url = new URL(window.location.href);
+      url.searchParams.delete("vimeo_id");
       url.searchParams.delete("vimeo_id_url");
       window.history.replaceState({}, "", url.toString());
-      return `https://vimeo.com/${vimeoIdUrl}`;
-    },
-  );
-  const [vimeoAutoLoad, setVimeoAutoLoad] = useState<VimeoLoadingState | null>(
-    null,
-  );
-  const vimeoAbortControllerRef = useRef<AbortController | null>(null);
+    }
+  }, []);
   const resumeMediaPlayback = () => {
     videoPlayerRef.current?.resumePlayback();
   };
@@ -181,10 +158,9 @@ function MainContent() {
   const workspaceKey = useMemo(
     () =>
       buildWorkspaceKey({
-        vimeoVideoId,
         trackName: activeTrack?.name ?? null,
       }),
-    [activeTrack?.name, vimeoVideoId],
+    [activeTrack?.name],
   );
 
   const { resumeUuid, recordInteraction, clearResumeHighlight } =
@@ -193,9 +169,7 @@ function MainContent() {
       workspaceKey,
       isPlaying,
       playbackTime,
-      mediaKey: mediaFile
-        ? `${mediaFile.name}:${mediaFile.size}`
-        : (vimeoVideoId ?? null),
+      mediaKey: mediaFile ? `${mediaFile.name}:${mediaFile.size}` : null,
       trackId: activeTrackId,
       subtitleTimings,
       resumeTarget,
@@ -230,14 +204,6 @@ function MainContent() {
   useSharedSubtitleUrlLoader({
     loadSubtitleFile,
     shouldJumpToFirstRef,
-  });
-
-  // Load Vimeo video from URL query parameter (e.g. ?vimeo_id=123456789)
-  useVimeoUrlLoader({
-    setVimeoVideoId,
-    vimeoAbortControllerRef,
-    setVimeoAutoLoad,
-    loadMediaFile,
   });
 
   // After import: jump to first subtitle (seek + scroll + focus, no auto-play)
@@ -320,9 +286,6 @@ function MainContent() {
           isBulkOffsetOpen={isBulkOffsetOpen}
           onToggleBulkOffset={toggleBulkOffset}
           bulkOffsetDisabled={bulkOffsetDisabled}
-          isVimeoOpen={isVimeoOpen}
-          onSetVimeoOpen={setIsVimeoOpen}
-          vimeoInitialUrl={vimeoInitialUrl}
         />
 
         <div className="flex-1 flex flex-col">
@@ -403,7 +366,9 @@ function MainContent() {
                   setDuration(duration);
                   // Apply pending seek from import (after video is loaded)
                   if (pendingSeekRef.current !== null) {
-                    setPlaybackTime(pendingSeekRef.current);
+                    const targetTime = pendingSeekRef.current;
+                    setPlaybackTime(targetTime);
+                    waveformRef.current?.setWaveformTime(targetTime);
                     pendingSeekRef.current = null;
                   }
                 }}
@@ -411,13 +376,6 @@ function MainContent() {
                 isPlaying={isPlaying}
                 playbackRate={playbackRate}
                 playInBackground={playInBackground}
-                onOpenVimeo={() => setIsVimeoOpen(true)}
-                vimeoLoadingState={vimeoAutoLoad}
-                onVimeoLoadCancel={() => {
-                  vimeoAbortControllerRef.current?.abort();
-                  vimeoAbortControllerRef.current = null;
-                  setVimeoAutoLoad(null);
-                }}
               />
             </div>
           </div>
@@ -449,7 +407,6 @@ function MainContent() {
                   onSeek={setPlaybackTime}
                   onPlayPause={setIsPlaying}
                   previewOffsets={bulkOffsetPreview}
-                  peaksCacheKey={vimeoVideoId}
                   onRegionClick={(uuid, opts) => {
                     requestScroll(uuid, { instant: Boolean(opts?.crossTrack) });
                   }}

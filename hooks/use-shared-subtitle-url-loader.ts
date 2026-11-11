@@ -48,6 +48,7 @@ export function useSharedSubtitleUrlLoader({
           const url = new URL(window.location.href);
           url.searchParams.delete("import");
           url.searchParams.delete("vimeo_id");
+          url.searchParams.delete("vimeo_id_url");
           url.searchParams.delete("caption");
           window.history.replaceState({}, "", url.toString());
         })

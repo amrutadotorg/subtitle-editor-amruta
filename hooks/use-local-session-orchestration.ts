@@ -46,8 +46,6 @@ interface UseLocalSessionOrchestrationParams {
 interface LocalSessionOrchestrationResult {
   pendingLocalSession: LocalSessionSnapshot | null;
   hasLocalSession: boolean;
-  vimeoVideoId: string | null;
-  setVimeoVideoId: (id: string | null) => void;
   restoreLocalSession: () => void;
   discardLocalSession: () => void;
   clearLocalSession: () => void;
@@ -72,12 +70,6 @@ export function useLocalSessionOrchestration({
   const [hasLocalSession, setHasLocalSession] = useState(
     () => readRecoverableLocalSession() !== null,
   );
-  const [vimeoVideoId, setVimeoVideoIdState] = useState<string | null>(
-    () => readRecoverableLocalSession()?.vimeoVideoId ?? null,
-  );
-  const setVimeoVideoId = useCallback((id: string | null) => {
-    setVimeoVideoIdState(id);
-  }, []);
   const suppressedAutosaveSignatureRef = useRef<string | null>(null);
   const skipAutoRestoreRef = useRef(false);
   const [resumeTarget, setResumeTarget] = useState<ResumeCandidate | null>(
@@ -86,13 +78,8 @@ export function useLocalSessionOrchestration({
   const clearResumeTarget = useCallback(() => setResumeTarget(null), []);
 
   const currentWorkspaceKeys = useMemo(
-    () =>
-      vimeoVideoId
-        ? [buildWorkspaceKey({ vimeoVideoId, trackName: null })]
-        : tracks.map((track) =>
-            buildWorkspaceKey({ vimeoVideoId: null, trackName: track.name }),
-          ),
-    [tracks, vimeoVideoId],
+    () => tracks.map((track) => buildWorkspaceKey({ trackName: track.name })),
+    [tracks],
   );
 
   useEffect(() => {
@@ -105,11 +92,10 @@ export function useLocalSessionOrchestration({
         tracks,
         activeTrackId,
         preferences,
-        vimeoVideoId: vimeoVideoId ?? undefined,
         lastPosition:
           readFreshestLastPosition(currentWorkspaceKeys) ?? undefined,
       }),
-    [activeTrackId, currentWorkspaceKeys, preferences, tracks, vimeoVideoId],
+    [activeTrackId, currentWorkspaceKeys, preferences, tracks],
   );
   const currentLocalSessionSignature = useMemo(
     () =>
@@ -182,16 +168,9 @@ export function useLocalSessionOrchestration({
         ? pendingLocalSession.activeTrackId
         : (nextTracks[0]?.id ?? null);
 
-    const restoredWorkspaceKeys = pendingLocalSession.vimeoVideoId
-      ? [
-          buildWorkspaceKey({
-            vimeoVideoId: pendingLocalSession.vimeoVideoId,
-            trackName: null,
-          }),
-        ]
-      : nextTracks.map((track) =>
-          buildWorkspaceKey({ vimeoVideoId: null, trackName: track.name }),
-        );
+    const restoredWorkspaceKeys = nextTracks.map((track) =>
+      buildWorkspaceKey({ trackName: track.name }),
+    );
     const mergedPosition = resolveResumeCandidate(
       readFreshestLastPosition(restoredWorkspaceKeys),
       pendingLocalSession.lastPosition,
@@ -219,7 +198,6 @@ export function useLocalSessionOrchestration({
     suppressedAutosaveSignatureRef.current = null;
     setPendingLocalSession(null);
     setHasLocalSession(true);
-    setVimeoVideoIdState(pendingLocalSession.vimeoVideoId ?? null);
   }, [
     pendingLocalSession,
     setHistorySnapshot,
@@ -276,8 +254,6 @@ export function useLocalSessionOrchestration({
   return {
     pendingLocalSession,
     hasLocalSession,
-    vimeoVideoId,
-    setVimeoVideoId,
     restoreLocalSession,
     discardLocalSession,
     clearLocalSession,

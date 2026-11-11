@@ -12,14 +12,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useLocalSession, useSubtitleState } from "@/context/subtitle";
+import { useSubtitleState } from "@/context/subtitle";
 import { getTrackHandleColor } from "@/lib/track-colors";
 import type { SubtitleTrack } from "@/types/subtitle";
 import {
   IconAdjustmentsHorizontal,
   IconArrowBack,
   IconArrowForward,
-  IconBrandVimeo,
   IconBulb,
   IconMovie,
 } from "@tabler/icons-react";
@@ -30,7 +29,6 @@ import LoadSrt from "./load-srt";
 import SaveSrt from "./save-srt";
 import SettingsTrigger from "./settings-trigger";
 import StatisticsTrigger from "./statistics-trigger";
-import VimeoLoader from "@/components/vimeo-loader";
 
 import { version } from "../../package.json";
 
@@ -63,9 +61,6 @@ interface AppHeaderProps {
   isBulkOffsetOpen: boolean;
   onToggleBulkOffset: () => void;
   bulkOffsetDisabled: boolean;
-  isVimeoOpen: boolean;
-  onSetVimeoOpen: (open: boolean) => void;
-  vimeoInitialUrl?: string;
 }
 
 export function AppHeader({
@@ -79,13 +74,9 @@ export function AppHeader({
   isBulkOffsetOpen,
   onToggleBulkOffset,
   bulkOffsetDisabled,
-  isVimeoOpen,
-  onSetVimeoOpen,
-  vimeoInitialUrl,
 }: AppHeaderProps) {
   const t = useTranslations();
   const { tracks, activeTrackId } = useSubtitleState();
-  const { setVimeoVideoId } = useLocalSession();
   const { bulkColor, bulkTextColor } = getBulkButtonColors(
     tracks,
     activeTrackId ?? null,
@@ -230,35 +221,8 @@ export function AppHeader({
           </Button>
         </Label>
 
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="secondary"
-                className="text-white bg-iris-800 hover:bg-iris-900 dark:hover:bg-iris-700 rounded-xs border-2 border-black dark:border-white cursor-pointer"
-                aria-label={t("vimeoLoader.buttonLabel")}
-                onClick={() => onSetVimeoOpen(true)}
-              >
-                <IconBrandVimeo size={20} />
-                <span className="hidden leading-none truncate sm:inline">
-                  {t("vimeoLoader.buttonLabel")}
-                </span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>{t("vimeoLoader.buttonLabel")}</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-
         <SaveSrt />
       </div>
-
-      <VimeoLoader
-        open={isVimeoOpen}
-        onOpenChange={onSetVimeoOpen}
-        onFileLoaded={onSelectMediaFile}
-        onVideoId={setVimeoVideoId}
-        initialUrl={vimeoInitialUrl}
-      />
     </nav>
   );
 }

@@ -57,7 +57,6 @@
     "supportedFormatsNote": "يتم كشف هذه القائمة من دعم الوسائط الأصلي في متصفحك. يعتمد التحميل الفعلي على الترميزات داخل الملف.",
     "supportedFormatsUnsupported": "لم يتم دعم ملفات البث (.m3u8، .mpd) و FLV حالياً في هذا التطبيق.",
     "subtitles": "الترجمة",
-    "loadFromVimeo": "أو حمّل فيديو من Vimeo (Amruta.org فقط)",
     "supportInfo": "للدعم أو للإبلاغ عن مشكلة، يرجى مراسلة help@amruta.org"
   },
   "findReplace": {
@@ -275,19 +274,5 @@
     "regionSummary": "ترجمة من {start} إلى {end} في المسار {track}",
     "regionAnnouncement": "ترجمة محددة من {start} إلى {end} في المسار {track}.",
     "untitledTrack": "مسار بدون عنوان"
-  },
-  "vimeoLoader": {
-    "title": "تحميل من Vimeo",
-    "description": "الصق رابط فيديو Vimeo من Amruta.org للتنزيل والتحميل كوسائط.",
-    "urlLabel": "رابط Vimeo",
-    "load": "تحميل",
-    "buttonLabel": "تحميل من Vimeo",
-    "invalidUrl": "لم يتم استخراج معرّف الفيديو من هذا الرابط",
-    "errorForbidden": "يتم دعم فيديوهات Amruta.org فقط",
-    "errorNotFound": "لم يتم العثور على الفيديو على Vimeo",
-    "errorGeneric": "لم يتم تحميل الفيديو من Vimeo",
-    "autoLoadDownloading": "جارٍ تحميل فيديو Vimeo…",
-    "autoLoadError": "فشل تحميل فيديو Vimeo. يرجى محاولة تحميله يدويًا.",
-    "autoLoadRetry": "تحميل يدويًا"
   }
 }

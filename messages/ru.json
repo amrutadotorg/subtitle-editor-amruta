@@ -57,7 +57,6 @@
     "supportedFormatsNote": "Этот список определяется на основе нативной поддержки HTML-медиа вашим браузером. Фактическая загрузка зависит от кодеков внутри файла.",
     "supportedFormatsUnsupported": "Манифесты потоковой передачи (.m3u8, .mpd) и FLV в настоящее время не поддерживаются этим приложением.",
     "subtitles": "Субтитры",
-    "loadFromVimeo": "Или загрузите видео с Vimeo (только Amruta.org)",
     "supportInfo": "Для получения помощи или сообщения об ошибке напишите на help@amruta.org"
   },
   "findReplace": {
@@ -275,19 +274,5 @@
     "regionSummary": "Субтитр от {start} до {end} на дорожке {track}",
     "regionAnnouncement": "Выбран субтитр от {start} до {end} на дорожке {track}.",
     "untitledTrack": "Дорожка без названия"
-  },
-  "vimeoLoader": {
-    "title": "Загрузить с Vimeo",
-    "description": "Вставьте URL видео Amruta.org на Vimeo, чтобы загрузить его как медиафайл.",
-    "urlLabel": "URL Vimeo",
-    "load": "Загрузить",
-    "buttonLabel": "Загрузить с Vimeo",
-    "invalidUrl": "Не удалось извлечь ID видео из этого URL",
-    "errorForbidden": "Поддерживаются только видео Amruta.org",
-    "errorNotFound": "Видео не найдено на Vimeo",
-    "errorGeneric": "Не удалось загрузить видео с Vimeo",
-    "autoLoadDownloading": "Загрузка видео с Vimeo…",
-    "autoLoadError": "Не удалось загрузить видео с Vimeo. Попробуйте загрузить его вручную.",
-    "autoLoadRetry": "Загрузить вручную"
   }
 }
