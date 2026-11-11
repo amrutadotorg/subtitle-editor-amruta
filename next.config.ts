@@ -30,7 +30,7 @@ const cspHeader = `
   form-action 'self';
   frame-ancestors 'none';
   worker-src 'self' blob:;
-  connect-src 'self';
+  connect-src 'self' blob:;
   upgrade-insecure-requests;
 `
   .replace(/\s{2,}/g, " ")

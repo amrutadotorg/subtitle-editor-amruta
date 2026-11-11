@@ -339,7 +339,7 @@ npm run build           # 6. Production build must succeed (catches type errors,
 
 - **API Security:** All API routes (`app/api/`) MUST be wrapped with `withApiAuth` from `lib/sso.ts` to ensure SSO protection.
 - **Path Traversal Protection:** When reading files from the filesystem via API, always use `resolveSafePath` from `lib/safe-path.ts` to validate the target path.
-- **Headers:** CSP and basic security headers are configured in `next.config.ts`.
+- **Headers:** CSP and basic security headers are configured in `next.config.ts`. `connect-src` must keep `blob:` — WaveSurfer `fetch`es the local media object URL to decode peaks for files below the 100 MB extraction threshold; without it the waveform silently never renders (spinner, then blank).
 
 ### State Management
 
