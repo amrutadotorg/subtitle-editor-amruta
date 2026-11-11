@@ -41,8 +41,34 @@ export function useWaveformPeaks({
       setMediaUrl("");
       setExtractedPeaks(undefined);
       setExtractedDuration(undefined);
+      setExtractionProgress(0);
+      setIsExtracting(false);
+      setIsLargeFile(false);
       return;
     }
+
+    let cancelled = false;
+    const controller = new AbortController();
+
+    // Reset immediately so the previous file's waveform never lingers while
+    // the new peaks are being loaded/extracted.
+    setExtractedPeaks(undefined);
+    setExtractedDuration(undefined);
+    setExtractionProgress(0);
+    setIsExtracting(false);
+    setIsLoading(false);
+
+    const isStale = () => cancelled || controller.signal.aborted;
+
+    const attachMediaUrl = () => {
+      const objectUrl = URL.createObjectURL(mediaFile);
+      if (isStale()) {
+        // The URL never reaches state, so the cleanup below cannot revoke it.
+        URL.revokeObjectURL(objectUrl);
+        return;
+      }
+      setMediaUrl(objectUrl);
+    };
 
     const large = mediaFile.size > 100 * 1024 * 1024;
     setIsLargeFile(large);
@@ -53,12 +79,11 @@ export function useWaveformPeaks({
       const runExtraction = (skipCache = false) => {
         if (!skipCache && peaksCacheKey) {
           getCachedPeaks(peaksCacheKey).then((cached) => {
+            if (isStale()) return;
             if (cached) {
               setExtractedPeaks(cached.peaks);
               setExtractedDuration(cached.duration);
-              const objectUrl = URL.createObjectURL(mediaFile);
-              setMediaUrl(objectUrl);
-              setIsLoading(true);
+              attachMediaUrl();
             } else {
               runExtraction(true);
             }
@@ -66,29 +91,38 @@ export function useWaveformPeaks({
           return;
         }
 
+        if (isStale()) return;
+
         setIsExtracting(true);
         setExtractionProgress(0);
 
-        extractPeaks(mediaFile, (percent: number) => {
-          setExtractionProgress(percent);
-        })
+        extractPeaks(
+          mediaFile,
+          (percent: number) => {
+            if (isStale()) return;
+            setExtractionProgress(percent);
+          },
+          controller.signal,
+        )
           .then(({ peaks, duration }) => {
+            if (isStale()) return;
             setExtractedPeaks([peaks]);
             setExtractedDuration(duration);
             setIsExtracting(false);
             if (peaksCacheKey) {
+              // Never rejects (best-effort cache).
               setCachedPeaks(peaksCacheKey, peaks, duration);
             }
-            const objectUrl = URL.createObjectURL(mediaFile);
-            setMediaUrl(objectUrl);
+            attachMediaUrl();
           })
           .catch((e: unknown) => {
+            if (isStale()) return;
+            if ((e as Error | undefined)?.name === "AbortError") return;
             warnDev("Peak extraction failed, falling back to dummy peaks:", e);
             setExtractedPeaks([new Float32Array([0])]);
             setExtractedDuration(undefined);
             setIsExtracting(false);
-            const objectUrl = URL.createObjectURL(mediaFile);
-            setMediaUrl(objectUrl);
+            attachMediaUrl();
           });
       };
 
@@ -96,18 +130,18 @@ export function useWaveformPeaks({
     } else if (large) {
       setExtractedPeaks([new Float32Array([0])]);
       setExtractedDuration(undefined);
-      const objectUrl = URL.createObjectURL(mediaFile);
-      setMediaUrl(objectUrl);
+      attachMediaUrl();
     } else {
       setExtractedPeaks(undefined);
       setExtractedDuration(undefined);
-      const objectUrl = URL.createObjectURL(mediaFile);
-      setMediaUrl(objectUrl);
+      attachMediaUrl();
+      // WaveSurfer decodes this file itself; keep the spinner until "ready".
+      setIsLoading(true);
     }
 
-    setIsLoading(true);
-
     return () => {
+      cancelled = true;
+      controller.abort();
       setMediaUrl((currentUrl) => {
         if (currentUrl) URL.revokeObjectURL(currentUrl);
         return "";

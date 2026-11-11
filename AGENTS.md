@@ -346,6 +346,7 @@ npm run build           # 6. Production build must succeed (catches type errors,
 - Global state via **split React Contexts** in `context/subtitle/` (6 contexts for granular re-renders)
 - **Undo/redo** via custom `useUndoableState` hook with per-track history
 - **Local session** persistence via localStorage (autosave with 750ms debounce). The last-worked cue position (pause/interaction) is kept in `subtitle-editor:position:v1` and added to the snapshot as `lastPosition`; it is deliberately NOT part of `getLocalSessionSignature()` (see `lib/last-position.ts`).
+- **Waveform peaks cache** for large local files (> 100 MB `.mp4/.m4a/.mov`) lives in IndexedDB (`subtitle-editor-waveform-cache`, store `peaks`) under the key `local:v1:<encoded-name>:<size>:<lastModified>`. Entries are `{ peaks: Float32Array; duration: number; updatedAt: number }`, capped at 20 LRU entries. The cache is best-effort (`setCachedPeaks` never rejects) and is **not** cleared by "Clear autosave" — see `lib/waveform-peaks-cache.ts`.
 - **Settings** persisted independently from session state
 
 ### Representative Code Pattern

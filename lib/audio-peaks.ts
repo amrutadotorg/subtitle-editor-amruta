@@ -27,12 +27,39 @@ function getAACDescription(sampleRate: number, channels: number): ArrayBuffer {
 export async function extractPeaks(
   file: File,
   onProgress?: (percent: number) => void,
+  signal?: AbortSignal,
 ): Promise<{ peaks: Float32Array; duration: number }> {
   return new Promise(async (resolve, reject) => {
+    let aborted = false;
     let mp4box: MP4File = MP4Box.createFile();
     let audioTrack: MP4AudioTrack | null = null;
     let decoder: AudioDecoder | null = null;
     let durationSeconds = 0;
+
+    const abortExtraction = () => {
+      if (aborted) return;
+      aborted = true;
+      if (decoder) {
+        try {
+          decoder.close();
+        } catch {
+          // Decoder may already be closed.
+        }
+      }
+      reject(new DOMException("Aborted", "AbortError"));
+    };
+
+    /** Returns true when the extraction must stop. */
+    const isAborted = () => {
+      if (aborted) return true;
+      if (signal?.aborted) {
+        abortExtraction();
+        return true;
+      }
+      return false;
+    };
+
+    if (isAborted()) return;
 
     const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB chunks
 
@@ -83,6 +110,7 @@ export async function extractPeaks(
     };
 
     mp4box.onReady = (info: MP4Info) => {
+      if (isAborted()) return;
       durationSeconds = info.duration / info.timescale;
       audioTrack = (info.audioTracks[0] as MP4AudioTrack | undefined) ?? null;
       if (!audioTrack) {
@@ -124,6 +152,7 @@ export async function extractPeaks(
     };
 
     mp4box.onSamples = (id: number, user: any, samples: MP4Sample[]) => {
+      if (isAborted()) return;
       if (!decoder || !audioTrack) return;
       for (const sample of samples) {
         const chunk = new EncodedAudioChunk({
@@ -145,6 +174,8 @@ export async function extractPeaks(
     };
 
     const readNextMdatChunk = () => {
+      if (isAborted()) return;
+
       if (decoder && decoder.decodeQueueSize > 2000) {
         setTimeout(readNextMdatChunk, 100);
         return;
@@ -152,6 +183,7 @@ export async function extractPeaks(
 
       if (mdatCursor >= mdatOffset + mdatSize || mdatCursor >= file.size) {
         // Finished
+        if (isAborted()) return;
         mp4box.flush();
         const finish = async () => {
           if (decoder) {
@@ -175,6 +207,7 @@ export async function extractPeaks(
       );
       const reader = new FileReader();
       reader.onload = (e) => {
+        if (isAborted()) return;
         const buffer = e.target?.result as ArrayBuffer;
         if (buffer.byteLength > 0) {
           const buf = buffer as MP4ArrayBuffer;
@@ -184,6 +217,7 @@ export async function extractPeaks(
           setTimeout(readNextMdatChunk, 1);
         } else {
           // EOF unexpectedly
+          if (isAborted()) return;
           mp4box.flush();
           const finish = async () => {
             if (decoder) await decoder.flush();
@@ -204,6 +238,8 @@ export async function extractPeaks(
     // Stage 1: Parse top-level boxes and read everything EXCEPT mdat
     let offset = 0;
     while (offset < file.size) {
+      if (isAborted()) return;
+
       const headerBlob = file.slice(offset, offset + 16);
       const headerBuffer = await headerBlob.arrayBuffer();
       if (headerBuffer.byteLength < 8) break;
@@ -243,6 +279,7 @@ export async function extractPeaks(
     }
 
     // Stage 2: We have fed all metadata (ftyp, moov, etc). mp4box should be ready.
+    if (isAborted()) return;
     if (mdatOffset === -1) {
       reject(new Error("No mdat box found."));
       return;

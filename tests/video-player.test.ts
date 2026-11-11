@@ -17,8 +17,7 @@ test("VideoPlayer ignores initial timeupdate at 0 when loading new media with se
       null,
       createElement(VideoPlayer, {
         mediaFile: dummyFile,
-        setMediaFile: () => {},
-        setMediaFileName: () => {},
+        onLoadMediaFile: () => {},
         onProgress: (time: number) => {
           progressCalls.push(time);
         },
@@ -82,8 +81,7 @@ test("VideoPlayer with seekTime === 0 reports normally once metadata loads", () 
       null,
       createElement(VideoPlayer, {
         mediaFile: dummyFile,
-        setMediaFile: () => {},
-        setMediaFileName: () => {},
+        onLoadMediaFile: () => {},
         onProgress: (time: number) => {
           progressCalls.push(time);
         },

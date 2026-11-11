@@ -29,8 +29,7 @@ import { IconUpload } from "@tabler/icons-react";
 
 export interface VideoPlayerProps {
   mediaFile: File | null;
-  setMediaFile: (file: File | null) => void;
-  setMediaFileName: (name: string) => void;
+  onLoadMediaFile: (file: File) => void;
   onProgress: (time: number) => void;
   onPlayPause: (playing: boolean) => void;
   onDuration: (duration: number) => void;
@@ -48,8 +47,7 @@ export interface VideoPlayerHandle {
 const VideoPlayer = forwardRef(function VideoPlayer(
   {
     mediaFile,
-    setMediaFile,
-    setMediaFileName,
+    onLoadMediaFile,
     onProgress,
     onPlayPause,
     onDuration,
@@ -288,8 +286,7 @@ const VideoPlayer = forwardRef(function VideoPlayer(
             onChange={(e) => {
               const file = e.target.files?.[0];
               if (!file) return;
-              setMediaFile(file);
-              setMediaFileName(file.name);
+              onLoadMediaFile(file);
             }}
           />
         </Label>

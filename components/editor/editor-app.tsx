@@ -23,6 +23,7 @@ import {
 } from "@/context/subtitle";
 import { errorDev, warnDev } from "@/lib/log";
 import { buildWorkspaceKey } from "@/lib/last-position";
+import { computeLocalMediaPeaksKey } from "@/lib/waveform-peaks-cache";
 import { SubtitleNavigationProvider } from "@/context/subtitle-navigation-context";
 import { useActiveTrackDetails } from "@/hooks/use-active-track-details";
 import { useBeforeUnloadGuard } from "@/hooks/use-beforeunload-guard";
@@ -99,14 +100,8 @@ function MainContent() {
   const { undoSubtitles, redoSubtitles, canUndoSubtitles, canRedoSubtitles } =
     useSubtitleHistory();
 
-  const {
-    mediaFile,
-    setMediaFile,
-    mediaFileName,
-    setMediaFileName,
-    mediaFileInputRef,
-    loadMediaFile,
-  } = useMediaFile(t("buttons.loadMedia"));
+  const { mediaFile, mediaFileName, mediaFileInputRef, loadMediaFile } =
+    useMediaFile(t("buttons.loadMedia"));
   const {
     pendingLocalSession,
     skipAutoRestoreRef,
@@ -161,6 +156,11 @@ function MainContent() {
         trackName: activeTrack?.name ?? null,
       }),
     [activeTrack?.name],
+  );
+
+  const peaksCacheKey = useMemo(
+    () => (mediaFile ? computeLocalMediaPeaksKey(mediaFile) : null),
+    [mediaFile],
   );
 
   const { resumeUuid, recordInteraction, clearResumeHighlight } =
@@ -355,8 +355,7 @@ function MainContent() {
               <VideoPlayer
                 ref={videoPlayerRef}
                 mediaFile={mediaFile}
-                setMediaFile={setMediaFile}
-                setMediaFileName={setMediaFileName}
+                onLoadMediaFile={loadMediaFile}
                 onProgress={(time) => {
                   setPlaybackTime(time);
                   waveformRef.current?.setWaveformTime(time);
@@ -402,6 +401,7 @@ function MainContent() {
                 <WaveformVisualizer
                   ref={waveformRef}
                   mediaFile={mediaFile}
+                  peaksCacheKey={peaksCacheKey}
                   isPlaying={isPlaying}
                   playInBackground={playInBackground}
                   onSeek={setPlaybackTime}
