@@ -50,7 +50,7 @@ export interface LocalSessionValue {
   hasLocalSession: boolean;
   restoreLocalSession: () => void;
   discardLocalSession: () => void;
-  clearLocalSession: () => void;
+  clearLocalSession: () => Promise<void> | void;
   downloadLocalSessionBackup: (snapshot?: LocalSessionSnapshot | null) => void;
   skipAutoRestoreRef: React.MutableRefObject<boolean>;
   resumeTarget: ResumeCandidate | null;

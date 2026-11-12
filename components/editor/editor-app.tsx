@@ -29,6 +29,7 @@ import { useActiveTrackDetails } from "@/hooks/use-active-track-details";
 import { useBeforeUnloadGuard } from "@/hooks/use-beforeunload-guard";
 import { useBulkOffsetState } from "@/hooks/use-bulk-offset-state";
 import { useDroppablePanel } from "@/hooks/use-droppable-panel";
+import { useLegacyCacheCleanup } from "@/hooks/use-legacy-cache-cleanup";
 import { useMediaFile } from "@/hooks/use-media-file";
 import { usePendingScroll } from "@/hooks/use-pending-scroll";
 import { usePlaybackState } from "@/hooks/use-playback-state";
@@ -123,6 +124,9 @@ function MainContent() {
   } = usePlaybackState();
   const { requestScroll } = usePendingScroll(subtitleListRef);
   const { list: subtitleTimings } = useSubtitleTimings();
+
+  // Drop the orphaned Vimeo IndexedDB database (removed feature) once per load.
+  useLegacyCacheCleanup();
 
   const [editingSubtitleUuid, setEditingSubtitleUuid] = useState<string | null>(
     null,

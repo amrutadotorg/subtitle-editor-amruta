@@ -4,7 +4,8 @@
 > Po całości obowiązuje pełny [Verification Workflow](../../../AGENTS.md#verification-workflow).
 
 **Data utworzenia:** 2026-11-11  
-**Status:** Gotowy do realizacji / Oczekuje na zatwierdzenie
+**Wersja:** 2 (dodane automatyczne czyszczenie przy starcie)  
+**Status:** Zrealizowany (2026-11-11)
 
 ---
 
@@ -18,10 +19,19 @@ Jednocześnie aplikacja korzysta (lub korzystała) z baz danych **IndexedDB**:
 - **Aktywna baza:** `subtitle-editor-waveform-cache` (object store: `peaks` w [`lib/waveform-peaks-cache.ts`](file:///home/admin/containers/subtitle-editor/lib/waveform-peaks-cache.ts)) — przechowuje obliczone piki audio dla załadowanych plików wideo/audio.
 - **Baza archiwalna/osierocona:** `subtitle-editor-vimeo-cache` (object store: `files`) — baza po usuniętej integracji Vimeo, która u istniejących użytkowników może nadal zajmować setki megabajtów na dysku w przeglądarce.
 
-**Cel wdrożenia:** Rozszerzenie akcji „Clear autosave” o jednorazowe usunięcie **osieroconej** bazy
-`subtitle-editor-vimeo-cache` z IndexedDB. Cache pików (`subtitle-editor-waveform-cache`) **nie jest**
-czyszczony — patrz decyzja D6 w planie
+**Cel wdrożenia:** Usunięcie **osieroconej** bazy `subtitle-editor-vimeo-cache` z IndexedDB. Cache
+pików (`subtitle-editor-waveform-cache`) **nie jest** czyszczony — patrz decyzja D6 w planie
 [`2026-11-11-local-media-peaks-cache-indexeddb.md`](./2026-11-11-local-media-peaks-cache-indexeddb.md).
+
+**Dwa wyzwalacze (v2):**
+
+1. **Automatycznie, przy starcie edytora** (`hooks/use-legacy-cache-cleanup.ts` montowany w
+   `editor-app.tsx`) — `deleteDatabase()` na nieistniejącej bazie kończy się sukcesem, więc próba
+   jest idempotentna i nie wymaga żadnej flagi w `localStorage`. Dzięki temu baza znika także u
+   użytkowników, którzy nigdy nie otworzą ustawień albo nie mają aktywnego autozapisu
+   (`hasLocalSession === false` blokuje przycisk „Clear”).
+2. **Przycisk „Clear” w „Local autosave”** — `clearLocalSession()` czyści `localStorage` i ponawia
+   usunięcie bazy Vimeo (belt and braces; użytkownik dostaje potwierdzenie, że dane zniknęły).
 
 ---
 
@@ -61,6 +71,17 @@ oznaczałoby minuty ponownej ekstrakcji bez powodu (D6 w planie cache'u pików).
   - Opcjonalny stan `isClearing` zapobiega wielokrotnemu kliknięciu podczas usuwania baz,
   - Toast informujący o wyczyszczeniu autozapisu wyświetla się po zakończeniu operacji.
 
+### 2.5. Automatyczne czyszczenie przy starcie (`hooks/use-legacy-cache-cleanup.ts`)
+
+- Nowy hook `useLegacyCacheCleanup()` wywołuje `void clearLegacyVimeoCache()` w `useEffect`
+  (fire-and-forget), osłonięty `useRef` — jedno wywołanie na instancję montowania (odporne na
+  podwójne wywołanie efektu w Strict Mode).
+- Montowany raz w `components/editor/editor-app.tsx` (`MainContent`), obok pozostałych hooków.
+- Nie ustawia stanu React i nie blokuje renderu; nieobsłużone odrzucenie jest niemożliwe
+  (`clearLegacyVimeoCache` nigdy nie odrzuca).
+- Gdy inna karta trzyma bazę otwartą, `onblocked` → timeout 1,5 s → próba po cichu przepada i jest
+  ponawiana przy następnym wczytaniu strony.
+
 ---
 
 ## 3. Zakres zmian
@@ -68,12 +89,13 @@ oznaczałoby minuty ponownej ekstrakcji bez powodu (D6 w planie cache'u pików).
 ### W zakresie:
 
 1. Nowa funkcja / moduł usuwający osieroconą bazę `subtitle-editor-vimeo-cache` (bez ruszania `subtitle-editor-waveform-cache`).
-2. Podpięcie czyszczenia pod `clearLocalSession()` w hooku `use-local-session-orchestration.ts`.
-3. Obsługa asynchroniczności w `settings-dialog.tsx`.
-4. **Brak** czyszczenia IndexedDB w `discardLocalSession()` — odrzucenie sesji nie ma kasować cache'u pików (D6).
-5. Bezpieczeństwo SSR i obsługa trybu incognito / przeglądarek bez wsparcia IndexedDB.
-6. Testy jednostkowe weryfikujące czyszczenie i odporność na brak IndexedDB / błędy.
-7. Aktualizacja dokumentacji [`AGENTS.md`](file:///home/admin/containers/subtitle-editor/AGENTS.md).
+2. Hook `useLegacyCacheCleanup()` + montaż w `editor-app.tsx` — automatyczne, idempotentne czyszczenie przy każdym starcie edytora.
+3. Podpięcie czyszczenia pod `clearLocalSession()` w hooku `use-local-session-orchestration.ts`.
+4. Obsługa asynchroniczności w `settings-dialog.tsx`.
+5. **Brak** czyszczenia IndexedDB w `discardLocalSession()` — odrzucenie sesji nie ma kasować cache'u pików (D6).
+6. Bezpieczeństwo SSR i obsługa trybu incognito / przeglądarek bez wsparcia IndexedDB.
+7. Testy jednostkowe weryfikujące czyszczenie i odporność na brak IndexedDB / błędy.
+8. Aktualizacja dokumentacji [`AGENTS.md`](file:///home/admin/containers/subtitle-editor/AGENTS.md).
 
 ### Poza zakresem:
 
@@ -94,20 +116,42 @@ Cel: implementacja odpornego na błędy modułu czyszczącego bazy IndexedDB dla
 - Utworzenie: `tests/indexed-db-cache.test.ts`
 
 Kroki:
-- [ ] **Step 1:** Zaimplementuj funkcję `deleteDatabaseSafely(dbName: string): Promise<boolean>` z obsługą `onsuccess`, `onerror`, `onblocked` oraz `try/catch`.
-- [ ] **Step 2:** Zaimplementuj funkcję `clearLegacyVimeoCache(): Promise<void>`, która:
+- [x] **Step 1:** Zaimplementuj funkcję `deleteDatabaseSafely(dbName: string): Promise<boolean>` z obsługą `onsuccess`, `onerror`, `onblocked` oraz `try/catch`.
+- [x] **Step 2:** Zaimplementuj funkcję `clearLegacyVimeoCache(): Promise<void>`, która:
   - sprawdza dostępność `indexedDB` (`typeof indexedDB === "undefined"` → ciche zakończenie),
   - usuwa **wyłącznie** `subtitle-editor-vimeo-cache` przy użyciu `deleteDatabaseSafely`.
   - Nie dodawaj `clearWaveformPeaksCache()` ani odkrywania baz po prefiksie `subtitle-editor-` — cache pików musi przetrwać (D6).
-- [ ] **Step 3:** Napisz testy jednostkowe w `tests/indexed-db-cache.test.ts` (`fake-indexeddb/auto`):
+- [x] **Step 3:** Napisz testy jednostkowe w `tests/indexed-db-cache.test.ts` (`fake-indexeddb/auto`):
   - zachowanie w środowisku Node bez `indexedDB` (ciche zakończenie sukcesem),
   - usunięcie `subtitle-editor-vimeo-cache` bez ruszania `subtitle-editor-waveform-cache`,
   - obsługa błędu / zdarzenia `onblocked` bez zawieszania Promise.
-- [ ] **Step 4:** Uruchom `npm run test` — wszystkie testy na zielono.
+- [x] **Step 4:** Uruchom `npm run test` — wszystkie testy na zielono.
 
 ---
 
-### Zadanie 2: Integracja z orkiestracją sesji i kontekstem
+### Zadanie 2: Automatyczne czyszczenie przy starcie edytora
+
+Cel: usunięcie bazy Vimeo bez udziału użytkownika — także u tych, którzy nigdy nie otworzą ustawień.
+
+**Pliki:**
+- Utworzenie: `hooks/use-legacy-cache-cleanup.ts`
+- Utworzenie: `tests/legacy-cache-cleanup.test.ts`
+- Modyfikacja: `components/editor/editor-app.tsx`
+
+Kroki:
+- [x] **Step 1:** Zaimplementuj hook `useLegacyCacheCleanup()`:
+  - `useEffect` z `void clearLegacyVimeoCache()`,
+  - osłona `useRef(false)`, aby jedno montowanie = jedna próba (Strict Mode nie dubluje wywołania),
+  - brak stanu React, brak `await` w renderze, brak rzucania wyjątków.
+- [x] **Step 2:** Wywołaj `useLegacyCacheCleanup()` w `MainContent` w `editor-app.tsx`.
+- [x] **Step 3:** Napisz testy w `tests/legacy-cache-cleanup.test.ts` (`fake-indexeddb/auto` + `renderHook`):
+  - baza istnieje → po zamontowaniu hooka znika,
+  - baza nie istnieje → brak błędu, brak skutków ubocznych.
+- [x] **Step 4:** Uruchom `npm run test` — wszystkie testy na zielono.
+
+---
+
+### Zadanie 3: Integracja z orkiestracją sesji i kontekstem
 
 Cel: powiązanie operacji `clearLocalSession` z usunięciem osieroconej bazy Vimeo.
 
@@ -118,18 +162,18 @@ Cel: powiązanie operacji `clearLocalSession` z usunięciem osieroconej bazy Vim
 - Modyfikacja: `tests/local-session.test.ts`
 
 Kroki:
-- [ ] **Step 1:** W `context/subtitle/types.ts` zaktualizuj typ `clearLocalSession` w interfejsie `LocalSessionValue` do `() => Promise<void> | void;`.
-- [ ] **Step 2:** W `hooks/use-local-session-orchestration.ts`:
+- [x] **Step 1:** W `context/subtitle/types.ts` zaktualizuj typ `clearLocalSession` w interfejsie `LocalSessionValue` do `() => Promise<void> | void;`.
+- [x] **Step 2:** W `hooks/use-local-session-orchestration.ts`:
   - Zaimportuj `clearLegacyVimeoCache`.
   - W `clearLocalSession` dodaj wywołanie `await clearLegacyVimeoCache()`.
   - **Nie** dodawaj czyszczenia IndexedDB w `discardLocalSession` (D6 — odrzucenie sesji nie kasuje cache'u pików).
-- [ ] **Step 3:** W `context/subtitle/provider.tsx` upewnij się, że memoizacja i przekazywanie `clearLocalSession` zachowują stabilną referencję.
-- [ ] **Step 4:** Zaktualizuj lub rozszerz testy w `tests/local-session.test.ts`.
-- [ ] **Step 5:** Uruchom `npm run test` — wszystkie testy na zielono.
+- [x] **Step 3:** W `context/subtitle/provider.tsx` upewnij się, że memoizacja i przekazywanie `clearLocalSession` zachowują stabilną referencję.
+- [x] **Step 4:** Zaktualizuj lub rozszerz testy w `tests/local-session.test.ts`.
+- [x] **Step 5:** Uruchom `npm run test` — wszystkie testy na zielono.
 
 ---
 
-### Zadanie 3: Integracja z interfejsem użytkownika (`SettingsDialog` i `LocalSessionRecovery`)
+### Zadanie 4: Integracja z interfejsem użytkownika (`SettingsDialog` i `LocalSessionRecovery`)
 
 Cel: zapewnienie płynnego feedbacku użytkownikowi podczas czyszczenia danych.
 
@@ -138,7 +182,7 @@ Cel: zapewnienie płynnego feedbacku użytkownikowi podczas czyszczenia danych.
 - Modyfikacja: `components/local-session-recovery.tsx` (opcjonalnie, jeśli asynchroniczne)
 
 Kroki:
-- [ ] **Step 1:** W `components/app-header/settings-dialog.tsx`:
+- [x] **Step 1:** W `components/app-header/settings-dialog.tsx`:
   - Dodaj lokalny stan `isClearing` (`useState(false)`).
   - W `handleClearLocalSession`:
     - Ustaw `setIsClearing(true)`,
@@ -146,11 +190,11 @@ Kroki:
     - Wyświetl toast o wyczyszczeniu danych,
     - W bloku `finally` ustaw `setIsClearing(false)`.
   - Zablokuj przycisk, gdy `isClearing === true` lub `!hasLocalSession`.
-- [ ] **Step 2:** Uruchom `npm run test` — wszystkie testy na zielono.
+- [x] **Step 2:** Uruchom `npm run test` — wszystkie testy na zielono.
 
 ---
 
-### Zadanie 4: Weryfikacja i aktualizacja dokumentacji
+### Zadanie 5: Weryfikacja i aktualizacja dokumentacji
 
 Cel: upewnienie się, że zachowanie jest udokumentowane w `AGENTS.md` oraz przejście pełnego łańcucha weryfikacji.
 
@@ -158,8 +202,8 @@ Cel: upewnienie się, że zachowanie jest udokumentowane w `AGENTS.md` oraz prze
 - Modyfikacja: `AGENTS.md`
 
 Kroki:
-- [ ] **Step 1:** W sekcji **State Management** w `AGENTS.md` dopisz informację, że `clearLocalSession` czyści `localStorage` (`autosave` + `position`) oraz osieroconą bazę IndexedDB `subtitle-editor-vimeo-cache`, natomiast **nie** usuwa `subtitle-editor-waveform-cache` (cache pików).
-- [ ] **Step 2:** Wykonaj pełny Verification Workflow (`lint`, `format`, `format:check`, `test`, `knip`, `build`).
+- [x] **Step 1:** W sekcji **State Management** w `AGENTS.md` dopisz informację, że `clearLocalSession` czyści `localStorage` (`autosave` + `position`) oraz osieroconą bazę IndexedDB `subtitle-editor-vimeo-cache`, natomiast **nie** usuwa `subtitle-editor-waveform-cache` (cache pików).
+- [x] **Step 2:** Wykonaj pełny Verification Workflow (`lint`, `format`, `format:check`, `test`, `knip`, `build`).
 
 ---
 
@@ -167,7 +211,8 @@ Kroki:
 
 | Ryzyko / Pytanie projektowe                                                        | Decyzja i mitygacja                                                                                                                                                                                                                                                                                           |
 | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Czy `deleteDatabase` może zablokować się, gdy otwarta jest inna karta?             | Tak, specyfikacja IndexedDB przewiduje zdarzenie `onblocked`. W handlerze dodajemy fallback: jeśli po 1.5 sekundy operacja nadal jest zablokowana, Promise rozwiązuje się sukcesem bez zawieszania aplikacji.                                                                                                 |
+| Czy `deleteDatabase` może zablokować się, gdy otwarta jest inna karta?             | Tak, specyfikacja IndexedDB przewiduje zdarzenie `onblocked`. W handlerze dodajemy fallback: jeśli po 1.5 sekundy operacja nadal jest zablokowana, Promise rozwiązuje się `false` (best-effort) bez zawieszania aplikacji; kolejne wczytanie strony ponawia próbę.                                            |
+| Czy usuwać bazę automatycznie przy każdym starcie edytora?                         | Tak (v2). `deleteDatabase()` na nieistniejącej bazie kończy się sukcesem, więc próba jest idempotentna i tania. Dzięki temu baza znika także u użytkowników bez autozapisu (zablokowany przycisk „Clear”). Hook nie ustawia stanu React i nie blokuje renderu.                                                |
 | Czy wyczyszczenie IndexedDB psuje aktualnie wyświetlaną falę dźwiękową?            | Nie dotyczy — cache pików nie jest usuwany. WaveSurfer i tak trzyma piki w pamięci komponentu React.                                                                                                                                                                                                          |
 | Czy „Discard” w oknie odzyskiwania sesji też powinien czyścić IndexedDB?           | Nie. Odrzucenie przywrócenia sesji nie jest powodem do kasowania cache'u pików — ponowna ekstrakcja dużych plików to minuty pracy (D6 w planie cache'u pików).                                                                                                                                                |
 | Czy przycisk w ustawieniach powinien być aktywny, gdy `hasLocalSession === false`? | Pozostawiamy powiązanie z `hasLocalSession` (lub rozważamy opcję włączenia przycisku, jeśli chcemy umożliwić użytkownikowi ręczne zresetowanie cache'u fali nawet bez aktywnego autozapisu). Rekomendacja: utrzymać spójność z obecną etykietą „Local autosave” i czyścić komplet danych przy aktywnej sesji. |
@@ -176,9 +221,10 @@ Kroki:
 
 ## 6. Kryteria akceptacji
 
-- [ ] Wywołanie `clearLocalSession()` (np. przycisk w oknie ustawień) trwale usuwa bazę `subtitle-editor-vimeo-cache` z IndexedDB.
-- [ ] Baza `subtitle-editor-waveform-cache` (cache pików) **pozostaje nietknięta** — także po „Discard” w oknie odzyskiwania sesji.
-- [ ] Operacja jest w pełni bezpieczna w środowisku SSR, Node.js (test runner) oraz w trybie prywatnym / przy zablokowanym IndexedDB (brak nieobsłużonych wyjątków).
-- [ ] Przycisk czyszczenia w ustawieniach obsługuje asynchroniczny stan oczekiwania bez możliwości wielokliku.
-- [ ] Wszystkie testy jednostkowe (`npm run test`) przechodzą na zielono.
-- [ ] Pełny workflow weryfikacyjny (`lint`, `format:check`, `test`, `knip`, `build`) kończy się z kodem 0.
+- [x] Zamontowanie edytora usuwa `subtitle-editor-vimeo-cache` automatycznie (`useLegacyCacheCleanup`), bez interakcji użytkownika i bez wpływu na render.
+- [x] Wywołanie `clearLocalSession()` (np. przycisk w oknie ustawień) trwale usuwa bazę `subtitle-editor-vimeo-cache` z IndexedDB.
+- [x] Baza `subtitle-editor-waveform-cache` (cache pików) **pozostaje nietknięta** — także po „Discard” w oknie odzyskiwania sesji.
+- [x] Operacja jest w pełni bezpieczna w środowisku SSR, Node.js (test runner) oraz w trybie prywatnym / przy zablokowanym IndexedDB (brak nieobsłużonych wyjątków).
+- [x] Przycisk czyszczenia w ustawieniach obsługuje asynchroniczny stan oczekiwania bez możliwości wielokliku.
+- [x] Wszystkie testy jednostkowe (`npm run test`) przechodzą na zielono.
+- [x] Pełny workflow weryfikacyjny (`lint`, `format:check`, `test`, `knip`, `build`) kończy się z kodem 0.

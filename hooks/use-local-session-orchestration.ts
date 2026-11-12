@@ -16,6 +16,7 @@ import {
   type LocalSessionPreferences,
   type LocalSessionSnapshot,
 } from "@/lib/local-session";
+import { clearLegacyVimeoCache } from "@/lib/indexed-db-cache";
 import { createTrackHistory, EMPTY_HISTORY } from "@/lib/subtitle-history";
 import {
   buildWorkspaceKey,
@@ -48,7 +49,7 @@ interface LocalSessionOrchestrationResult {
   hasLocalSession: boolean;
   restoreLocalSession: () => void;
   discardLocalSession: () => void;
-  clearLocalSession: () => void;
+  clearLocalSession: () => Promise<void>;
   downloadLocalSessionBackup: (snapshot?: LocalSessionSnapshot | null) => void;
   skipAutoRestoreRef: MutableRefObject<boolean>;
   resumeTarget: ResumeCandidate | null;
@@ -219,13 +220,16 @@ export function useLocalSessionOrchestration({
     setHasLocalSession(false);
   }, [currentWorkspaceKeys]);
 
-  const clearLocalSession = useCallback(() => {
+  const clearLocalSession = useCallback(async () => {
     suppressedAutosaveSignatureRef.current = currentLocalSessionSignature;
     clearLocalSessionSnapshot();
     clearLastPosition();
     setResumeTarget(null);
     setPendingLocalSession(null);
     setHasLocalSession(false);
+    // Orphaned database from the removed Vimeo integration; best-effort and
+    // never rejects. The peaks cache is intentionally left untouched.
+    await clearLegacyVimeoCache();
   }, [currentLocalSessionSignature]);
 
   const downloadLocalSessionBackup = useCallback(

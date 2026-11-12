@@ -34,6 +34,7 @@ export default function SettingsDialog({
   const { toast } = useToast();
   const { hasLocalSession, clearLocalSession } = useLocalSession();
   const [isThemeMounted, setIsThemeMounted] = useState(false);
+  const [isClearing, setIsClearing] = useState(false);
   const {
     clampOverlaps,
     setClampOverlaps,
@@ -61,12 +62,18 @@ export default function SettingsDialog({
   const rulesMinDurationId = useId();
   const rulesMaxDurationId = useId();
 
-  const handleClearLocalSession = () => {
-    clearLocalSession();
-    toast({
-      title: t("localSession.clearedTitle"),
-      description: t("localSession.clearedDescription"),
-    });
+  const handleClearLocalSession = async () => {
+    if (isClearing) return;
+    setIsClearing(true);
+    try {
+      await clearLocalSession();
+      toast({
+        title: t("localSession.clearedTitle"),
+        description: t("localSession.clearedDescription"),
+      });
+    } finally {
+      setIsClearing(false);
+    }
   };
 
   useEffect(() => {
@@ -298,7 +305,7 @@ export default function SettingsDialog({
               type="button"
               variant="outline"
               size="sm"
-              disabled={!hasLocalSession}
+              disabled={!hasLocalSession || isClearing}
               onClick={handleClearLocalSession}
             >
               <IconTrash size={16} />
