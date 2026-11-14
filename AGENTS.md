@@ -1,501 +1,62 @@
-# Project Context & Rules for AI Agents
+# subtitle-editor
 
-## Overview
+Browser-based SRT/VTT subtitle editor: multi-track editing, waveform visualization, 13 locales — Next.js 16 PWA, deployed with Docker behind nginx.
 
-A browser-based subtitle editor (SRT/VTT) with multi-track support, audio waveform visualization, and i18n (13 locales: ar, bn, de, en, es, fr, hi, mr, pl, pt, ru, yue, zh). Built as a Next.js PWA with React 19 and deployed via Docker.
+This file is the entry point. Read it fully; open a linked file only when your task touches that area.
 
-## Tech Stack
+## Ground rules
 
-| Category          | Technology                                                                                                     |
-| ----------------- | -------------------------------------------------------------------------------------------------------------- |
-| Framework         | Next.js 16 (App Router, Turbopack dev, standalone output)                                                      |
-| UI Library        | React 19.2, React DOM 19.2, React Compiler enabled (`reactCompiler: true` in next.config)                      |
-| Language          | TypeScript 6 (strict mode)                                                                                     |
-| Styling           | Tailwind CSS 4 + `tailwindcss-animate`, Radix UI Colors, class-variance-authority (cva), clsx + tailwind-merge |
-| Component Library | shadcn/ui (New York style, Radix primitives)                                                                   |
-| Icons             | @tabler/icons-react                                                                                            |
-| State Management  | React Context (6 contexts in `context/subtitle/`), custom hooks, useReducer via `use-undoable-state`           |
-| i18n              | next-intl (13 locales: ar, bn, de, en, es, fr, hi, mr, pl, pt, ru, yue, zh), deep-merged fallback to English   |
-| Animation         | motion (Framer Motion successor)                                                                               |
-| Video/Audio       | wavesurfer.js 7 + @wavesurfer/react, mp4box for MP4 parsing                                                    |
-| Testing           | Node test runner (`tsx --test`), @testing-library/react, jsdom                                                 |
-| Linting           | ESLint 9 (eslint-config-next/core-web-vitals), Biome 2 (formatter only, linter disabled)                       |
-| PWA               | @ducanh2912/next-pwa (service worker, offline fallback)                                                        |
-| Runtime           | Node.js 26 (.nvmrc)                                                                                            |
-| Docker            | docker-compose with dev and prod profiles                                                                      |
-
-## Directory Structure
-
-```
-├── app/                    # Next.js App Router pages and API routes
-│   ├── [locale]/           # i18n-routed pages (page.tsx, layout.tsx)
-│   ├── api/                # API routes (load-shared, load-captions)
-│   ├── best-practices/     # Static subtitling best practices page
-│   ├── offline/            # PWA offline fallback page
-│   ├── globals.css         # Global styles, Tailwind config, Radix color mappings, CSS variables
-│   ├── layout.tsx          # Root layout (ThemeProvider, Toaster, fonts, PWA meta)
-│   ├── robots.ts           # SEO robots
-│   └── sitemap.ts          # SEO sitemap
-├── components/             # React components
-│   ├── ui/                 # shadcn/ui base components (button, dialog, input, tabs, etc.)
-│   ├── editor/             # Core editor: editor-app.tsx, responsive-editor-entry.tsx, viewport.ts
-│   ├── subtitle/           # Subtitle list, items, text editor, time fields, track tabs
-│   ├── app-header/         # App header with settings dialog
-│   ├── bulk-offset/        # Bulk timing offset controls
-│   ├── find-replace/       # Find & replace panel
-│   ├── waveform-visualizer/ # Waveform display and region handling
-│   ├── theme-provider.tsx  # next-themes ThemeProvider wrapper
-│   ├── video-player.tsx    # Video player (wavesurfer-backed)
-│   ├── logo.tsx            # SVG brand mark
-│   └── ...                 # Various utility UI components
-├── context/                # React Context providers
-│   ├── subtitle/           # Core state: 6 contexts split into separate files
-│   │   ├── types.ts        # Shared interfaces and ensureContext helper
-│   │   ├── state.tsx       # SubtitleStateContext + useSubtitleState
-│   │   ├── actions.tsx     # SubtitleActionsContext + useSubtitleActionsContext
-│   │   ├── history.tsx     # SubtitleHistoryContext + useSubtitleHistory
-│   │   ├── data.tsx        # SubtitleDataContext + useSubtitles
-│   │   ├── timing.tsx      # SubtitleTimingContext + useSubtitleTimings
-│   │   ├── local-session.tsx # LocalSessionContext + useLocalSession
-│   │   ├── provider.tsx    # SubtitleProvider (all shared state)
-│   │   └── index.tsx       # Barrel re-exports + useSubtitleContext
-│   └── subtitle-navigation-context.tsx
-├── hooks/                  # Custom React hooks (use-subtitle-actions, use-undoable-state, etc.)
-├── lib/                    # Pure utility functions and business logic
-│   ├── utils.ts            # cn(), timeToSeconds, secondsToTime, isValidTime, escapeRegExp
-│   ├── subtitle-*.ts       # Subtitle parsing, operations, ordering, metrics, playback, history
-│   ├── local-session.ts    # LocalStorage session autosave/restore
-│   ├── file-utils.ts       # File type detection
-│   ├── locales.ts          # Locale definitions and validator
-│   └── ...                 # Format, logging, media support, etc.
-├── types/                  # TypeScript type definitions
-│   └── subtitle.ts         # Subtitle, SubtitleTrack interfaces
-├── tests/                  # Unit tests (mirrors lib/ and components/ structure)
-│   ├── helpers/            # Test utilities (renderWithIntl, jsdom setup)
-│   └── fixtures/           # Test fixture files (gitignored by biome/eslint)
-├── i18n/                   # next-intl request config (deep-merge fallback to en)
-├── messages/               # Locale JSON files (ar, bn, de, en, es, fr, hi, mr, pl, pt, ru, yue, zh)
-├── public/                 # Static assets (favicon, icons, manifest, og-image)
-├── scripts/                # Build/utility scripts (scripts/icon/)
-└── docs/                   # Documentation (docs/superpowers/)
-```
+- **Package manager: npm.** `package-lock.json` is authoritative — use `npm ci`, never yarn/pnpm.
+- **Node 26** (`.nvmrc` → `26.13.1`). Run `nvm use` before anything else.
+- **Local env:** `.env.local` must contain `SSO_SALT` (HMAC secret for the SSO cookie). Nothing else is required.
 
 ## Commands
 
-### Development
+| Command                | What it really is                                                                                    |
+| ---------------------- | ---------------------------------------------------------------------------------------------------- |
+| `npm run dev`          | Next dev **with Turbopack**                                                                          |
+| `npm run build`        | **`next build --webpack`** — deliberate, do not "modernise" it ([why](docs/agents/build-and-pwa.md)) |
+| `npm run test`         | `tsx --test tests/**/*.test.ts` — Node test runner, not Jest/Vitest                                  |
+| `npm run lint`         | ESLint with `--max-warnings=0`                                                                       |
+| `npm run format`       | Biome **formatter only** — ESLint owns linting                                                       |
+| `npm run format:check` | Same check CI runs (no writes)                                                                       |
+| `npm run knip`         | Unused files, exports, dependencies                                                                  |
+
+## Before you call a change done
+
+Every change, no exceptions — CI runs the same steps in the same order:
 
 ```bash
-npm run dev          # Start Next.js dev server with Turbopack
+npm run format        # only if you touched formatting; then:
+npm run lint && npm run format:check && npm run test && npm run knip && npm run build
 ```
 
-### Build & Production
-
-```bash
-npm run build        # Production build (Next.js standalone output)
-npm run start        # Start production server
-```
-
-### Code Quality
-
-```bash
-npm run lint         # ESLint with max-warnings=0 (zero tolerance)
-npm run format       # Biome auto-format entire codebase
-npm run format:check # Biome format check only (no auto-fix, no lint)
-npm run knip         # Detect unused files, exports, dependencies, and types
-```
-
-### Testing
-
-```bash
-npm run test         # Run all unit tests via Node test runner (tsx --test tests/**/*.test.ts)
-```
-
-### Docker
-
-```bash
-docker compose -f docker-compose-dev.yml --profile dev up    # Dev server on port 3000 (hot reload, source mounted)
-docker compose -f docker-compose-dev.yml --profile prod up   # Prod server on port 3001 (built image)
-```
-
-### Docker Deployment (Production)
-
-```bash
-# Production compose file is at ~/containers/compose.yml (NOT in this repo)
-cd ~/containers
-docker compose config -q                # validate merged config (run from ~/containers!)
-docker compose build subtitle_editor   # Build production image
-docker compose up -d subtitle_editor   # Deploy (recreate container)
-docker restart nginx subtitle_editor   # Reload nginx proxy
-uv run --project ~/SCRIPTS/py_amr -m waf.purge_cache --host subtitle-editor.amruta.org  # Purge CF cache
-```
-
-The image is `subtitle-editor:prod`. After deploying, users must hard-refresh (Ctrl+Shift+R) to see changes if the service worker was updated.
-
-## Dependency Updates (Dependabot)
-
-Dependabot is configured via `.github/dependabot.yml` with two ecosystems:
-
-- **npm** — weekly PRs grouped by patch/minor (major gets separate PR)
-- **docker** — weekly PRs for base image updates (`node:26.13.1-alpine`)
-
-### Deployment workflow after Dependabot PR merge
-
-```bash
-# 1. Pull latest main (with merged Dependabot PR)
-git pull origin main
-
-# 2. Reinstall dependencies (matches what Dockerfile.prod does)
-nvm use && npm ci
-
-# 3. Rebuild Docker image
-docker compose build subtitle_editor
-
-# 4. Deploy
-docker compose up -d subtitle_editor
-docker restart nginx subtitle_editor
-
-# 5. Purge Cloudflare cache
-uv run --project ~/SCRIPTS/py_amr -m waf.purge_cache --host subtitle-editor.amruta.org
-```
-
-CI runs lint, test, build, **and** `docker build` on every Dependabot PR — green CI means the update is safe to merge. After merge, the steps above deploy the updated image.
-
-### Resolved: `braces` npm audit highs (2026-10-23)
-
-The 6 highs previously reported here (`braces`, `micromatch`, `fast-glob`,
-`@ducanh2912/next-pwa`, `@next/eslint-plugin-next`, `eslint-config-next`) all stemmed
-from a single advisory that has since been **withdrawn**:
-
-- [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm) (CVE-2026-93687) —
-  `braces <=3.0.3` stack-exhaustion DoS via deeply nested brace patterns.
-  **Withdrawn 2026-10-23** ("not a practically exploitable vulnerability").
-  No patched `braces` release was ever published (`latest` remains `3.0.3`); the
-  advisory removal is what clears the audit, not a version bump.
-
-Do **not** attempt `npm audit fix --force` for this chain — it only offers downgrades
-(`@ducanh2912/next-pwa@6.1.0`, `eslint-config-next@14.2.35`), which is a regression.
-
-### Accepted risk: `deepmerge` npm audit low (2026-10-28)
-
-`npm audit` reports 5 lows that all trace to one advisory in `deepmerge`:
-
-- [GHSA-gcqx-w48m-w2h4](https://github.com/advisories/GHSA-gcqx-w48m-w2h4) (CVE-2026-93753) —
-  prototype-poisoning guard bypass in `mergeObject()` (`deepmerge >=4.2.0 <=4.3.1`),
-  **no patched versions**. GitHub scores it **Low (2.7)**.
-- Chain: `deepmerge` → `@rollup/plugin-node-resolve` → `workbox-build` →
-  `workbox-webpack-plugin` / `@ducanh2912/next-pwa`.
-
-Upstream has **declined to fix** ([TehShrike/deepmerge#273](https://github.com/TehShrike/deepmerge/issues/273),
-closed; the maintainer dismisses it as "cve slop"). `latest` is still `4.3.1`, and the
-only "fix" `npm audit fix --force` offers is a breaking downgrade of
-`@ducanh2912/next-pwa` to `6.1.0`. The whole chain is **build-time only** (Workbox
-generates the service worker during `next build`); the merge inputs are local plugin
-options, never untrusted request data, so there is no reachable attack path in this app.
-
-Accept documented 2026-10-28. Revisit if `deepmerge` publishes a release > 4.3.1 or the
-advisory is withdrawn.
-
-### Resolved: `minimatch` DoS CVE-2026-118764 (2026-10-31)
-
-[minimatch <11.0.1](https://github.com/advisories/GHSA-g3hv-75wg-m249) (Moderate 6.9)
-amplifies attacker-supplied glob patterns during preprocessing
-(`optimizationLevel >= 2`) and then processes the result quadratically — CPU/memory
-exhaustion. No 10.x patch exists, and every dependent still pins `minimatch ^10`
-(`eslint`, `@eslint/eslintrc`, `@eslint/config-array`, `eslint-plugin-import`,
-`eslint-plugin-jsx-a11y`, `eslint-plugin-react`, `typescript-eslint`, and `glob@7`
-inside `workbox-build`).
-
-`overrides.minimatch` bumped `^10.2.5` → `^11.0.3`. Note that `glob@7.2.3`
-(workbox-build 7.1.1, which is what `@ducanh2912/next-pwa@10.2.9` pulls) officially
-declares `minimatch ^3`; the override is safe in practice — it was verified by a full
-production build (`next build --webpack`, which does run workbox-build and emits
-`public/sw.js` with 67 precache entries), plus `eslint --max-warnings=0` and 196 tests.
-Audit dropped from 18 moderate to 0 moderate (5 lows from the `deepmerge` chain remain).
-
-### Resolved: `sharp` npm audit high (2026-10-07)
-
-`npm audit` flagged `sharp <0.35.5` ([GHSA-wq5f-xc86-pv6w](https://github.com/advisories/GHSA-wq5f-xc86-pv6w),
-CVE-2026-96889, librsvg use-after-free) plus a derived `next` entry (`via: sharp`).
-Fixed by bumping the `overrides.sharp` pin `0.35.4` → `0.35.5` (Next `16.3.8`
-declares `sharp: ^0.35.4` as optional peer, so `0.35.5` satisfies it).
-After `npm install`, audit dropped from 8 highs to the 6 `braces`-chain highs above.
-Direct in-repo `sharp` usage is build-time only (`scripts/icon/render.mjs`, trusted local
-SVGs), but Next Image Optimization can process untrusted images in production, so the
-upgrade was warranted rather than accepted.
-
-## Node runtime upgrades
-
-Node is pinned in several places and they must move together. CI resolves its own
-version from `.nvmrc`, so a mismatch only surfaces as a confusing build failure.
-
-| File                            | What it holds                                                    | When                                       |
-| ------------------------------- | ---------------------------------------------------------------- | ------------------------------------------ |
-| `.nvmrc`                        | `26.13.1` — also what CI uses (`node-version-file`)              | every bump                                 |
-| `package.json` → `engines.node` | `>=26`                                                           | major only                                 |
-| `Dockerfile.prod`               | `FROM node:26.13.1-alpine` in **both** stages (builder + runner) | every bump                                 |
-| `Dockerfile.dev`                | `FROM node:26.13.1-alpine` (single stage)                        | every bump                                 |
-| `Dockerfile.prod`               | `RUN npm install -g npm@12`                                      | only if the bundled npm must be overridden |
-| `package.json` → `@types/node`  | `^26.6.6`                                                        | major only (patch/minor via Dependabot)    |
-
-Note: npm is pinned **floating** here (`npm@12`) and only in `Dockerfile.prod`'s
-**builder** stage — the runner has no override, so the production container runs the npm
-bundled in the base image (11.20.0 on `node:26.13.1-alpine`, checked 2026-11-14).
-transcribe pins `npm@12.0.1` in both stages, so its runtime does run 12.0.1. That
-asymmetry is easy to misread; here the line only affects the build.
-
-### Two different signals, two different actions
-
-**Dependabot PR (`docker` ecosystem)** — the tag _string_ in the Dockerfiles changed
-(e.g. `26.13.0-alpine` → `26.14.0-alpine`). Merge it, then run the deploy workflow above.
-
-**DIUN notification for `node:26-alpine`** — this only says the **digest** of the
-floating tag changed. It fires both for a new Node release _and_ for an upstream
-rebuild of the same version (Alpine base patch, bundled npm). Check which it is:
-
-```bash
-curl -s "https://hub.docker.com/v2/repositories/library/node/tags?page_size=100&name=26." \
-  | python3 -c "import sys,json;print('\n'.join(t['name'] for t in json.load(sys.stdin)['results']))"
-```
-
-- **Newer version exists** → bump the pins above, merge, deploy.
-- **Same version** → **no file changes, nothing to commit**; just rebuild so the image
-  picks up the refreshed base. This is what the 2026-11-09 notification was: still
-  `26.13.0`, but the base moved from Alpine `3.24.3` to `3.24.4`.
-
-```bash
-cd ~/containers
-docker compose build --pull subtitle_editor   # --pull is REQUIRED
-docker compose up -d subtitle_editor
-docker restart nginx subtitle_editor
-uv run --project ~/SCRIPTS/py_amr -m waf.purge_cache --host subtitle-editor.amruta.org
-```
-
-⚠️ **`--pull` is not optional.** BuildKit resolves `node:26.13.1-alpine` to whatever
-digest it has cached; without `--pull` the rebuild silently reuses the old base and
-still reports success. Verify the base actually moved _before_ deploying:
-
-```bash
-docker history --format '{{.CreatedBy}}' subtitle-editor:prod | grep -o 'alpine-minirootfs-[0-9.]*-aarch64'
-docker run --rm --entrypoint node subtitle-editor:prod -v   # expect the pinned version
-```
-
-### Node major upgrade (e.g. 26 → 28)
-
-Same pins, plus one file **outside this repo**: DIUN watches the floating tag, so
-`~/containers/diun/custom-images.yml` has to follow, otherwise DIUN keeps watching an
-EOL tag and silently stops reporting anything.
-
-```bash
-cd ~/containers/diun && git pull
-sed -i 's/node:26-alpine/node:28-alpine/' custom-images.yml && git commit -am 'chore: watch node:28-alpine'
-git push
-cd ~/containers && docker compose up -d diun
-```
-
-Node majors land roughly every 6 months (24 → 26 in October 2026). Patch/minor bumps
-never touch `custom-images.yml`.
-
-## Verification Workflow
-
-Before considering any change complete, an agent **must** run:
-
-```bash
-npm run lint            # 1. ESLint — must pass with zero warnings
-npm run format          # 2. Biome format — auto-fix formatting
-npm run format:check    # 3. Biome format verify — must exit clean
-npm run test            # 4. All unit tests must pass
-npm run knip            # 5. No unused files, exports, or dependencies
-```
-
-For UI-impacting changes, also run:
-```bash
-npm run build           # 6. Production build must succeed (catches type errors, missing exports)
-```
-
-**Do NOT skip any step.** ESLint has `--max-warnings=0`, so any warning is a failure.
-
-## Environment Setup
-
-- **Node.js 26** (required; `.nvmrc` specifies version)
-- **`.env.local`** contains:
-  - `SSO_SALT` — HMAC secret for SSO cookie verification
-- No other env vars required for local dev; the app runs fully client-side after SSO verification
-
-## Coding Guidelines & Best Practices
-
-### Component Conventions
-
-- **TypeScript throughout** — strict mode enabled, no `.js`/`.jsx` files
-- **Functional components only** — no class components
-- **Client components** marked with `"use client"` at top of file
-- **Path aliases** — use `@/` for all imports (e.g., `@/components/...`, `@/lib/...`, `@/hooks/...`)
-- **Naming**: kebab-case for files (`subtitle-list.tsx`, `use-playback-state.ts`), PascalCase for components, camelCase for hooks and utilities
-- **Default exports** for pages and most components; named exports for hooks and utilities
-- **Hooks**: Keep complex `useEffect` logic out of components by extracting them into dedicated custom hooks in the `hooks/` directory.
-- **Types**: Avoid `any`. Provide proper type definitions (e.g., `types/mp4box.d.ts`) when consuming untyped external libraries.
-- **shadcn/ui components** in `components/ui/` — extend via cva, do not modify base primitives
-- **CSS**: Tailwind utility classes only; use `cn()` helper for conditional classes; Radix color tokens via CSS variables
-- **i18n**: Use `useTranslations()` from next-intl for all user-facing strings; keys live in `messages/*.json`
-
-### Security & Safe Paths
-
-- **API Security:** All API routes (`app/api/`) MUST be wrapped with `withApiAuth` from `lib/sso.ts` to ensure SSO protection.
-- **Path Traversal Protection:** When reading files from the filesystem via API, always use `resolveSafePath` from `lib/safe-path.ts` to validate the target path.
-- **Headers:** CSP and basic security headers are configured in `next.config.ts`. `connect-src` must keep `blob:` — WaveSurfer `fetch`es the local media object URL to decode peaks for files below the 100 MB extraction threshold; without it the waveform silently never renders (spinner, then blank).
-
-### State Management
-
-- Global state via **split React Contexts** in `context/subtitle/` (6 contexts for granular re-renders)
-- **Undo/redo** via custom `useUndoableState` hook with per-track history
-- **Local session** persistence via localStorage (autosave with 750ms debounce). The last-worked cue position (pause/interaction) is kept in `subtitle-editor:position:v1` and added to the snapshot as `lastPosition`; it is deliberately NOT part of `getLocalSessionSignature()` (see `lib/last-position.ts`).
-- **Waveform peaks cache** for large local files (> 100 MB `.mp4/.m4a/.mov`) lives in IndexedDB (`subtitle-editor-waveform-cache`, store `peaks`) under the key `local:v1:<encoded-name>:<size>:<lastModified>`. Entries are `{ peaks: Float32Array; duration: number; updatedAt: number }`, capped at 20 LRU entries. The cache is best-effort (`setCachedPeaks` never rejects) and is **not** cleared by "Clear autosave" — see `lib/waveform-peaks-cache.ts`.
-- **Legacy IndexedDB cleanup** — the orphaned `subtitle-editor-vimeo-cache` database (removed Vimeo integration, store `files`) is deleted best-effort on every editor mount (`hooks/use-legacy-cache-cleanup.ts`) and again by "Clear autosave" (`clearLocalSession`). Deletion is idempotent, never rejects, and gives up after 1.5 s if another tab holds the database open (retried on the next load). It never touches the peaks cache — see `lib/indexed-db-cache.ts`.
-- **Settings** persisted independently from session state
-
-### Representative Code Pattern
-
-```tsx
-"use client";
-
-import { IconKeyboard } from "@tabler/icons-react";
-import { useTranslations } from "next-intl";
-
-export default function BottomInstructions() {
-  const t = useTranslations();
-
-  return (
-    <div className="grid grid-cols-1 gap-3 md:grid-cols-2 items-start h-full text-foreground px-4 md:px-8 py-4 border-t-2 border-black dark:border-white">
-      <div className="text-base md:text-lg text-foreground p-2">
-        <p className="">{t("instructions.afterLoading")}</p>
-        <ul className="list-disc list-inside my-2">
-          <li>{t("instructions.editText")}</li>
-          <li>{t("instructions.icons")}</li>
-        </ul>
-      </div>
-      <div className="p-2">
-        <h2 className="text-base md:text-lg inline-flex items-center text-foreground">
-          <IconKeyboard className="mr-2" />
-          {t("shortcuts.title")}
-        </h2>
-      </div>
-    </div>
-  );
-}
-```
-
-### Import Order Convention
-
-```tsx
-// 1. External libraries
-import { useTranslations } from "next-intl";
-import dynamic from "next/dynamic";
-// 2. Internal components/hooks/lib (all via @/ alias)
-import { AppHeader } from "@/components/app-header";
-import { useSubtitleState } from "@/context/subtitle";
-import { cn } from "@/lib/utils";
-// 3. Types
-import type { Subtitle } from "@/types/subtitle";
-// 4. React
-import { useEffect, useRef, useState } from "react";
-```
-
-## Known Issues / Work in Progress
-
-- **No TODO/FIXME/HACK comments found** — codebase is clean of tracked in-progress markers
-- **`scratch.js`** in project root — ad-hoc MP4 debugging script, not part of the build; safe to ignore
-- **`components.json`** references `tailwind.config.ts` which does not exist (Tailwind v4 uses CSS-based config in `globals.css`); this is a stale shadcn/ui config artifact — do not create a `tailwind.config.ts`
-- **React Compiler** is enabled (`reactCompiler: true`) — this is intentional and must remain enabled
-- **ESLint rule `react-hooks/set-state-in-effect`** is disabled for 12 specific files (legitimate pattern for autosave/restore); do not re-enable without understanding the autosave architecture
-- **`fast-xml-parser`** is pinned in overrides to 5.7.1 — do not upgrade
-- **`npm audit` reports 5 lows from the `deepmerge` chain — accepted, not actionable** — see [Accepted risk: `deepmerge` npm audit low](#accepted-risk-deepmerge-npm-audit-low-2026-10-28); no upstream fix exists (maintainer declined, advisory is Low/2.7, build-time only). The former 6 `braces`-chain highs were cleared by that advisory's withdrawal (2026-10-23) — see [Resolved: `braces` npm audit highs](#resolved-braces-npm-audit-highs-2026-10-23). The `sharp` high (GHSA-wq5f-xc86-pv6w) was fixed 2026-10-07 via override `0.35.5` — see [Resolved: `sharp` npm audit high](#resolved-sharp-npm-audit-high-2026-10-07).
-- **2-line subtitle limit** — the editor enforces a maximum of 2 lines per subtitle (industry best practice); splitting into separate cues is expected behavior, not a bug
-
-## PWA build uses webpack (not Turbopack)
-
-`npm run build` is **`next build --webpack`** — deliberately. Next 16 builds with
-Turbopack by default, but `@ducanh2912/next-pwa` hooks the **webpack** build only; under
-Turbopack no `public/sw.js` was emitted, `/sw.js` returned 404, and the client kept
-registering it (silent loss of offline mode). Fixed 2026-10-31.
-
-- `npm run dev` stays on Turbopack — the PWA plugin is disabled in development anyway
-  (`disable: process.env.NODE_ENV === "development"`).
-- `public/sw.js` and `public/workbox-*.js` are **generated at build time** and
-  git-ignored; never commit them.
-- The webpack build type-checks Next's generated route types, so a route file may only
-  export HTTP handlers (+ `config`/`dynamic`/…).
-- nginx already serves `/sw.js`, `/workbox-*.js` and `/manifest.json` with
-  `no-cache, no-store` (`nginx/sites/subtitle-editor.amruta.org.conf`), so a new worker is
-  picked up immediately. `public/_headers` is a Cloudflare-Pages artifact and is unused
-  here.
-
-If build time becomes a problem, the alternative is migrating to `@serwist/next`
-(Turbopack-capable) rather than dropping the flag blindly.
-
-## Adding New Public Static Pages
-
-When adding a new static page (like `/best-practices`) that should be publicly accessible **without SSO authentication**:
-
-1. Create the page under `app/<page-name>/page.tsx`
-2. Update `app/sitemap.ts` to include the new page
-3. Run the full verification workflow, then rebuild and deploy
-
-**No need to update `proxy.ts`** — SSO only applies via `proxy.ts` to locale routes (`/en`, `/de`, etc.) and the root `/`. Static pages under `app/` are intentionally public. API routes under `app/api/` are NOT covered by `proxy.ts` at all — each route handler MUST be wrapped with `withApiAuth()` explicitly.
-
-## Git Workflow
-
-- **`main`** is the sole long-lived branch; all work lands here.
-- CI runs on every push and PR to `main` via `.github/workflows/ci.yml`.
-- Before opening a PR, run the full [Verification Workflow](#verification-workflow) locally.
-- Keep commits atomic: one logical change per commit.
-- Do not force-push to `main` or rewrite published history.
-- Use `git add -A` cautiously — review `git status` before staging.
-
-### CI Pipeline (`.github/workflows/ci.yml`)
-
-Triggers on push/PR to `main`. Steps, in order:
-
-1. `npm run lint` — ESLint (zero warnings)
-2. `npm run format:check` — Biome format verification
-3. `npm run test` — Node test runner
-4. `npm run knip` — Unused code detection
-5. `npm run build` — Next.js production build
-
-All steps must pass. A failure in any step blocks the merge.
-
-## Do Not Touch
-
-- **`.next/`** — Next.js build output (auto-generated)
-- **`node_modules/`** — dependencies
-- **`public/sw.js`**, **`public/workbox-*.js`**, **`public/fallback-*.js`** — PWA service worker files auto-generated by next-pwa at build time
-- **`tsconfig.tsbuildinfo`** — TypeScript incremental build cache
-- **`messages/*.json`** — locale files; add keys via the i18n pipeline, not arbitrary edits
-- **`components/ui/`** base primitives — these are shadcn/ui scaffolding; extend via wrapper components, not by editing the base files
-- **`tests/fixtures/`** — test fixture data
-
-## Nginx Configuration
-
-- **Config file**: `~/containers/nginx/sites/subtitle-editor.amruta.org.conf`
-- **Reload nginx**: `docker restart nginx`
-
-## Key Files
-
-| File                               | Purpose                                                                                |
-| ---------------------------------- | -------------------------------------------------------------------------------------- |
-| `app/layout.tsx`                   | Root layout: fonts, ThemeProvider, Toaster, PWA meta, SEO                              |
-| `app/[locale]/layout.tsx`          | Locale layout: i18n provider, metadata per locale                                      |
-| `app/[locale]/page.tsx`            | Main page entry (server component → ResponsiveEditorEntry)                             |
-| `app/globals.css`                  | Tailwind v4 config, Radix color mappings, CSS custom properties                        |
-| `next.config.ts`                   | Next.js config: PWA, i18n plugin, standalone output, React Compiler                    |
-| `proxy.ts`                         | Middleware: SSO verification (locale routes only) + next-intl locale routing           |
-| `app/best-practices/page.tsx`      | Static "Top 10 Subtitling Best Practices" page                                         |
-| `context/subtitle/`                | Core state management (6 contexts split into separate files, undo/redo, local session) |
-| `components/editor/editor-app.tsx` | Main editor client component                                                           |
-| `lib/locales.ts`                   | Locale definitions and validation                                                      |
-| `lib/utils.ts`                     | cn(), time formatting utilities                                                        |
-| `types/subtitle.ts`                | Subtitle and SubtitleTrack interfaces                                                  |
-| `tsconfig.json`                    | TypeScript config (strict, path aliases, bundler resolution)                           |
-| `biome.json`                       | Biome formatter config (space indent, width 2)                                         |
-| `eslint.config.js`                 | ESLint config (core-web-vitals, file-specific rule overrides)                          |
+`npm run build` is mandatory, not "for UI changes only" — it type-checks Next's generated route types, which `tsc` never sees. Details and CI parity: [local-workflow.md](docs/agents/local-workflow.md).
+
+## Invariants
+
+- Every `app/api/**/route.ts` is wrapped in `withApiAuth()` from `@/lib/sso` — **except `app/api/health/route.ts`**, which must stay public for the Docker healthcheck. `tests/api-guardrail.test.ts` enforces this.
+- Any filesystem path derived from request input goes through `resolveSafePath()` from `@/lib/safe-path`.
+- Never edit or commit generated state: `.next/`, `public/sw.js`, `public/workbox-*.js`, `public/fallback-*.js`, `tsconfig.tsbuildinfo`. Full list: [architecture.md § Do not touch](docs/agents/architecture.md#do-not-touch).
+- Keep `reactCompiler: true` in `next.config.ts` and `connect-src 'self' blob:` in the CSP — removing the latter silently breaks waveform rendering.
+
+## Where to look next
+
+| Task touches…                                       | Read                                                             |
+| --------------------------------------------------- | ---------------------------------------------------------------- |
+| Repo layout, key files, request flow                | [architecture.md](docs/agents/architecture.md)                   |
+| React/TS conventions, naming, imports, i18n, shadcn | [frontend-conventions.md](docs/agents/frontend-conventions.md)   |
+| Contexts, undo/redo, autosave, IndexedDB caches     | [state-and-persistence.md](docs/agents/state-and-persistence.md) |
+| SSO, API auth, path traversal, CSP, public pages    | [security.md](docs/agents/security.md)                           |
+| Tests, fixtures, guardrail suites                   | [testing.md](docs/agents/testing.md)                             |
+| Env, scripts, ESLint/Biome split, CI                | [local-workflow.md](docs/agents/local-workflow.md)               |
+| Webpack build, service worker, nginx caching        | [build-and-pwa.md](docs/agents/build-and-pwa.md)                 |
+| Docker dev/prod, deploy, nginx reload, CF purge     | [deployment.md](docs/agents/deployment.md)                       |
+| Dependabot, Node pins, DIUN, npm audit, overrides   | [dependencies.md](docs/agents/dependencies.md)                   |
+| Branching, commits, PRs                             | [git-workflow.md](docs/agents/git-workflow.md)                   |
+| Known quirks and stale artifacts                    | [known-issues.md](docs/agents/known-issues.md)                   |
+
+Infrastructure that is shared with other stacks (compose project layout, nginx upstream pinning, DIUN defaults) is documented in `~/containers/AGENTS.md` — that file wins for cross-stack rules.
 
 <!-- BEGIN:nextjs-agent-rules -->
 
