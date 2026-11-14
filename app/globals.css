@@ -500,6 +500,12 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-accent-ink: var(--iris-11);
 
+  /* Strong blue fill for the primary action button (the file picker in the
+     header). Deliberately not derived from `iris` — the header action is a
+     plain blue, not the indigo accent used elsewhere. */
+  --color-action: var(--action);
+  --color-action-hover: var(--action-hover);
+
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
 
@@ -588,6 +594,10 @@
     --muted-foreground: var(--slate-11);
     --accent: var(--slate-4);
     --accent-foreground: var(--slate-12);
+    /* Strong blue action fill. White text clears AA everywhere: 6.7:1 on the
+       base fill, 8.7:1 on the light-theme hover, 5.2:1 on the dark hover. */
+    --action: #1d4ed8; /* blue-700 */
+    --action-hover: #1e40af; /* blue-800 */
     /* Deep red, darkened from red-9 so WHITE text clears AA (6.25:1) in both
        themes; the /90 hover stays >=5.5:1. Distinct from the bright track-3
        coral (#ff6b6b) and the find/replace match red (red-9). */
@@ -619,6 +629,10 @@
     --muted-foreground: var(--slate-11);
     --accent: var(--slate-4);
     --accent-foreground: var(--slate-12);
+    /* Same base fill as light; hover steps one shade LIGHTER here so the
+       button brightens against the dark page instead of disappearing. */
+    --action: #1d4ed8; /* blue-700 */
+    --action-hover: #2563eb; /* blue-600 */
     /* same fixed deep red/teal as light — both are theme-stable */
     --destructive: #c01030;
     --destructive-foreground: white;
