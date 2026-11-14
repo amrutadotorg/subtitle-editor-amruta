@@ -136,7 +136,7 @@ The image is `subtitle-editor:prod`. After deploying, users must hard-refresh (C
 Dependabot is configured via `.github/dependabot.yml` with two ecosystems:
 
 - **npm** — weekly PRs grouped by patch/minor (major gets separate PR)
-- **docker** — weekly PRs for base image updates (`node:26.13.0-alpine`)
+- **docker** — weekly PRs for base image updates (`node:26.13.1-alpine`)
 
 ### Deployment workflow after Dependabot PR merge
 
@@ -230,16 +230,18 @@ version from `.nvmrc`, so a mismatch only surfaces as a confusing build failure.
 
 | File                            | What it holds                                                    | When                                       |
 | ------------------------------- | ---------------------------------------------------------------- | ------------------------------------------ |
-| `.nvmrc`                        | `26.13.0` — also what CI uses (`node-version-file`)              | every bump                                 |
+| `.nvmrc`                        | `26.13.1` — also what CI uses (`node-version-file`)              | every bump                                 |
 | `package.json` → `engines.node` | `>=26`                                                           | major only                                 |
-| `Dockerfile.prod`               | `FROM node:26.13.0-alpine` in **both** stages (builder + runner) | every bump                                 |
-| `Dockerfile.dev`                | `FROM node:26.13.0-alpine` (single stage)                        | every bump                                 |
+| `Dockerfile.prod`               | `FROM node:26.13.1-alpine` in **both** stages (builder + runner) | every bump                                 |
+| `Dockerfile.dev`                | `FROM node:26.13.1-alpine` (single stage)                        | every bump                                 |
 | `Dockerfile.prod`               | `RUN npm install -g npm@12`                                      | only if the bundled npm must be overridden |
 | `package.json` → `@types/node`  | `^26.6.6`                                                        | major only (patch/minor via Dependabot)    |
 
-Note: npm is pinned **floating** here (`npm@12`), while transcribe pins it exactly
-(`npm@12.0.1`). The line is redundant today (the `node:26.13.0-alpine` image ships npm
-12.0.1); dropping it would make the base image the single source of truth.
+Note: npm is pinned **floating** here (`npm@12`) and only in `Dockerfile.prod`'s
+**builder** stage — the runner has no override, so the production container runs the npm
+bundled in the base image (11.20.0 on `node:26.13.1-alpine`, checked 2026-11-14).
+transcribe pins `npm@12.0.1` in both stages, so its runtime does run 12.0.1. That
+asymmetry is easy to misread; here the line only affects the build.
 
 ### Two different signals, two different actions
 
@@ -268,7 +270,7 @@ docker restart nginx subtitle_editor
 uv run --project ~/SCRIPTS/py_amr -m waf.purge_cache --host subtitle-editor.amruta.org
 ```
 
-⚠️ **`--pull` is not optional.** BuildKit resolves `node:26.13.0-alpine` to whatever
+⚠️ **`--pull` is not optional.** BuildKit resolves `node:26.13.1-alpine` to whatever
 digest it has cached; without `--pull` the rebuild silently reuses the old base and
 still reports success. Verify the base actually moved _before_ deploying:
 
