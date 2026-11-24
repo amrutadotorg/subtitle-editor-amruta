@@ -241,7 +241,9 @@
     "invalidEndTitle": "Invalid end time",
     "invalidEndDescription": "End time cannot be earlier than the start time of the subtitle.",
     "invalidSubtitleFileTitle": "Invalid subtitle file",
-    "invalidSubtitleFileDescription": "No valid cues were found."
+    "invalidSubtitleFileDescription": "No valid cues were found.",
+    "loadFailedTitle": "Failed to load subtitles",
+    "unknownError": "Unknown error"
   },
   "metadata": {
     "title": "Subtitle Editor - Open-sourced, Web-based SRT/VTT Editor",

@@ -240,7 +240,9 @@
     "invalidEndTitle": "अमान्य समाप्ति समय",
     "invalidEndDescription": "समाप्ति समय उपशीर्षक के प्रारंभ समय से पहले नहीं हो सकता।",
     "invalidSubtitleFileTitle": "अमान्य सबटाइटल फ़ाइल",
-    "invalidSubtitleFileDescription": "कोई मान्य सबटाइटल नहीं मिला।"
+    "invalidSubtitleFileDescription": "कोई मान्य सबटाइटल नहीं मिला।",
+    "loadFailedTitle": "सबटाइटल लोड नहीं हो सके",
+    "unknownError": "अज्ञात त्रुटि"
   },
   "metadata": {
     "title": "उपशीर्षक संपादक - ओपन-सोर्स, वेब-आधारित SRT/VTT संपादक",

@@ -241,7 +241,9 @@
     "invalidEndTitle": "Ungültige Endzeit",
     "invalidEndDescription": "Die Endzeit darf nicht vor der Startzeit des Untertitels liegen.",
     "invalidSubtitleFileTitle": "Ungültige Untertiteldatei",
-    "invalidSubtitleFileDescription": "Es wurden keine gültigen Untertitel gefunden."
+    "invalidSubtitleFileDescription": "Es wurden keine gültigen Untertitel gefunden.",
+    "loadFailedTitle": "Untertitel konnten nicht geladen werden",
+    "unknownError": "Unbekannter Fehler"
   },
   "metadata": {
     "title": "Untertitel-Editor - Quelloffenes, webbasiertes SRT/VTT-Editor",

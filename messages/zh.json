@@ -240,7 +240,9 @@
     "invalidEndTitle": "结束时间无效",
     "invalidEndDescription": "结束时间不能早于字幕的开始时间。",
     "invalidSubtitleFileTitle": "字幕文件无效",
-    "invalidSubtitleFileDescription": "未找到有效的字幕。"
+    "invalidSubtitleFileDescription": "未找到有效的字幕。",
+    "loadFailedTitle": "无法加载字幕",
+    "unknownError": "未知错误"
   },
   "metadata": {
     "title": "字幕编辑器 - 开源在线 SRT/VTT 编辑工具",

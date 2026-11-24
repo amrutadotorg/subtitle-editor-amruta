@@ -240,7 +240,9 @@
     "invalidEndTitle": "Hora de fin no válida",
     "invalidEndDescription": "La hora de fin no puede ser anterior a la hora de inicio del subtítulo.",
     "invalidSubtitleFileTitle": "Archivo de subtítulos no válido",
-    "invalidSubtitleFileDescription": "No se encontraron subtítulos válidos."
+    "invalidSubtitleFileDescription": "No se encontraron subtítulos válidos.",
+    "loadFailedTitle": "No se pudieron cargar los subtítulos",
+    "unknownError": "Error desconocido"
   },
   "metadata": {
     "title": "Editor de subtítulos - Editor SRT/VTT de código abierto y basado en web",

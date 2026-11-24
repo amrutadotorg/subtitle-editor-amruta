@@ -240,7 +240,9 @@
     "invalidEndTitle": "অবৈধ শেষের সময়",
     "invalidEndDescription": "শেষের সময় উপশিরোনামের শুরুর সময়ের আগে হতে পারে না।",
     "invalidSubtitleFileTitle": "অবৈধ সাবটাইটেল ফাইল",
-    "invalidSubtitleFileDescription": "কোনো বৈধ সাবটাইটেল পাওয়া যায়নি।"
+    "invalidSubtitleFileDescription": "কোনো বৈধ সাবটাইটেল পাওয়া যায়নি।",
+    "loadFailedTitle": "সাবটাইটেল লোড করা যায়নি",
+    "unknownError": "অজানা ত্রুটি"
   },
   "metadata": {
     "title": "উপশিরোনাম সম্পাদক - ওপেন-সোর্স, ওয়েব-ভিত্তিক SRT/VTT সম্পাদক",

@@ -240,7 +240,9 @@
     "invalidEndTitle": "Heure de fin invalide",
     "invalidEndDescription": "L'heure de fin ne peut pas être antérieure à l'heure de début du sous-titre.",
     "invalidSubtitleFileTitle": "Fichier de sous-titres invalide",
-    "invalidSubtitleFileDescription": "Aucun sous-titre valide n'a été trouvé."
+    "invalidSubtitleFileDescription": "Aucun sous-titre valide n'a été trouvé.",
+    "loadFailedTitle": "Impossible de charger les sous-titres",
+    "unknownError": "Erreur inconnue"
   },
   "metadata": {
     "title": "Éditeur de sous-titres - Éditeur SRT/VTT open-source et web",

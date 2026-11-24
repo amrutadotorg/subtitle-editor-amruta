@@ -240,7 +240,9 @@
     "invalidEndTitle": "وقت انتهاء غير صالح",
     "invalidEndDescription": "لا يمكن أن يكون وقت الانتهاء قبل وقت بدء الترجمة.",
     "invalidSubtitleFileTitle": "ملف ترجمة غير صالح",
-    "invalidSubtitleFileDescription": "لم يتم العثور على ترجمات صالحة."
+    "invalidSubtitleFileDescription": "لم يتم العثور على ترجمات صالحة.",
+    "loadFailedTitle": "تعذّر تحميل الترجمات",
+    "unknownError": "خطأ غير معروف"
   },
   "metadata": {
     "title": "محرر الترجمة — محرر SRT/VTT مفتوح المصدر ومبني على الويب",
