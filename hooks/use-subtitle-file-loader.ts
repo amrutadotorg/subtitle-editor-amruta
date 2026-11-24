@@ -32,6 +32,8 @@ interface UseSubtitleFileLoaderOptions {
   setInitialSubtitles: SubtitleActions["setInitialSubtitles"];
   /** Default post-import callback for every load; a call-level callback wins. */
   onImported?: (report: OverlapReport) => void;
+  /** Default zero-cue callback for every load; a call-level callback wins. */
+  onEmpty?: () => void;
 }
 
 const buildResultingWorkspace = (
@@ -58,6 +60,7 @@ export const useSubtitleFileLoader = ({
   renameTrack,
   setInitialSubtitles,
   onImported,
+  onEmpty,
 }: UseSubtitleFileLoaderOptions) => {
   const loadSubtitleFile = useCallback(
     async (file: File, options?: SubtitleFileLoadOptions) => {
@@ -75,7 +78,7 @@ export const useSubtitleFileLoader = ({
         : undefined;
 
       if (parsedSubtitles.length === 0) {
-        options?.onEmpty?.();
+        (options?.onEmpty ?? onEmpty)?.();
         return;
       }
 
@@ -121,6 +124,7 @@ export const useSubtitleFileLoader = ({
       setInitialSubtitles,
       tracks,
       onImported,
+      onEmpty,
     ],
   );
 

@@ -4,8 +4,8 @@ import {
   useSubtitleState,
   useSubtitleTimings,
 } from "@/context/subtitle";
+import type { SubtitleFileLoadOptions } from "@/hooks/use-subtitle-file-loader";
 import type { OverlapPartnersByUuid } from "@/lib/overlap-report";
-import { parseSRT, parseVTT } from "@/lib/subtitle-operations";
 import type { Subtitle } from "@/types/subtitle";
 import { AnimatePresence } from "motion/react";
 import { useTranslations } from "next-intl";
@@ -36,6 +36,11 @@ interface SubtitleListProps {
   resumeUuid: string | null;
   /** Per-cue overlap partners, computed once by the parent tab strip. */
   overlapPartnersByUuid?: OverlapPartnersByUuid;
+  /** Shared import mechanism; the empty track picker loads into the active track. */
+  onLoadSubtitleFile: (
+    file: File,
+    options?: SubtitleFileLoadOptions,
+  ) => Promise<void>;
 }
 
 export interface SubtitleListRef {
@@ -60,6 +65,7 @@ const SubtitleList = forwardRef<SubtitleListRef, SubtitleListProps>(
       jumpDuration,
       resumeUuid,
       overlapPartnersByUuid = {},
+      onLoadSubtitleFile,
     },
     ref,
   ) => {
@@ -72,7 +78,6 @@ const SubtitleList = forwardRef<SubtitleListRef, SubtitleListProps>(
     const {
       mergeSubtitlesAction,
       loadSubtitlesIntoTrack,
-      renameTrack,
       deleteSubtitleAction,
     } = useSubtitleActionsContext();
     const { activeTrackId } = useSubtitleState();
@@ -168,15 +173,7 @@ const SubtitleList = forwardRef<SubtitleListRef, SubtitleListProps>(
       const file = event.target.files?.[0];
       if (!file || !activeTrackId) return;
 
-      const raw = await file.text();
-      const lower = file.name.toLowerCase();
-      const firstLine =
-        raw.split(/\r?\n/).find((l) => l.trim().length > 0) || "";
-      const isVtt = lower.endsWith(".vtt") || /^WEBVTT( |$)/.test(firstLine);
-      const newSubtitles = isVtt ? parseVTT(raw) : parseSRT(raw);
-      loadSubtitlesIntoTrack(activeTrackId, newSubtitles);
-      const safe = file.name.replace(/\.(srt|vtt)$/i, "");
-      renameTrack(activeTrackId, safe);
+      await onLoadSubtitleFile(file, { trackId: activeTrackId });
     };
 
     const handleStartFromScratch = () => {

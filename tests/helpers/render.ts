@@ -31,6 +31,7 @@ Object.defineProperty(globalThis, "navigator", {
   configurable: true,
 });
 globalThis.HTMLElement = window.HTMLElement;
+globalThis.Element = window.Element;
 globalThis.SVGElement = window.SVGElement;
 globalThis.HTMLFormElement = window.HTMLFormElement;
 globalThis.MutationObserver =

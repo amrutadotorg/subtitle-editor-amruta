@@ -238,7 +238,9 @@
     "invalidStartTitle": "开始时间无效",
     "invalidStartDescription": "开始时间不能晚于字幕的结束时间。",
     "invalidEndTitle": "结束时间无效",
-    "invalidEndDescription": "结束时间不能早于字幕的开始时间。"
+    "invalidEndDescription": "结束时间不能早于字幕的开始时间。",
+    "invalidSubtitleFileTitle": "字幕文件无效",
+    "invalidSubtitleFileDescription": "未找到有效的字幕。"
   },
   "metadata": {
     "title": "字幕编辑器 - 开源在线 SRT/VTT 编辑工具",
