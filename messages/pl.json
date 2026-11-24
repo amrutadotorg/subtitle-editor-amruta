@@ -239,7 +239,9 @@
     "invalidStartTitle": "Nieprawidłowy czas rozpoczęcia",
     "invalidStartDescription": "Czas rozpoczęcia nie może być późniejszy niż czas zakończenia napisu.",
     "invalidEndTitle": "Nieprawidłowy czas zakończenia",
-    "invalidEndDescription": "Czas zakończenia nie może być wcześniejszy niż czas rozpoczęcia napisu."
+    "invalidEndDescription": "Czas zakończenia nie może być wcześniejszy niż czas rozpoczęcia napisu.",
+    "invalidSubtitleFileTitle": "Nieprawidłowy plik napisów",
+    "invalidSubtitleFileDescription": "Nie znaleziono prawidłowych napisów."
   },
   "metadata": {
     "title": "Edytor Napisów - Otwartoźródłowy edytor SRT/VTT w przeglądarce",
