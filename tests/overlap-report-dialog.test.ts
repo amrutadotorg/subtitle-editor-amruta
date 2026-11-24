@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 // Must precede component imports so Radix portals mount synchronously.
-import { cleanup, fireEvent, renderWithIntl } from "./helpers/render";
+import { cleanup, fireEvent, renderWithIntl, within } from "./helpers/render";
 import { createElement } from "react";
 import OverlapReportDialog from "../components/overlap-report/overlap-report-dialog";
 import {
@@ -206,6 +206,92 @@ test("report dialog shows only the first 100 pairs but the full counts", () => {
   );
 
   view.getByText("…and 5 more");
+});
+
+test("report dialog caps pairs per track so a later track keeps its rows", () => {
+  const manyPairs: OverlapPair[] = [];
+  for (let index = 0; index < OVERLAP_PAIR_DISPLAY_LIMIT + 2; index += 1) {
+    const start = index * 2;
+    manyPairs.push(
+      makePair(
+        "track-many",
+        {
+          uuid: `many-a-${index}`,
+          id: index * 2 + 1,
+          start: secondsToTime(start),
+          end: secondsToTime(start + 2),
+        },
+        {
+          uuid: `many-b-${index}`,
+          id: index * 2 + 2,
+          start: secondsToTime(start + 1),
+          end: secondsToTime(start + 3),
+        },
+        1000,
+      ),
+    );
+  }
+  const fewPair = makePair(
+    "track-few",
+    {
+      uuid: "few-a",
+      id: 901,
+      start: "00:20:00,000",
+      end: "00:20:04,000",
+    },
+    {
+      uuid: "few-b",
+      id: 902,
+      start: "00:20:03,000",
+      end: "00:20:05,000",
+    },
+    1000,
+  );
+  const report = makeReport({ pairs: [...manyPairs, fewPair] });
+  const tracks = [
+    makeTrack("track-many", "Many"),
+    makeTrack("track-few", "Few"),
+  ];
+  const view = renderDialog({ report, tracks });
+
+  const fewSection = view.getByRole("region", { name: "Few" });
+  assert.equal(
+    within(fewSection).getAllByText(messages.overlaps.pairsSection).length,
+    1,
+    "the later track must still render its pair section",
+  );
+  assert.equal(
+    fewSection.querySelectorAll("[data-overlap-pair]").length,
+    1,
+    "the later track must keep its own pair row",
+  );
+  assert.ok(
+    (fewSection.textContent ?? "").includes(formatOverlapSeconds(1000)),
+  );
+  assert.ok(
+    !(fewSection.textContent ?? "").includes("…and"),
+    "a track under the cap has nothing hidden",
+  );
+
+  const manySection = view.getByRole("region", { name: "Many" });
+  assert.ok(
+    (manySection.textContent ?? "").includes("…and 2 more"),
+    "the hidden count belongs to the huge track's own section",
+  );
+});
+
+test("report dialog sections sit one heading level under the track heading", () => {
+  const view = renderDialog({ report: sampleReport });
+
+  view.getByRole("heading", { level: 3, name: /English/ });
+  view.getByRole("heading", {
+    level: 4,
+    name: messages.overlaps.pairsSection,
+  });
+  view.getByRole("heading", {
+    level: 4,
+    name: messages.overlaps.invalidSection,
+  });
 });
 
 test("report dialog renders nothing for a clean report", () => {

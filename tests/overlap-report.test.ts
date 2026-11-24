@@ -5,8 +5,8 @@ import {
   buildOverlapPartnerMap,
   buildOverlapReport,
   buildTrackOverlapReport,
-  limitOverlapPairs,
   needsOverlapConfirmation,
+  selectTrackOverlapRows,
 } from "../lib/overlap-report";
 import { secondsToTime } from "../lib/utils";
 import type { Subtitle, SubtitleTrack } from "../types/subtitle";
@@ -310,26 +310,61 @@ test("only SRT and VTT need confirmation, and only with overlaps", () => {
   assert.equal(needsOverlapConfirmation("srt", undefined), false);
 });
 
-test("the pair display cap keeps the hidden count for the more-pairs line", () => {
-  // Every cue lasts 3 s and starts 2 s after the previous one, so each cue
-  // overlaps exactly its successor: N cues give N - 1 pairs.
-  const pairs = buildOverlapReport([
-    makeTrack(
-      "t1",
-      Array.from({ length: OVERLAP_PAIR_DISPLAY_LIMIT + 2 }, (_, index) =>
-        makeSubtitle(
-          index + 1,
-          secondsToTime(index * 2),
-          secondsToTime(index * 2 + 3),
-        ),
+test("per-track selection caps each track's pairs independently", () => {
+  // Track "many" alone exceeds the cap; track "few" must still show all of its
+  // pairs and its own hidden count — a global cap would leave it empty.
+  const manyCues = Array.from(
+    { length: OVERLAP_PAIR_DISPLAY_LIMIT + 2 },
+    (_, index) =>
+      makeSubtitle(
+        index + 1,
+        secondsToTime(index * 2),
+        secondsToTime(index * 2 + 3),
       ),
-    ),
-  ]).pairs;
-  assert.equal(pairs.length, OVERLAP_PAIR_DISPLAY_LIMIT + 1);
+  );
+  const fewCues = [
+    makeSubtitle(101, "00:10:00,000", "00:10:04,000"),
+    makeSubtitle(102, "00:10:03,000", "00:10:05,000"),
+  ];
+  const report = buildOverlapReport([
+    makeTrack("many", manyCues),
+    makeTrack("few", fewCues),
+  ]);
 
-  const { displayed, hiddenCount } = limitOverlapPairs(pairs);
+  const many = selectTrackOverlapRows(report, "many");
+  assert.equal(many.pairs.length, OVERLAP_PAIR_DISPLAY_LIMIT);
+  assert.equal(
+    many.hiddenPairCount,
+    OVERLAP_PAIR_DISPLAY_LIMIT + 1 - OVERLAP_PAIR_DISPLAY_LIMIT,
+  );
 
-  assert.equal(displayed.length, OVERLAP_PAIR_DISPLAY_LIMIT);
-  assert.equal(hiddenCount, pairs.length - OVERLAP_PAIR_DISPLAY_LIMIT);
-  assert.deepEqual(limitOverlapPairs([]), { displayed: [], hiddenCount: 0 });
+  const few = selectTrackOverlapRows(report, "few");
+  assert.equal(few.pairs.length, 1);
+  assert.equal(few.hiddenPairCount, 0);
+  assert.deepEqual(
+    few.pairs.map((pair) => pair.trackId),
+    ["few"],
+  );
+
+  const empty = selectTrackOverlapRows(report, "missing");
+  assert.deepEqual(empty, {
+    pairs: [],
+    invalidTiming: [],
+    hiddenPairCount: 0,
+  });
+});
+
+test("per-track selection keeps invalid timing entries for that track", () => {
+  const report = buildOverlapReport([
+    makeTrack("t1", [
+      makeSubtitle(1, "00:00:05,000", "00:00:05,000"),
+      makeSubtitle(2, "00:00:06,000", "00:00:07,000"),
+    ]),
+    makeTrack("t2", [makeSubtitle(3, "00:00:08,000", "00:00:09,000")]),
+  ]);
+
+  const rows = selectTrackOverlapRows(report, "t1");
+  assert.equal(rows.invalidTiming.length, 1);
+  assert.equal(rows.invalidTiming[0]?.cue.id, 1);
+  assert.equal(rows.pairs.length, 0);
 });

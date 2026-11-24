@@ -22,15 +22,10 @@ import {
 } from "@/components/ui/dialog";
 import { useSubtitleState } from "@/context/subtitle";
 import { useOverlapReport } from "@/hooks/use-overlap-report";
+import { buildTrackFile, type TrackFile } from "@/lib/format";
 import {
-  buildCsvContent,
-  buildPlainTextContent,
-  buildSrtContent,
-  buildVttContent,
-} from "@/lib/format";
-import {
-  limitOverlapPairs,
   needsOverlapConfirmation,
+  selectTrackOverlapRows,
   type OverlapDownloadFormat,
 } from "@/lib/overlap-report";
 import { getTrackHandleColor } from "@/lib/track-colors";
@@ -39,19 +34,13 @@ import { IconDownload } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
-interface SavedFile {
-  fileName: string;
-  content: string;
-  mime: string;
-}
-
 interface SaveSrtProps {
   /**
    * Receives the generated file instead of downloading it in the browser.
    * Defaults to the real download; tests inject this because JSDOM has no
    * `URL.createObjectURL`.
    */
-  onDownload?: (file: SavedFile) => void;
+  onDownload?: (file: TrackFile) => void;
 }
 
 interface PendingDownload {
@@ -59,35 +48,7 @@ interface PendingDownload {
   format: OverlapDownloadFormat;
 }
 
-/** Generates a track's export exactly as before — no repair, no reordering. */
-const buildTrackFile = (
-  track: SubtitleTrack,
-  format: OverlapDownloadFormat,
-): SavedFile => {
-  let content: string;
-  if (format === "vtt") {
-    content = buildVttContent(track.subtitles, {
-      header: track.vttHeader,
-      prologue: track.vttPrologue,
-    });
-  } else if (format === "csv") {
-    content = buildCsvContent(track.subtitles);
-  } else if (format === "txt") {
-    content = buildPlainTextContent(track.subtitles);
-  } else {
-    content = buildSrtContent(track.subtitles);
-  }
-  const mime =
-    format === "vtt"
-      ? "text/vtt"
-      : format === "csv"
-        ? "text/csv"
-        : "text/plain";
-  const safeName = (track.name || "subtitles").replace(/\s+/g, "_");
-  return { fileName: `${safeName}.${format}`, content, mime };
-};
-
-const downloadInBrowser = ({ fileName, content, mime }: SavedFile) => {
+const downloadInBrowser = ({ fileName, content, mime }: TrackFile) => {
   const blob = new Blob([content], { type: mime });
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
@@ -169,16 +130,12 @@ export default function SaveSrt({
   const pendingTrack = pendingDownload
     ? tracks.find((track) => track.id === pendingDownload.trackId)
     : undefined;
-  const pendingPairs = pendingTrack
-    ? overlapReport.pairs.filter((pair) => pair.trackId === pendingTrack.id)
-    : [];
-  const pendingInvalidTiming = pendingTrack
-    ? overlapReport.invalidTiming.filter(
-        (entry) => entry.trackId === pendingTrack.id,
-      )
-    : [];
-  const { displayed: pendingDisplayedPairs, hiddenCount: pendingHiddenPairs } =
-    limitOverlapPairs(pendingPairs);
+  const pendingRows = pendingTrack
+    ? selectTrackOverlapRows(overlapReport, pendingTrack.id)
+    : { pairs: [], invalidTiming: [], hiddenPairCount: 0 };
+  const pendingOverlapCount = pendingTrack
+    ? (overlapReport.countsByTrack[pendingTrack.id]?.overlaps ?? 0)
+    : 0;
 
   return (
     <>
@@ -280,7 +237,7 @@ export default function SaveSrt({
               <AlertDialogDescription>
                 {t("overlaps.saveConfirmDescription", {
                   track: pendingTrack.name,
-                  count: pendingPairs.length,
+                  count: pendingOverlapCount,
                 })}
               </AlertDialogDescription>
             </AlertDialogHeader>
@@ -288,12 +245,14 @@ export default function SaveSrt({
               <OverlapPairList
                 trackId={pendingTrack.id}
                 trackName={pendingTrack.name}
-                pairs={pendingDisplayedPairs}
-                invalidTiming={pendingInvalidTiming}
+                pairs={pendingRows.pairs}
+                invalidTiming={pendingRows.invalidTiming}
               />
-              {pendingHiddenPairs > 0 ? (
+              {pendingRows.hiddenPairCount > 0 ? (
                 <p className="mt-2 text-sm text-muted-foreground">
-                  {t("overlaps.morePairs", { count: pendingHiddenPairs })}
+                  {t("overlaps.morePairs", {
+                    count: pendingRows.hiddenPairCount,
+                  })}
                 </p>
               ) : null}
             </div>

@@ -4,11 +4,12 @@ import {
   buildCsvContent,
   buildPlainTextContent,
   buildSrtContent,
+  buildTrackFile,
   buildVttContent,
   subtitlesToVttString,
 } from "../lib/format";
 import { parseVTT } from "../lib/subtitle-operations";
-import type { Subtitle } from "../types/subtitle";
+import type { Subtitle, SubtitleTrack } from "../types/subtitle";
 
 const goldenSubtitles: Subtitle[] = [
   {
@@ -89,4 +90,56 @@ test("subtitlesToVttString round-trips back to the original cues", () => {
   const reparsed = parseVTT(vtt);
   const roundTripped = buildSrtContent(reparsed);
   assert.equal(roundTripped, expectedSrt);
+});
+
+const goldenTrack: SubtitleTrack = {
+  id: "track-golden",
+  name: "My Track",
+  subtitles: goldenSubtitles,
+};
+
+test("buildTrackFile names the export after the track and picks the mime", () => {
+  assert.deepEqual(buildTrackFile(goldenTrack, "srt"), {
+    fileName: "My_Track.srt",
+    content: expectedSrt,
+    mime: "text/plain",
+  });
+  assert.deepEqual(buildTrackFile(goldenTrack, "txt"), {
+    fileName: "My_Track.txt",
+    content: expectedPlainText,
+    mime: "text/plain",
+  });
+  assert.deepEqual(buildTrackFile(goldenTrack, "csv"), {
+    fileName: "My_Track.csv",
+    content: expectedCsv,
+    mime: "text/csv",
+  });
+  assert.equal(buildTrackFile(goldenTrack, "vtt").mime, "text/vtt");
+  assert.equal(buildTrackFile(goldenTrack, "vtt").fileName, "My_Track.vtt");
+  assert.equal(
+    buildTrackFile(goldenTrack, "vtt").content,
+    buildVttContent(goldenSubtitles),
+  );
+});
+
+test("buildTrackFile keeps the VTT header and prologue and falls back to a generic name", () => {
+  const track: SubtitleTrack = {
+    id: "track-vtt",
+    name: "",
+    subtitles: goldenSubtitles,
+    vttHeader: "WEBVTT Kind: captions",
+    vttPrologue: ["NOTE keep me"],
+  };
+
+  const file = buildTrackFile(track, "vtt");
+  assert.equal(file.fileName, "subtitles.vtt");
+  assert.ok(file.content.startsWith("WEBVTT Kind: captions"));
+  assert.ok(file.content.includes("NOTE keep me"));
+  assert.equal(
+    file.content,
+    buildVttContent(goldenSubtitles, {
+      header: track.vttHeader,
+      prologue: track.vttPrologue,
+    }),
+  );
 });

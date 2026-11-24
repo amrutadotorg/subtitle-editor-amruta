@@ -14,6 +14,7 @@ import {
   buildSrtContent,
   buildVttContent,
 } from "../lib/format";
+import { secondsToTime } from "../lib/utils";
 import type { Subtitle, SubtitleTrack } from "../types/subtitle";
 import messages from "../messages/en.json";
 
@@ -278,6 +279,45 @@ test("a track without overlaps downloads SRT directly", () => {
   assert.equal(view.queryByText(messages.overlaps.saveConfirmTitle), null);
   assert.equal(downloads.length, 1);
   assert.equal(downloads[0]?.content, buildSrtContent(cleanTrack.subtitles));
+});
+
+test("the confirmation's counters stay full when the pair list is capped", () => {
+  const manyCues: Subtitle[] = Array.from({ length: 102 }, (_, index) => ({
+    uuid: `many-${index}`,
+    id: index + 1,
+    startTime: secondsToTime(index * 2),
+    endTime: secondsToTime(index * 2 + 3),
+    text: `Cue ${index + 1}`,
+  }));
+  const view = renderSaveDialog([
+    { id: "track-many", name: "Many", subtitles: manyCues },
+  ]);
+
+  fireEvent.click(formatButton(view, "Many", ".srt"));
+
+  view.getByText(/Track Many has 101 overlapping pairs\./);
+  view.getByText("…and 1 more");
+  assert.equal(
+    view.baseElement.querySelectorAll("[data-overlap-pair]").length,
+    100,
+    "the list itself is capped",
+  );
+});
+
+test("the confirmation's section headings sit directly under the dialog title", () => {
+  const view = renderSaveDialog([overlappingTrack]);
+
+  fireEvent.click(formatButton(view, "Overlapping", ".srt"));
+
+  view.getByRole("heading", {
+    level: 3,
+    name: messages.overlaps.pairsSection,
+  });
+  assert.equal(
+    view.queryByRole("heading", { level: 4 }),
+    null,
+    "no heading level may be skipped below the dialog title",
+  );
 });
 
 test("the confirmation lists only the chosen track's pairs", () => {
