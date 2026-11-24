@@ -78,8 +78,8 @@ export default function LoadSrt({
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : String(err);
       toast({
-        title: "Failed to load subtitles",
-        description: errorMessage || "Unknown error",
+        title: t("validation.loadFailedTitle"),
+        description: errorMessage || t("validation.unknownError"),
         variant: "destructive",
       });
     }

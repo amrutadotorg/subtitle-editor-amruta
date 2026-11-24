@@ -240,7 +240,9 @@
     "invalidEndTitle": "Неверное время окончания",
     "invalidEndDescription": "Время окончания не может быть раньше времени начала субтитра.",
     "invalidSubtitleFileTitle": "Недопустимый файл субтитров",
-    "invalidSubtitleFileDescription": "Допустимые субтитры не найдены."
+    "invalidSubtitleFileDescription": "Допустимые субтитры не найдены.",
+    "loadFailedTitle": "Не удалось загрузить субтитры",
+    "unknownError": "Неизвестная ошибка"
   },
   "metadata": {
     "title": "Редактор субтитров — open-source веб-редактор SRT/VTT",

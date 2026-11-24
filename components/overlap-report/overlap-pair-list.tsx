@@ -1,12 +1,14 @@
 "use client";
 
-import type {
-  InvalidTimingEntry,
-  OverlapCueRef,
-  OverlapPair,
+import { useTranslations } from "next-intl";
+
+import {
+  formatOverlapSeconds,
+  type InvalidTimingEntry,
+  type OverlapCueRef,
+  type OverlapPair,
 } from "@/lib/overlap-report";
 import { cn } from "@/lib/utils";
-import { useTranslations } from "next-intl";
 
 interface OverlapPairListProps {
   /** Track the rows belong to; also passed back through `onNavigate`. */
@@ -14,6 +16,12 @@ interface OverlapPairListProps {
   trackName: string;
   pairs: OverlapPair[];
   invalidTiming?: InvalidTimingEntry[];
+  /**
+   * Heading level for the two section titles. The report dialog puts these
+   * under an `h3` track heading (`h4` sections); the save confirmation has no
+   * track heading and uses `h3` sections directly under the dialog title.
+   */
+  headingLevel?: "h3" | "h4";
   /**
    * When provided, cue numbers become buttons that jump to the cue. When
    * omitted the rows are plain text (the save confirmation downloads instead
@@ -23,23 +31,22 @@ interface OverlapPairListProps {
   className?: string;
 }
 
-const formatOverlapSeconds = (overlapMs: number): string =>
-  (overlapMs / 1000).toFixed(3);
-
 /**
  * The pair/invalid-timing list shared by the post-import report and the save
- * confirmation. Callers cap the rows (see `limitOverlapPairs`) and pass only
- * the track's own entries.
+ * confirmation. Callers select their track's rows (see `selectTrackOverlapRows`)
+ * and render the hidden-count line beside the list.
  */
 export default function OverlapPairList({
   trackId,
   trackName,
   pairs,
   invalidTiming = [],
+  headingLevel = "h3",
   onNavigate,
   className,
 }: OverlapPairListProps) {
   const t = useTranslations();
+  const SectionHeading = headingLevel;
 
   const renderCueRef = (cue: OverlapCueRef) =>
     onNavigate ? (
@@ -61,9 +68,9 @@ export default function OverlapPairList({
     <div className={cn("space-y-2", className)}>
       {pairs.length > 0 && (
         <div className="space-y-2">
-          <h4 className="text-xs font-semibold">
+          <SectionHeading className="text-xs font-semibold">
             {t("overlaps.pairsSection")}
-          </h4>
+          </SectionHeading>
           <ul className="space-y-1">
             {pairs.map((pair) => (
               <li
@@ -100,9 +107,9 @@ export default function OverlapPairList({
 
       {invalidTiming.length > 0 && (
         <div className="space-y-2">
-          <h4 className="text-xs font-semibold">
+          <SectionHeading className="text-xs font-semibold">
             {t("overlaps.invalidSection")}
-          </h4>
+          </SectionHeading>
           <ul className="space-y-1">
             {invalidTiming.map((entry) => (
               <li

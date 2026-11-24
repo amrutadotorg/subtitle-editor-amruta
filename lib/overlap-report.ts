@@ -69,17 +69,34 @@ export const needsOverlapConfirmation = (
 ): boolean =>
   (format === "srt" || format === "vtt") && (counts?.overlaps ?? 0) > 0;
 
+/** Renders an overlap duration in seconds with millisecond precision. */
+export function formatOverlapSeconds(overlapMs: number): string {
+  return (overlapMs / 1000).toFixed(3);
+}
+
 /**
- * Applies the display cap to one pair list while keeping the number of hidden
- * rows for the "…and N more" line. Shared by the report and the save
- * confirmation so both truncate identically.
+ * The rows a single track contributes to a report surface: its pairs capped at
+ * the display limit, its invalid timings (uncapped) and how many pairs the cap
+ * hid. The cap is applied per track so one huge track cannot starve the others;
+ * counters elsewhere always use the full `countsByTrack` numbers.
  */
-export function limitOverlapPairs(pairs: OverlapPair[]): {
-  displayed: OverlapPair[];
-  hiddenCount: number;
+export function selectTrackOverlapRows(
+  report: OverlapReport,
+  trackId: string,
+): {
+  pairs: OverlapPair[];
+  invalidTiming: InvalidTimingEntry[];
+  hiddenPairCount: number;
 } {
-  const displayed = pairs.slice(0, OVERLAP_PAIR_DISPLAY_LIMIT);
-  return { displayed, hiddenCount: pairs.length - displayed.length };
+  const trackPairs = report.pairs.filter((pair) => pair.trackId === trackId);
+  const pairs = trackPairs.slice(0, OVERLAP_PAIR_DISPLAY_LIMIT);
+  return {
+    pairs,
+    invalidTiming: report.invalidTiming.filter(
+      (entry) => entry.trackId === trackId,
+    ),
+    hiddenPairCount: trackPairs.length - pairs.length,
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -92,16 +109,13 @@ interface DecoratedCue {
   endMs: number;
 }
 
+/** A pair plus the numeric bounds needed for chronological sorting. */
 interface DecoratedPair {
   pair: OverlapPair;
-  bStart: number;
-  bEnd: number;
-  bId: number;
-  bUuid: string;
   aStart: number;
   aEnd: number;
-  aId: number;
-  aUuid: string;
+  bStart: number;
+  bEnd: number;
 }
 
 const toMilliseconds = (time: string): number =>
@@ -135,12 +149,12 @@ const compareCueOrder = (a: DecoratedCue, b: DecoratedCue): number =>
 const comparePairOrder = (a: DecoratedPair, b: DecoratedPair): number =>
   a.bStart - b.bStart ||
   a.bEnd - b.bEnd ||
-  a.bId - b.bId ||
+  a.pair.b.id - b.pair.b.id ||
   a.aStart - b.aStart ||
   a.aEnd - b.aEnd ||
-  a.aId - b.aId ||
-  a.aUuid.localeCompare(b.aUuid) ||
-  a.bUuid.localeCompare(b.bUuid);
+  a.pair.a.id - b.pair.a.id ||
+  a.pair.a.uuid.localeCompare(b.pair.a.uuid) ||
+  a.pair.b.uuid.localeCompare(b.pair.b.uuid);
 
 // ---------------------------------------------------------------------------
 // Per-track detection
@@ -205,12 +219,8 @@ export function buildTrackOverlapReport(
         },
         aStart: earlier.startMs,
         aEnd: earlier.endMs,
-        aId: earlier.cue.id,
-        aUuid: earlier.cue.uuid,
         bStart: later.startMs,
         bEnd: later.endMs,
-        bId: later.cue.id,
-        bUuid: later.cue.uuid,
       });
     }
   }

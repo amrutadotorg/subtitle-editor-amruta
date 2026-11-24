@@ -16,8 +16,12 @@ export interface SubtitleFileLoadOptions {
   trackId?: string;
   /** Called when the file parses to zero usable cues (nothing is written). */
   onEmpty?: () => void;
-  /** Receives the report for the resulting workspace; overrides the hook default. */
-  onImported?: (report: OverlapReport) => void;
+  /**
+   * Receives the report for the resulting workspace and the track the file was
+   * imported into. Callers decide whether that track's own problems open a
+   * dialog; the report itself always covers the whole workspace.
+   */
+  onImported?: (report: OverlapReport, trackId: string) => void;
 }
 
 interface UseSubtitleFileLoaderOptions {
@@ -31,11 +35,16 @@ interface UseSubtitleFileLoaderOptions {
   renameTrack: SubtitleActions["renameTrack"];
   setInitialSubtitles: SubtitleActions["setInitialSubtitles"];
   /** Default post-import callback for every load; a call-level callback wins. */
-  onImported?: (report: OverlapReport) => void;
+  onImported?: (report: OverlapReport, trackId: string) => void;
   /** Default zero-cue callback for every load; a call-level callback wins. */
   onEmpty?: () => void;
 }
 
+/**
+ * The post-import report must reflect the file that was just loaded, and React
+ * state updates are async — so the workspace is predicted here instead of read
+ * back from the provider before it re-renders.
+ */
 const buildResultingWorkspace = (
   tracks: SubtitleTrack[],
   trackId: string,
@@ -114,6 +123,7 @@ export const useSubtitleFileLoader = ({
             parsedSubtitles,
           ),
         ),
+        resultTrackId,
       );
     },
     [

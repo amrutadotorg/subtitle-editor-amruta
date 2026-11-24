@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import OverlapPairList from "@/components/overlap-report/overlap-pair-list";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,10 +13,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { limitOverlapPairs, type OverlapReport } from "@/lib/overlap-report";
+import {
+  selectTrackOverlapRows,
+  type OverlapReport,
+} from "@/lib/overlap-report";
 import { cn } from "@/lib/utils";
 import type { SubtitleTrack } from "@/types/subtitle";
-import { useTranslations } from "next-intl";
 
 interface OverlapReportDialogProps {
   open: boolean;
@@ -48,8 +52,6 @@ export default function OverlapReportDialog({
     return null;
   }
 
-  const { displayed: displayedPairs, hiddenCount: hiddenPairCount } =
-    limitOverlapPairs(report.pairs);
   const tracksWithIssues = tracks.filter((track) => {
     const counts = report.countsByTrack[track.id];
     return counts ? counts.overlaps > 0 || counts.invalid > 0 : false;
@@ -76,12 +78,11 @@ export default function OverlapReportDialog({
               overlaps: 0,
               invalid: 0,
             };
-            const trackPairs = displayedPairs.filter(
-              (pair) => pair.trackId === track.id,
-            );
-            const trackInvalid = report.invalidTiming.filter(
-              (entry) => entry.trackId === track.id,
-            );
+            const {
+              pairs: trackPairs,
+              invalidTiming: trackInvalid,
+              hiddenPairCount,
+            } = selectTrackOverlapRows(report, track.id);
 
             return (
               <section key={track.id} aria-label={track.name}>
@@ -100,17 +101,17 @@ export default function OverlapReportDialog({
                   trackName={track.name}
                   pairs={trackPairs}
                   invalidTiming={trackInvalid}
+                  headingLevel="h4"
                   onNavigate={handleNavigate}
                 />
+                {hiddenPairCount > 0 && (
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    {t("overlaps.morePairs", { count: hiddenPairCount })}
+                  </p>
+                )}
               </section>
             );
           })}
-
-          {hiddenPairCount > 0 && (
-            <p className="text-sm text-muted-foreground">
-              {t("overlaps.morePairs", { count: hiddenPairCount })}
-            </p>
-          )}
         </div>
 
         <DialogFooter className="shrink-0">

@@ -1,11 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { act } from "@testing-library/react";
 // Must precede component imports so Radix portals mount synchronously.
 import { cleanup, fireEvent, renderWithIntl } from "./helpers/render";
-import SubtitleList from "../components/subtitle/subtitle-list";
-import { act } from "@testing-library/react";
-import { createElement, useCallback, useRef, useState } from "react";
 import OverlapReportDialog from "../components/overlap-report/overlap-report-dialog";
+import SubtitleList from "../components/subtitle/subtitle-list";
 import {
   SubtitleProvider,
   useLocalSession,
@@ -22,6 +21,7 @@ import {
 } from "../lib/local-session";
 import type { OverlapReport } from "../lib/overlap-report";
 import type { Subtitle } from "../types/subtitle";
+import { createElement, useCallback, useRef, useState } from "react";
 
 const overlappingSrt = [
   "1",
@@ -117,6 +117,18 @@ function useImportHarness() {
     setEmptyCount((count) => count + 1);
   }, []);
 
+  // Mirrors the editor: the callback carries the imported track, and only that
+  // track's own problems open the dialog (ticket #27: a clean file never opens
+  // it, even when another track in the workspace is dirty).
+  const handleImported = useCallback(
+    (nextReport: OverlapReport, trackId: string) => {
+      const counts = nextReport.countsByTrack[trackId];
+      if (!counts || (counts.overlaps === 0 && counts.invalid === 0)) return;
+      setReport(nextReport);
+    },
+    [],
+  );
+
   const { loadSubtitleFile } = useSubtitleFileLoader({
     activeTrackId,
     activeTrackIsEmpty,
@@ -126,7 +138,7 @@ function useImportHarness() {
     loadSubtitlesIntoTrack: actions.loadSubtitlesIntoTrack,
     renameTrack: actions.renameTrack,
     setInitialSubtitles: actions.setInitialSubtitles,
-    onImported: setReport,
+    onImported: handleImported,
     onEmpty: handleEmpty,
   });
 
@@ -405,6 +417,23 @@ test("loading a clean file does not open the report dialog", async () => {
 
   assert.equal(view.queryByRole("dialog"), null);
   assert.equal(view.getByTestId("track-summary").textContent, "clean:2");
+});
+
+test("a clean imported file never opens the report for a dirty other track", async () => {
+  const view = renderHarness(cleanFile);
+
+  await click(view, "seed");
+  await click(view, "load-as-new");
+
+  assert.equal(
+    view.queryByRole("dialog"),
+    null,
+    "only the imported track's own problems may open the dialog",
+  );
+  assert.equal(
+    view.getByTestId("track-summary").textContent,
+    "Existing:2|clean:2",
+  );
 });
 
 test("the import report covers the new track and every existing track", async () => {

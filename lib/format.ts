@@ -1,4 +1,5 @@
-import type { Subtitle } from "@/types/subtitle";
+import type { OverlapDownloadFormat } from "@/lib/overlap-report";
+import type { Subtitle, SubtitleTrack } from "@/types/subtitle";
 
 const flattenSubtitleText = (subtitle: Subtitle): string => {
   const text = stripVttStyling(subtitle.text, false);
@@ -76,4 +77,42 @@ const stripVttStyling = (text: string, allowBasic = true): string => {
   if (!allowBasic) return text.replace(/<\/?[^>]+>/g, "");
   // Remove all tags except <i>, <b>, <u>
   return text.replace(/<(?!\/?(?:i|b|u)\b)[^>]+>/g, "");
+};
+
+/** A downloadable file assembled from one track. */
+export interface TrackFile {
+  fileName: string;
+  content: string;
+  mime: string;
+}
+
+/**
+ * Builds the exact bytes a track exports for `format` — no repair, no
+ * reordering. The name keeps the user's track name with whitespace replaced.
+ */
+export const buildTrackFile = (
+  track: SubtitleTrack,
+  format: OverlapDownloadFormat,
+): TrackFile => {
+  let content: string;
+  if (format === "vtt") {
+    content = buildVttContent(track.subtitles, {
+      header: track.vttHeader,
+      prologue: track.vttPrologue,
+    });
+  } else if (format === "csv") {
+    content = buildCsvContent(track.subtitles);
+  } else if (format === "txt") {
+    content = buildPlainTextContent(track.subtitles);
+  } else {
+    content = buildSrtContent(track.subtitles);
+  }
+  const mime =
+    format === "vtt"
+      ? "text/vtt"
+      : format === "csv"
+        ? "text/csv"
+        : "text/plain";
+  const safeName = (track.name || "subtitles").replace(/\s+/g, "_");
+  return { fileName: `${safeName}.${format}`, content, mime };
 };

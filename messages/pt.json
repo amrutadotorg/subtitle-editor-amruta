@@ -240,7 +240,9 @@
     "invalidEndTitle": "Hora de término inválida",
     "invalidEndDescription": "A hora de término não pode ser anterior à hora de início da legenda.",
     "invalidSubtitleFileTitle": "Arquivo de legendas inválido",
-    "invalidSubtitleFileDescription": "Nenhuma legenda válida foi encontrada."
+    "invalidSubtitleFileDescription": "Nenhuma legenda válida foi encontrada.",
+    "loadFailedTitle": "Não foi possível carregar as legendas",
+    "unknownError": "Erro desconhecido"
   },
   "metadata": {
     "title": "Editor de Legendas — Editor SRT/VTT de código aberto e baseado na web",
