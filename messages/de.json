@@ -278,6 +278,18 @@
     "tooltipTitle": "{count, plural, =1 {Überschneidet 1 Untertitel} other {Überschneidet # Untertitel}}",
     "tooltipPair": "Untertitel #{id} · {start} – {end} · Überlappung {value} s",
     "rowSr": "Überschneidet Untertitel #{id} ({start} – {end}) um {value} s.",
-    "trackBadge": "{count, plural, =1 {1 Überlappung} other {# Überlappungen}}"
+    "trackBadge": "{count, plural, =1 {1 Überlappung} other {# Überlappungen}}",
+    "reportTitle": "Überlappende Untertitel",
+    "reportDescription": "Die Datei wurde geladen. Nichts wird blockiert — klicke auf eine Untertitelnummer, um dorthin zu springen, und korrigiere das Timing, wenn du kannst.",
+    "trackCounts": "{overlaps, plural, =1 {1 Überlappung} other {# Überlappungen}} · {invalid, plural, =1 {1 ungültiger Untertitel} other {# ungültige Untertitel}}",
+    "pairsSection": "Überlappende Paare",
+    "invalidSection": "Ungültiges Timing",
+    "cueButton": "Untertitel #{id}",
+    "goToCue": "Zu Untertitel #{id} in Spur {track} springen",
+    "cueRange": "{start} – {end}",
+    "overlapDuration": "Überlappung {value} s",
+    "invalidCue": "Endet vor oder mit dem Start",
+    "morePairs": "{count, plural, =1 {…und 1 weiterer} other {…und # weitere}}",
+    "close": "Schließen"
   }
 }

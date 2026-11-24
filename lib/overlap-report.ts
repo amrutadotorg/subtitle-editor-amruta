@@ -6,7 +6,7 @@ import type { Subtitle, SubtitleTrack } from "@/types/subtitle";
 // ---------------------------------------------------------------------------
 
 /** A cue as it appears in the overlap report — stable identity is `uuid`. */
-interface OverlapCueRef {
+export interface OverlapCueRef {
   uuid: string;
   id: number;
   start: string;

@@ -279,6 +279,18 @@
     "tooltipTitle": "{count, plural, =1 {1টি কিউ-এর সাথে ওভারল্যাপ} other {#টি কিউ-এর সাথে ওভারল্যাপ}}",
     "tooltipPair": "কিউ #{id} · {start} – {end} · ওভারল্যাপ {value} সে.",
     "rowSr": "কিউ #{id} ({start} – {end}) এর সাথে {value} সে. ওভারল্যাপ করে।",
-    "trackBadge": "{count, plural, =1 {1টি ওভারল্যাপ} other {#টি ওভারল্যাপ}}"
+    "trackBadge": "{count, plural, =1 {1টি ওভারল্যাপ} other {#টি ওভারল্যাপ}}",
+    "reportTitle": "ওভারল্যাপিং সাবটাইটেল",
+    "reportDescription": "ফাইলটি লোড হয়েছে। কিছুই ব্লক করা হয়নি — কোনো সাবটাইটেল নম্বরে ক্লিক করে সেখানে যান এবং সময় ঠিক করুন।",
+    "trackCounts": "{overlaps, plural, =1 {১টি ওভারল্যাপ} other {#টি ওভারল্যাপ}} · {invalid, plural, =1 {১টি অবৈধ সাবটাইটেল} other {#টি অবৈধ সাবটাইটেল}}",
+    "pairsSection": "ওভারল্যাপিং জোড়া",
+    "invalidSection": "অবৈধ সময়",
+    "cueButton": "সাবটাইটেল #{id}",
+    "goToCue": "ট্র্যাক {track}-এ সাবটাইটেল #{id}-এ যান",
+    "cueRange": "{start} – {end}",
+    "overlapDuration": "ওভারল্যাপ {value} সে",
+    "invalidCue": "শুরুর আগে বা শুরুর সময়েই শেষ হয়",
+    "morePairs": "{count, plural, =1 {…আরও ১টি} other {…আরও #টি}}",
+    "close": "বন্ধ করুন"
   }
 }

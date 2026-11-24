@@ -4,11 +4,14 @@ import { createContext, useContext } from "react";
 
 interface SubtitleNavigationContextValue {
   navigateToSubtitle: (uuid: string) => void;
+  /** Navigates to a cue in any track, switching the active track when needed. */
+  navigateToSubtitleInTrack: (trackId: string, uuid: string) => void;
 }
 
 const SubtitleNavigationContext = createContext<SubtitleNavigationContextValue>(
   {
     navigateToSubtitle: () => {},
+    navigateToSubtitleInTrack: () => {},
   },
 );
 

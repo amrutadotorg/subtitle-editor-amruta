@@ -279,6 +279,18 @@
     "tooltipTitle": "{count, plural, =1 {Se superpone con 1 subtítulo} other {Se superpone con # subtítulos}}",
     "tooltipPair": "Subtítulo #{id} · {start} – {end} · superposición {value} s",
     "rowSr": "Se superpone con el subtítulo #{id} ({start} – {end}) durante {value} s.",
-    "trackBadge": "{count, plural, =1 {1 superposición} other {# superposiciones}}"
+    "trackBadge": "{count, plural, =1 {1 superposición} other {# superposiciones}}",
+    "reportTitle": "Subtítulos superpuestos",
+    "reportDescription": "El archivo se cargó. Nada está bloqueado: haz clic en un número de subtítulo para ir a él y corrige el tiempo cuando puedas.",
+    "trackCounts": "{overlaps, plural, =1 {1 superposición} other {# superposiciones}} · {invalid, plural, =1 {1 subtítulo no válido} other {# subtítulos no válidos}}",
+    "pairsSection": "Pares superpuestos",
+    "invalidSection": "Tiempo no válido",
+    "cueButton": "Subtítulo #{id}",
+    "goToCue": "Ir al subtítulo #{id} de la pista {track}",
+    "cueRange": "{start} – {end}",
+    "overlapDuration": "Superposición {value} s",
+    "invalidCue": "Termina antes o al mismo tiempo que empieza",
+    "morePairs": "{count, plural, =1 {…y 1 más} other {…y # más}}",
+    "close": "Cerrar"
   }
 }

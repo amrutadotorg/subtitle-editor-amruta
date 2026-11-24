@@ -276,6 +276,18 @@
     "tooltipTitle": "{count} 條字幕重疊",
     "tooltipPair": "字幕 #{id} · {start} – {end} · 重疊 {value} 秒",
     "rowSr": "同字幕 #{id}（{start} – {end}）重疊 {value} 秒。",
-    "trackBadge": "{count} 個重疊"
+    "trackBadge": "{count} 個重疊",
+    "reportTitle": "重疊嘅字幕",
+    "reportDescription": "檔案已載入。冇封鎖任何嘢 — 撳字幕編號就可以跳去嗰度，得閒再修正時間。",
+    "trackCounts": "{overlaps, plural, =1 {1 個重疊} other {# 個重疊}} · {invalid, plural, =1 {1 個無效字幕} other {# 個無效字幕}}",
+    "pairsSection": "重疊嘅配對",
+    "invalidSection": "無效時間",
+    "cueButton": "字幕 #{id}",
+    "goToCue": "跳去軌道 {track} 嘅字幕 #{id}",
+    "cueRange": "{start} – {end}",
+    "overlapDuration": "重疊 {value} 秒",
+    "invalidCue": "喺開始之前或者同時結束",
+    "morePairs": "{count, plural, =1 {…仲有 1 個} other {…仲有 # 個}}",
+    "close": "閂"
   }
 }

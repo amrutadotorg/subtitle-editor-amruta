@@ -279,6 +279,18 @@
     "tooltipTitle": "{count, plural, =1 {Chevauche 1 sous-titre} other {Chevauche # sous-titres}}",
     "tooltipPair": "Sous-titre #{id} · {start} – {end} · chevauchement {value} s",
     "rowSr": "Chevauche le sous-titre #{id} ({start} – {end}) de {value} s.",
-    "trackBadge": "{count, plural, =1 {1 chevauchement} other {# chevauchements}}"
+    "trackBadge": "{count, plural, =1 {1 chevauchement} other {# chevauchements}}",
+    "reportTitle": "Sous-titres qui se chevauchent",
+    "reportDescription": "Le fichier a été chargé. Rien n'est bloqué — cliquez sur un numéro de sous-titre pour y accéder et corrigez le timing quand vous pouvez.",
+    "trackCounts": "{overlaps, plural, =1 {1 chevauchement} other {# chevauchements}} · {invalid, plural, =1 {1 sous-titre invalide} other {# sous-titres invalides}}",
+    "pairsSection": "Paires qui se chevauchent",
+    "invalidSection": "Timing invalide",
+    "cueButton": "Sous-titre #{id}",
+    "goToCue": "Aller au sous-titre #{id} de la piste {track}",
+    "cueRange": "{start} – {end}",
+    "overlapDuration": "Chevauchement {value} s",
+    "invalidCue": "Se termine avant ou au début",
+    "morePairs": "{count, plural, =1 {…et 1 de plus} other {…et # de plus}}",
+    "close": "Fermer"
   }
 }
