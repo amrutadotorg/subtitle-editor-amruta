@@ -5,11 +5,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useOverlapReport } from "@/hooks/use-overlap-report";
+import { buildOverlapPartnerMap } from "@/lib/overlap-report";
 import { getTrackColor, getTrackHandleColor } from "@/lib/track-colors";
 import type { SubtitleTrack } from "@/types/subtitle";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
-import type { Dispatch, RefObject, SetStateAction } from "react";
+import {
+  useMemo,
+  type Dispatch,
+  type RefObject,
+  type SetStateAction,
+} from "react";
 
 interface TrackTabsProps {
   tracks: SubtitleTrack[];
@@ -53,6 +60,11 @@ export default function TrackTabs({
   const t = useTranslations();
   const { resolvedTheme } = useTheme();
   const theme = resolvedTheme ?? "light";
+  const overlapReport = useOverlapReport();
+  const overlapPartnersByUuid = useMemo(
+    () => buildOverlapPartnerMap(overlapReport),
+    [overlapReport],
+  );
 
   if (tracks.length === 0 || !activeTrackId) {
     return (
@@ -94,6 +106,8 @@ export default function TrackTabs({
             const handleColor = getTrackHandleColor(trackIndex);
             const inactiveAlpha = theme === "dark" ? 0.5 : 0.25;
             const isActive = track.id === activeTrackId;
+            const overlapCount =
+              overlapReport.countsByTrack[track.id]?.overlaps ?? 0;
             const backgroundColor = isActive
               ? handleColor
               : getTrackColor(trackIndex, inactiveAlpha);
@@ -122,6 +136,19 @@ export default function TrackTabs({
                 }}
               >
                 {track.name}
+                {overlapCount > 0 ? (
+                  <>
+                    <span
+                      aria-hidden="true"
+                      className="ms-1 inline-flex min-w-4 items-center justify-center rounded-sm bg-black/10 px-1 text-[10px] font-bold tabular-nums dark:bg-white/20"
+                    >
+                      {overlapCount}
+                    </span>
+                    <span className="sr-only">
+                      {t("overlaps.trackBadge", { count: overlapCount })}
+                    </span>
+                  </>
+                ) : null}
               </TabsTrigger>
             );
           })}
@@ -146,6 +173,7 @@ export default function TrackTabs({
             onTimeJump={onTimeJump}
             jumpDuration={jumpDuration}
             resumeUuid={activeTrackId === track.id ? resumeUuid : null}
+            overlapPartnersByUuid={overlapPartnersByUuid}
           />
         </TabsContent>
       ))}

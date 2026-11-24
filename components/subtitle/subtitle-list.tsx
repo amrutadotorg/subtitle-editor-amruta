@@ -4,6 +4,7 @@ import {
   useSubtitleState,
   useSubtitleTimings,
 } from "@/context/subtitle";
+import type { OverlapPartnersByUuid } from "@/lib/overlap-report";
 import { parseSRT, parseVTT } from "@/lib/subtitle-operations";
 import type { Subtitle } from "@/types/subtitle";
 import { AnimatePresence } from "motion/react";
@@ -33,6 +34,8 @@ interface SubtitleListProps {
   onTimeJump: (seconds: number) => void;
   jumpDuration: number;
   resumeUuid: string | null;
+  /** Per-cue overlap partners, computed once by the parent tab strip. */
+  overlapPartnersByUuid?: OverlapPartnersByUuid;
 }
 
 export interface SubtitleListRef {
@@ -56,6 +59,7 @@ const SubtitleList = forwardRef<SubtitleListRef, SubtitleListProps>(
       onTimeJump,
       jumpDuration,
       resumeUuid,
+      overlapPartnersByUuid = {},
     },
     ref,
   ) => {
@@ -230,6 +234,7 @@ const SubtitleList = forwardRef<SubtitleListRef, SubtitleListProps>(
                 setIsPlaying={setIsPlaying}
                 setPlaybackTime={setPlaybackTime}
                 isResumeTarget={resumeUuid === subtitle.uuid}
+                overlapPartners={overlapPartnersByUuid[subtitle.uuid]}
               />
             );
           })}

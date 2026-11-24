@@ -685,6 +685,14 @@
     outline: 2px dashed var(--iris-9);
     outline-offset: -2px;
   }
+
+  /* overlapping cue: solid ruby outline, inset so the grid never shifts.
+     Declared after data-resume on purpose — a timing bug outranks a bookmark.
+     `outline` is direction-agnostic, so no RTL variant is needed. */
+  .subtitle-row[data-overlap="true"] {
+    outline: 2px solid var(--ruby-9);
+    outline-offset: -2px;
+  }
 }
 
 /* RTL support */
