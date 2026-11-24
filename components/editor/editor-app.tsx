@@ -5,6 +5,7 @@ import BottomInstructions from "@/components/bottom-instructions";
 import type { BulkOffsetDrawerProps } from "@/components/bulk-offset/drawer";
 import CustomControls from "@/components/custom-controls";
 import LocalSessionRecovery from "@/components/local-session-recovery";
+import OverlapReportDialog from "@/components/overlap-report/overlap-report-dialog";
 import SkipLinks from "@/components/skip-links";
 import type { SubtitleListRef } from "@/components/subtitle/subtitle-list";
 import TrackTabs from "@/components/subtitle/track-tabs";
@@ -23,6 +24,8 @@ import {
 } from "@/context/subtitle";
 import { errorDev, warnDev } from "@/lib/log";
 import { buildWorkspaceKey } from "@/lib/last-position";
+import type { OverlapReport } from "@/lib/overlap-report";
+import { getCuePreviewSeekTime } from "@/lib/subtitle-playback";
 import { computeLocalMediaPeaksKey } from "@/lib/waveform-peaks-cache";
 import { SubtitleNavigationProvider } from "@/context/subtitle-navigation-context";
 import { useActiveTrackDetails } from "@/hooks/use-active-track-details";
@@ -35,6 +38,7 @@ import { usePendingScroll } from "@/hooks/use-pending-scroll";
 import { usePlaybackState } from "@/hooks/use-playback-state";
 import { useResumeCursor } from "@/hooks/use-resume-cursor";
 import { useSubtitleFileLoader } from "@/hooks/use-subtitle-file-loader";
+import type { SubtitleFileLoadOptions } from "@/hooks/use-subtitle-file-loader";
 import { useSubtitleShortcuts } from "@/hooks/use-subtitle-shortcuts";
 import { usePlaybackVisibilityCoordinator } from "@/hooks/use-visibility-playback";
 import { isMediaFile, isSubtitleFile } from "@/lib/file-utils";
@@ -131,6 +135,9 @@ function MainContent() {
   const [editingSubtitleUuid, setEditingSubtitleUuid] = useState<string | null>(
     null,
   );
+  const [overlapReport, setOverlapReport] = useState<OverlapReport | null>(
+    null,
+  );
   useEffect(() => {
     if (typeof window === "undefined") return;
     const searchParams = new URLSearchParams(window.location.search);
@@ -197,12 +204,31 @@ function MainContent() {
   const { loadSubtitleFile, handleStartFromScratch } = useSubtitleFileLoader({
     activeTrackId,
     activeTrackIsEmpty,
+    tracks,
     newSubtitleText: t("subtitle.newSubtitle"),
     newTrackName: t("subtitle.newTrackName", { number: 1 }),
     loadSubtitlesIntoTrack,
     renameTrack,
     setInitialSubtitles,
   });
+
+  const handleImportedReport = useCallback((report: OverlapReport) => {
+    if (report.pairs.length === 0 && report.invalidTiming.length === 0) {
+      return;
+    }
+    setOverlapReport(report);
+  }, []);
+
+  // Only the header "Load" path opts into the post-import report for now; the
+  // remaining import paths are wired by #27 through the same hook.
+  const loadSubtitleFileFromHeader = useCallback(
+    (file: File, options?: SubtitleFileLoadOptions) =>
+      loadSubtitleFile(file, {
+        ...options,
+        onImported: handleImportedReport,
+      }),
+    [loadSubtitleFile, handleImportedReport],
+  );
 
   // Load shared file from URL query parameter (e.g. ?import=final_subtitles_xyz.vtt)
   useSharedSubtitleUrlLoader({
@@ -275,8 +301,37 @@ function MainContent() {
     clearResumeHighlight();
   };
 
+  const navigateToSubtitleInTrack = (trackId: string, uuid: string) => {
+    const target = tracks
+      .find((track) => track.id === trackId)
+      ?.subtitles.find((subtitle) => subtitle.uuid === uuid);
+    if (!target) return;
+
+    const previewTime = getCuePreviewSeekTime(
+      timeToSeconds(target.startTime),
+      timeToSeconds(target.endTime),
+    );
+
+    if (activeTrackId !== trackId) {
+      setActiveTrackId(trackId);
+      // The inactive panel is unmounted; the retry queue scrolls it once it mounts.
+      requestScroll(uuid, { instant: true });
+    } else {
+      subtitleListRef.current?.scrollToSubtitle(uuid, { instant: true });
+    }
+
+    // The waveform region map spans every track, so this works before the switch lands.
+    waveformRef.current?.scrollToRegion(uuid);
+    setPlaybackTime(previewTime);
+    pendingSeekRef.current = previewTime;
+    recordInteraction(uuid);
+    clearResumeHighlight();
+  };
+
   return (
-    <SubtitleNavigationProvider value={{ navigateToSubtitle }}>
+    <SubtitleNavigationProvider
+      value={{ navigateToSubtitle, navigateToSubtitleInTrack }}
+    >
       <div className="flex flex-col min-h-screen md:h-screen">
         <SkipLinks />
         <AppHeader
@@ -290,6 +345,17 @@ function MainContent() {
           isBulkOffsetOpen={isBulkOffsetOpen}
           onToggleBulkOffset={toggleBulkOffset}
           bulkOffsetDisabled={bulkOffsetDisabled}
+          onLoadSubtitleFile={loadSubtitleFileFromHeader}
+        />
+
+        <OverlapReportDialog
+          open={overlapReport !== null}
+          onOpenChange={(open) => {
+            if (!open) setOverlapReport(null);
+          }}
+          report={overlapReport}
+          tracks={tracks}
+          onNavigate={navigateToSubtitleInTrack}
         />
 
         <div className="flex-1 flex flex-col">

@@ -53,7 +53,7 @@ export interface SubtitleActions {
     subs: Subtitle[],
     trackName?: string,
     meta?: { vttHeader?: string; vttPrologue?: string[] },
-  ) => void;
+  ) => string | null;
   addSubtitleAction: (
     beforeId: number,
     afterId: number | null,
@@ -204,9 +204,9 @@ export const useSubtitleActions = ({
       subs: Subtitle[],
       trackName?: string,
       meta?: { vttHeader?: string; vttPrologue?: string[] },
-    ) => {
+    ): string | null => {
       const newTrackId = addTrack(trackName || "Track 1", subs, meta);
-      if (!newTrackId) return;
+      if (!newTrackId) return null;
       if (activeTrackId) {
         trackHistoriesRef.current.set(activeTrackId, getHistorySnapshot());
       }
@@ -219,6 +219,7 @@ export const useSubtitleActions = ({
         trackHistoriesRef.current.set(newTrackId, fallbackHistory);
         setHistorySnapshot(fallbackHistory);
       }
+      return newTrackId;
     };
 
     const addSubtitleAction = (

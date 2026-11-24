@@ -29,12 +29,8 @@ import {
   useSubtitleActionsContext,
   useSubtitleState,
 } from "@/context/subtitle";
+import type { SubtitleFileLoadOptions } from "@/hooks/use-subtitle-file-loader";
 import { useToast } from "@/hooks/use-toast";
-import {
-  extractVttPrologue,
-  parseSRT,
-  parseVTT,
-} from "@/lib/subtitle-operations";
 import { getTrackHandleColor } from "@/lib/track-colors";
 import {
   IconBadgeCc,
@@ -54,7 +50,14 @@ const getTrackButtonStyle = (trackIndex: number): CSSProperties => {
   };
 };
 
-export default function LoadSrt() {
+export default function LoadSrt({
+  onLoadSubtitleFile,
+}: {
+  onLoadSubtitleFile: (
+    file: File,
+    options?: SubtitleFileLoadOptions,
+  ) => Promise<void>;
+}) {
   const t = useTranslations();
   const [isSrtDialogOpen, setIsSrtDialogOpen] = useState(false);
   const { toast } = useToast();
@@ -71,30 +74,16 @@ export default function LoadSrt() {
     if (!file) return;
 
     try {
-      const raw = await file.text();
-      const lower = file.name.toLowerCase();
-      const firstLine =
-        raw.split(/\r?\n/).find((l) => l.trim().length > 0) || "";
-      const isVtt = lower.endsWith(".vtt") || /^WEBVTT( |$)/.test(firstLine);
-      const newSubtitles = isVtt ? parseVTT(raw) : parseSRT(raw);
-      const meta = isVtt ? extractVttPrologue(raw) : undefined;
-      if (newSubtitles.length === 0) {
-        toast({
-          title: "Invalid subtitle file",
-          description: "No valid cues were found.",
-          variant: "destructive",
-        });
-        return;
-      }
-      loadSubtitlesIntoTrack(
+      await onLoadSubtitleFile(file, {
         trackId,
-        newSubtitles,
-        meta
-          ? { vttHeader: meta.header, vttPrologue: meta.prologue }
-          : undefined,
-      );
-      const safeName = file.name.replace(/\.(srt|vtt)$/i, "");
-      renameTrack(trackId, safeName);
+        onEmpty: () => {
+          toast({
+            title: "Invalid subtitle file",
+            description: "No valid cues were found.",
+            variant: "destructive",
+          });
+        },
+      });
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : String(err);
       toast({
