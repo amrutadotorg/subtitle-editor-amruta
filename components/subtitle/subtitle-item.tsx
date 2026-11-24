@@ -9,7 +9,10 @@ import {
   useSubtitleState,
   useSubtitleTimings,
 } from "@/context/subtitle";
-import type { OverlapPartner } from "@/lib/overlap-report";
+import {
+  formatOverlapSeconds,
+  type OverlapPartner,
+} from "@/lib/overlap-report";
 import { getCuePreviewSeekTime } from "@/lib/subtitle-playback";
 import { getTrackColor, getTrackHandleColor } from "@/lib/track-colors";
 import { computeCueMetrics, type CueWarning } from "@/lib/subtitle-metrics";
@@ -41,9 +44,6 @@ interface SubtitleItemProps {
   /** Cues this row overlaps, with the shared duration. */
   overlapPartners?: OverlapPartner[];
 }
-
-const formatOverlapSeconds = (overlapMs: number): string =>
-  (overlapMs / 1000).toFixed(3);
 
 const SubtitleItem = memo(function SubtitleItem({
   subtitle,
@@ -199,135 +199,135 @@ const SubtitleItem = memo(function SubtitleItem({
       transition={{ duration: 0.1 }}
     >
       <TooltipProvider>
-        {/* biome-ignore lint/a11y/noStaticElementInteractions: Interactive div */}
-        <div
-          id={`subtitle-${subtitle.uuid}`}
-          data-current={isCurrent ? "true" : undefined}
-          data-resume={isResumeTarget ? "true" : undefined}
-          data-overlap={overlapPartners.length > 0 ? "true" : undefined}
-          style={currentRowStyle}
-          onPointerDown={() => onPrepareSubtitleInteraction(subtitle.uuid)}
-          onClick={() => {
-            onScrollToRegion(subtitle.uuid);
-            setPlaybackTime(previewStartSeconds);
-          }}
-          className={`subtitle-row px-4 py-2 border-b border-b-black dark:border-b-white cursor-pointer grid gap-4 items-center ${
-            showSubtitleDuration
-              ? "grid-cols-[1rem_7rem_5rem_1fr]"
-              : "grid-cols-[1rem_7rem_1fr]"
-          }`}
-        >
-          <div className="text-sm font-mono">
-            {overlapPartners.length > 0 ? (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <span>{subtitle.id}</span>
-                </TooltipTrigger>
-                <TooltipContent className="max-w-xs">
-                  <p className="font-semibold">
-                    {t("overlaps.tooltipTitle", {
-                      count: overlapPartners.length,
+        <Tooltip>
+          <TooltipTrigger asChild>
+            {/* biome-ignore lint/a11y/noStaticElementInteractions: Interactive div */}
+            <div
+              id={`subtitle-${subtitle.uuid}`}
+              data-current={isCurrent ? "true" : undefined}
+              data-resume={isResumeTarget ? "true" : undefined}
+              data-overlap={overlapPartners.length > 0 ? "true" : undefined}
+              style={currentRowStyle}
+              onPointerDown={() => onPrepareSubtitleInteraction(subtitle.uuid)}
+              onClick={() => {
+                onScrollToRegion(subtitle.uuid);
+                setPlaybackTime(previewStartSeconds);
+              }}
+              className={`subtitle-row px-4 py-2 border-b border-b-black dark:border-b-white cursor-pointer grid gap-4 items-center ${
+                showSubtitleDuration
+                  ? "grid-cols-[1rem_7rem_5rem_1fr]"
+                  : "grid-cols-[1rem_7rem_1fr]"
+              }`}
+            >
+              <div className="text-sm font-mono">
+                {subtitle.id}
+                {overlapPartners.map((partner) => (
+                  <span key={partner.cue.uuid} className="sr-only">
+                    {t("overlaps.rowSr", {
+                      id: partner.cue.id,
+                      start: partner.cue.start,
+                      end: partner.cue.end,
+                      value: formatOverlapSeconds(partner.overlapMs),
                     })}
-                  </p>
-                  <ul className="mt-1 space-y-0.5 text-start font-mono tabular-nums">
-                    {overlapPartners.map((partner) => (
-                      <li key={partner.cue.uuid}>
-                        {t("overlaps.tooltipPair", {
-                          id: partner.cue.id,
-                          start: partner.cue.start,
-                          end: partner.cue.end,
-                          value: formatOverlapSeconds(partner.overlapMs),
-                        })}
-                      </li>
-                    ))}
-                  </ul>
-                </TooltipContent>
-              </Tooltip>
-            ) : (
-              subtitle.id
-            )}
-            {overlapPartners.map((partner) => (
-              <span key={partner.cue.uuid} className="sr-only">
-                {t("overlaps.rowSr", {
-                  id: partner.cue.id,
-                  start: partner.cue.start,
-                  end: partner.cue.end,
-                  value: formatOverlapSeconds(partner.overlapMs),
-                })}
-              </span>
-            ))}
-            {isResumeTarget ? (
-              <span className="sr-only">{t("localSession.resumeMarker")}</span>
-            ) : null}
-          </div>
+                  </span>
+                ))}
+                {isResumeTarget ? (
+                  <span className="sr-only">
+                    {t("localSession.resumeMarker")}
+                  </span>
+                ) : null}
+              </div>
 
-          <SubtitleTimeFields
-            subtitle={subtitle}
-            startSeconds={startSeconds}
-            endSeconds={endSeconds}
-            editingSubtitleUuid={editingSubtitleUuid}
-            onUpdateStartTime={updateSubtitleStartTimeAction}
-            onUpdateEndTime={updateSubtitleEndTimeAction}
-          />
-
-          {showSubtitleDuration ? (
-            <div className="flex flex-col justify-center items-center gap-1.5 text-sm font-mono tabular-nums text-center">
-              <span
-                className={cn(
-                  "font-semibold text-xs px-1.5 py-0.5 rounded-sm select-none",
-                  Math.round(cps) <= rulesMaxCps
-                    ? "text-green-600 dark:text-green-400 bg-green-500/10"
-                    : "text-[var(--ruby-9)] dark:text-[color(display-p3_0.715_0.193_0.262)] bg-amber-500/10 font-bold",
-                )}
-              >
-                {Math.round(cps)} {t("subtitleStats.cpsUnit")}
-              </span>
-            </div>
-          ) : null}
-
-          <div className="flex justify-between items-start gap-4">
-            <div className="flex-1">
-              <SubtitleTextEditor
+              <SubtitleTimeFields
                 subtitle={subtitle}
-                isEditing={isEditing}
-                previousSubtitle={previousSubtitle}
-                nextSubtitle={nextSubtitle}
-                onPrepareSubtitleInteraction={onPrepareSubtitleInteraction}
-                onScrollToRegion={onScrollToRegion}
-                isPlaying={isPlaying}
-                resumePlayback={resumePlayback}
-                setIsPlaying={setIsPlaying}
-                setPlaybackTime={setPlaybackTime}
-                setEditingSubtitleUuid={setEditingSubtitleUuid}
-                resolveStartSeconds={resolveStartSeconds}
                 startSeconds={startSeconds}
-                onUpdateText={updateSubtitleTextAction}
-                onSplitSubtitle={splitSubtitleAction}
-                onLocalTextChange={setLocalText}
-                onAddSubtitle={(
-                  currentId: number,
-                  nextId: number | null,
-                  text: string,
-                  durationHint?: number,
-                ) => {
-                  const newUuid = addSubtitleAction(
-                    currentId,
-                    nextId,
-                    text,
-                    durationHint,
-                  );
-                  if (newUuid) {
-                    setEditingSubtitleUuid(newUuid);
-                  }
-                }}
+                endSeconds={endSeconds}
+                editingSubtitleUuid={editingSubtitleUuid}
+                onUpdateStartTime={updateSubtitleStartTimeAction}
+                onUpdateEndTime={updateSubtitleEndTimeAction}
               />
-            </div>
 
-            <SubtitleItemDeleteButton
-              onDelete={() => deleteSubtitleAction(subtitle.id)}
-            />
-          </div>
-        </div>
+              {showSubtitleDuration ? (
+                <div className="flex flex-col justify-center items-center gap-1.5 text-sm font-mono tabular-nums text-center">
+                  <span
+                    className={cn(
+                      "font-semibold text-xs px-1.5 py-0.5 rounded-sm select-none",
+                      Math.round(cps) <= rulesMaxCps
+                        ? "text-green-600 dark:text-green-400 bg-green-500/10"
+                        : "text-[var(--ruby-9)] dark:text-[color(display-p3_0.715_0.193_0.262)] bg-amber-500/10 font-bold",
+                    )}
+                  >
+                    {Math.round(cps)} {t("subtitleStats.cpsUnit")}
+                  </span>
+                </div>
+              ) : null}
+
+              <div className="flex justify-between items-start gap-4">
+                <div className="flex-1">
+                  <SubtitleTextEditor
+                    subtitle={subtitle}
+                    isEditing={isEditing}
+                    previousSubtitle={previousSubtitle}
+                    nextSubtitle={nextSubtitle}
+                    onPrepareSubtitleInteraction={onPrepareSubtitleInteraction}
+                    onScrollToRegion={onScrollToRegion}
+                    isPlaying={isPlaying}
+                    resumePlayback={resumePlayback}
+                    setIsPlaying={setIsPlaying}
+                    setPlaybackTime={setPlaybackTime}
+                    setEditingSubtitleUuid={setEditingSubtitleUuid}
+                    resolveStartSeconds={resolveStartSeconds}
+                    startSeconds={startSeconds}
+                    onUpdateText={updateSubtitleTextAction}
+                    onSplitSubtitle={splitSubtitleAction}
+                    onLocalTextChange={setLocalText}
+                    onAddSubtitle={(
+                      currentId: number,
+                      nextId: number | null,
+                      text: string,
+                      durationHint?: number,
+                    ) => {
+                      const newUuid = addSubtitleAction(
+                        currentId,
+                        nextId,
+                        text,
+                        durationHint,
+                      );
+                      if (newUuid) {
+                        setEditingSubtitleUuid(newUuid);
+                      }
+                    }}
+                  />
+                </div>
+
+                <SubtitleItemDeleteButton
+                  onDelete={() => deleteSubtitleAction(subtitle.id)}
+                />
+              </div>
+            </div>
+          </TooltipTrigger>
+          {overlapPartners.length > 0 ? (
+            <TooltipContent className="max-w-xs">
+              <p className="font-semibold">
+                {t("overlaps.tooltipTitle", {
+                  count: overlapPartners.length,
+                })}
+              </p>
+              <ul className="mt-1 space-y-0.5 text-start font-mono tabular-nums">
+                {overlapPartners.map((partner) => (
+                  <li key={partner.cue.uuid}>
+                    {t("overlaps.tooltipPair", {
+                      id: partner.cue.id,
+                      start: partner.cue.start,
+                      end: partner.cue.end,
+                      value: formatOverlapSeconds(partner.overlapMs),
+                    })}
+                  </li>
+                ))}
+              </ul>
+            </TooltipContent>
+          ) : null}
+        </Tooltip>
 
         <SubtitleItemMergeActions
           subtitle={subtitle}
