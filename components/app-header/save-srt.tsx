@@ -183,18 +183,23 @@ export default function SaveSrt({
                         })}
                       </span>
                       {overlapCount > 0 ? (
-                        <span
-                          data-overlap-badge=""
-                          title={t("overlaps.saveBadge", {
-                            count: overlapCount,
-                          })}
-                          aria-label={t("overlaps.saveBadge", {
-                            count: overlapCount,
-                          })}
-                          className="inline-flex min-w-4 items-center justify-center rounded-sm bg-black/10 px-1 text-xs font-bold tabular-nums text-[var(--ruby-9)] dark:bg-white/20"
-                        >
-                          {overlapCount}
-                        </span>
+                        <>
+                          <span
+                            data-overlap-badge=""
+                            title={t("overlaps.saveBadge", {
+                              count: overlapCount,
+                            })}
+                            aria-hidden="true"
+                            className="inline-flex min-w-4 items-center justify-center rounded-sm bg-black/10 px-1 text-xs font-bold tabular-nums text-[var(--ruby-9)] dark:bg-white/20"
+                          >
+                            {overlapCount}
+                          </span>
+                          <span className="sr-only">
+                            {t("overlaps.saveBadge", {
+                              count: overlapCount,
+                            })}
+                          </span>
+                        </>
                       ) : null}
                     </span>
                   </div>

@@ -165,9 +165,22 @@ test("save dialog badges only the track that has overlaps", () => {
 
   const badges = overlappingRow.querySelectorAll("[data-overlap-badge]");
   assert.equal(badges.length, 1);
-  assert.match(badges[0]?.textContent ?? "", /1/);
+  const badge = badges[0];
+  assert.ok(badge, "the overlapping track must render a badge");
+  assert.match(badge.textContent ?? "", /1/);
+  assert.equal(
+    badge.getAttribute("aria-hidden"),
+    "true",
+    "the visual number is decorative — screen readers get the sentence below",
+  );
+
+  const srOnly = [...overlappingRow.querySelectorAll(".sr-only")]
+    .map((node) => node.textContent ?? "")
+    .find((text) => text.includes("overlap"));
+  assert.equal(srOnly, "1 overlap");
 
   assert.equal(cleanRow.querySelectorAll("[data-overlap-badge]").length, 0);
+  assert.equal(cleanRow.querySelector(".sr-only"), null);
 });
 
 test("SRT for a track with overlaps opens a confirmation listing its pairs", () => {
