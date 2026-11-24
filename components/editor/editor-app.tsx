@@ -204,12 +204,19 @@ function MainContent() {
 
   const { toast } = useToast();
 
-  const handleImportedReport = useCallback((report: OverlapReport) => {
-    if (report.pairs.length === 0 && report.invalidTiming.length === 0) {
-      return;
-    }
-    setOverlapReport(report);
-  }, []);
+  const handleImportedReport = useCallback(
+    (report: OverlapReport, trackId: string) => {
+      // Ticket #27: a clean imported file never opens the dialog, even if some
+      // other track already had overlaps. The dialog still shows the whole
+      // workspace when it does open.
+      const counts = report.countsByTrack[trackId];
+      if (!counts || (counts.overlaps === 0 && counts.invalid === 0)) {
+        return;
+      }
+      setOverlapReport(report);
+    },
+    [],
+  );
 
   const handleEmptyImport = useCallback(() => {
     // A URL import sets the jump flag before parsing; clear it when nothing loaded.
