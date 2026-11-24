@@ -239,7 +239,11 @@
     "invalidStartTitle": "Nieprawidłowy czas rozpoczęcia",
     "invalidStartDescription": "Czas rozpoczęcia nie może być późniejszy niż czas zakończenia napisu.",
     "invalidEndTitle": "Nieprawidłowy czas zakończenia",
-    "invalidEndDescription": "Czas zakończenia nie może być wcześniejszy niż czas rozpoczęcia napisu."
+    "invalidEndDescription": "Czas zakończenia nie może być wcześniejszy niż czas rozpoczęcia napisu.",
+    "invalidSubtitleFileTitle": "Nieprawidłowy plik napisów",
+    "invalidSubtitleFileDescription": "Nie znaleziono prawidłowych napisów.",
+    "loadFailedTitle": "Nie udało się wczytać napisów",
+    "unknownError": "Nieznany błąd"
   },
   "metadata": {
     "title": "Edytor Napisów - Otwartoźródłowy edytor SRT/VTT w przeglądarce",
@@ -275,5 +279,28 @@
     "regionSummary": "Napis od {start} do {end} na ścieżce {track}",
     "regionAnnouncement": "Zaznaczono napis od {start} do {end} na ścieżce {track}.",
     "untitledTrack": "Ścieżka bez nazwy"
+  },
+  "overlaps": {
+    "tooltipTitle": "{count, plural, =1 {Nakłada się na 1 napis} few {Nakłada się na # napisy} many {Nakłada się na # napisów} other {Nakłada się na # napisu}}",
+    "tooltipPair": "Napis #{id} · {start} – {end} · nakładka {value} s",
+    "rowSr": "Nakłada się na napis #{id} ({start} – {end}) przez {value} s.",
+    "trackBadge": "{count, plural, =1 {1 nakładka} few {# nakładki} many {# nakładek} other {# nakładki}}",
+    "reportTitle": "Nakładające się napisy",
+    "reportDescription": "Plik został wczytany. Nic nie jest blokowane — kliknij numer napisu, aby do niego przejść, i popraw timing, kiedy możesz.",
+    "trackCounts": "{overlaps, plural, =1 {1 nakładka} few {# nakładki} many {# nakładek} other {# nakładki}} · {invalid, plural, =1 {1 nieprawidłowy napis} few {# nieprawidłowe napisy} many {# nieprawidłowych napisów} other {# nieprawidłowego napisu}}",
+    "pairsSection": "Nakładające się pary",
+    "invalidSection": "Nieprawidłowy timing",
+    "cueButton": "Napis #{id}",
+    "goToCue": "Przejdź do napisu #{id} na ścieżce {track}",
+    "cueRange": "{start} – {end}",
+    "overlapDuration": "Nakładka {value} s",
+    "invalidCue": "Kończy się przed początkiem lub razem z nim",
+    "morePairs": "{count, plural, =1 {…i 1 więcej} few {…i # więcej} many {…i # więcej} other {…i # więcej}}",
+    "close": "Zamknij",
+    "saveBadge": "{count, plural, =1 {1 nakładka} few {# nakładki} many {# nakładek} other {# nakładki}}",
+    "saveConfirmTitle": "Pobrać mimo nakładających się napisów?",
+    "saveConfirmDescription": "Ścieżka {track} ma {count, plural, =1 {1 nakładającą się parę} few {# nakładające się pary} many {# nakładających się par} other {# nakładającej się pary}}. Plik zostanie zapisany dokładnie tak, jak jest — timing nie jest poprawiany, a kolejność napisów nie zmienia się.",
+    "downloadAnyway": "Pobierz mimo to",
+    "back": "Wróć"
   }
 }

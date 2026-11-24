@@ -238,7 +238,11 @@
     "invalidStartTitle": "Heure de début invalide",
     "invalidStartDescription": "L'heure de début ne peut pas être postérieure à l'heure de fin du sous-titre.",
     "invalidEndTitle": "Heure de fin invalide",
-    "invalidEndDescription": "L'heure de fin ne peut pas être antérieure à l'heure de début du sous-titre."
+    "invalidEndDescription": "L'heure de fin ne peut pas être antérieure à l'heure de début du sous-titre.",
+    "invalidSubtitleFileTitle": "Fichier de sous-titres invalide",
+    "invalidSubtitleFileDescription": "Aucun sous-titre valide n'a été trouvé.",
+    "loadFailedTitle": "Impossible de charger les sous-titres",
+    "unknownError": "Erreur inconnue"
   },
   "metadata": {
     "title": "Éditeur de sous-titres - Éditeur SRT/VTT open-source et web",
@@ -274,5 +278,28 @@
     "regionSummary": "Sous-titre de {start} à {end} sur la piste {track}",
     "regionAnnouncement": "Sous-titre sélectionné de {start} à {end} sur la piste {track}.",
     "untitledTrack": "Piste sans titre"
+  },
+  "overlaps": {
+    "tooltipTitle": "{count, plural, =1 {Chevauche 1 sous-titre} other {Chevauche # sous-titres}}",
+    "tooltipPair": "Sous-titre #{id} · {start} – {end} · chevauchement {value} s",
+    "rowSr": "Chevauche le sous-titre #{id} ({start} – {end}) de {value} s.",
+    "trackBadge": "{count, plural, =1 {1 chevauchement} other {# chevauchements}}",
+    "reportTitle": "Sous-titres qui se chevauchent",
+    "reportDescription": "Le fichier a été chargé. Rien n'est bloqué — cliquez sur un numéro de sous-titre pour y accéder et corrigez le timing quand vous pouvez.",
+    "trackCounts": "{overlaps, plural, =1 {1 chevauchement} other {# chevauchements}} · {invalid, plural, =1 {1 sous-titre invalide} other {# sous-titres invalides}}",
+    "pairsSection": "Paires qui se chevauchent",
+    "invalidSection": "Timing invalide",
+    "cueButton": "Sous-titre #{id}",
+    "goToCue": "Aller au sous-titre #{id} de la piste {track}",
+    "cueRange": "{start} – {end}",
+    "overlapDuration": "Chevauchement {value} s",
+    "invalidCue": "Se termine avant ou au début",
+    "morePairs": "{count, plural, =1 {…et 1 de plus} other {…et # de plus}}",
+    "close": "Fermer",
+    "saveBadge": "{count, plural, =1 {1 chevauchement} other {# chevauchements}}",
+    "saveConfirmTitle": "Télécharger malgré les sous-titres qui se chevauchent ?",
+    "saveConfirmDescription": "La piste {track} contient {count, plural, =1 {1 paire qui se chevauche} other {# paires qui se chevauchent}}. Le fichier est enregistré tel quel — aucun timing n'est corrigé et aucun sous-titre n'est réordonné.",
+    "downloadAnyway": "Télécharger quand même",
+    "back": "Retour"
   }
 }

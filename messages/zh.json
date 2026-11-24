@@ -238,7 +238,11 @@
     "invalidStartTitle": "开始时间无效",
     "invalidStartDescription": "开始时间不能晚于字幕的结束时间。",
     "invalidEndTitle": "结束时间无效",
-    "invalidEndDescription": "结束时间不能早于字幕的开始时间。"
+    "invalidEndDescription": "结束时间不能早于字幕的开始时间。",
+    "invalidSubtitleFileTitle": "字幕文件无效",
+    "invalidSubtitleFileDescription": "未找到有效的字幕。",
+    "loadFailedTitle": "无法加载字幕",
+    "unknownError": "未知错误"
   },
   "metadata": {
     "title": "字幕编辑器 - 开源在线 SRT/VTT 编辑工具",
@@ -274,5 +278,28 @@
     "regionSummary": "{start} 至 {end} 的字幕，位于轨道 {track}",
     "regionAnnouncement": "已选中 {start} 至 {end} 的字幕，位于轨道 {track}。",
     "untitledTrack": "未命名轨道"
+  },
+  "overlaps": {
+    "tooltipTitle": "{count} 条字幕重叠",
+    "tooltipPair": "字幕 #{id} · {start} – {end} · 重叠 {value} 秒",
+    "rowSr": "与字幕 #{id}（{start} – {end}）重叠 {value} 秒。",
+    "trackBadge": "{count} 个重叠",
+    "reportTitle": "重叠的字幕",
+    "reportDescription": "文件已加载。没有阻止任何操作——点击字幕编号即可跳转，方便时再修正时间。",
+    "trackCounts": "{overlaps, plural, =1 {1 处重叠} other {# 处重叠}} · {invalid, plural, =1 {1 条无效字幕} other {# 条无效字幕}}",
+    "pairsSection": "重叠的字幕对",
+    "invalidSection": "无效时间",
+    "cueButton": "字幕 #{id}",
+    "goToCue": "前往轨道 {track} 的字幕 #{id}",
+    "cueRange": "{start} – {end}",
+    "overlapDuration": "重叠 {value} 秒",
+    "invalidCue": "在开始之前或同时结束",
+    "morePairs": "{count, plural, =1 {…还有 1 条} other {…还有 # 条}}",
+    "close": "关闭",
+    "saveBadge": "{count} 个重叠",
+    "saveConfirmTitle": "存在重叠字幕，仍要下载吗？",
+    "saveConfirmDescription": "轨道 {track} 有 {count} 对重叠字幕。文件将按原样保存——不会修正任何时间，也不会重新排列字幕。",
+    "downloadAnyway": "仍然下载",
+    "back": "返回"
   }
 }

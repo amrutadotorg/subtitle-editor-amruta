@@ -37,7 +37,7 @@ components/
   ui/                  shadcn primitives — read-only (see Do not touch)
   editor/              editor-app.tsx, responsive-editor-entry.tsx, viewport.ts
   subtitle/            list, items, text editor, time fields, track tabs
-  app-header/  bulk-offset/  find-replace/  waveform-visualizer/
+  app-header/  bulk-offset/  find-replace/  overlap-report/  waveform-visualizer/
   video-player.tsx     wavesurfer-backed player
 context/subtitle/      global state — see state-and-persistence.md
 hooks/                 one concern per hook; effects live here, not in components

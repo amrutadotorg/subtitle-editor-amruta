@@ -239,7 +239,11 @@
     "invalidStartTitle": "Ungültige Startzeit",
     "invalidStartDescription": "Die Startzeit darf nicht nach der Endzeit des Untertitels liegen.",
     "invalidEndTitle": "Ungültige Endzeit",
-    "invalidEndDescription": "Die Endzeit darf nicht vor der Startzeit des Untertitels liegen."
+    "invalidEndDescription": "Die Endzeit darf nicht vor der Startzeit des Untertitels liegen.",
+    "invalidSubtitleFileTitle": "Ungültige Untertiteldatei",
+    "invalidSubtitleFileDescription": "Es wurden keine gültigen Untertitel gefunden.",
+    "loadFailedTitle": "Untertitel konnten nicht geladen werden",
+    "unknownError": "Unbekannter Fehler"
   },
   "metadata": {
     "title": "Untertitel-Editor - Quelloffenes, webbasiertes SRT/VTT-Editor",
@@ -273,5 +277,28 @@
     "regionSummary": "Untertitel von {start} bis {end} in Spur {track}",
     "regionAnnouncement": "Untertitel von {start} bis {end} in Spur {track} ausgewählt.",
     "untitledTrack": "Unbenannte Spur"
+  },
+  "overlaps": {
+    "tooltipTitle": "{count, plural, =1 {Überschneidet 1 Untertitel} other {Überschneidet # Untertitel}}",
+    "tooltipPair": "Untertitel #{id} · {start} – {end} · Überlappung {value} s",
+    "rowSr": "Überschneidet Untertitel #{id} ({start} – {end}) um {value} s.",
+    "trackBadge": "{count, plural, =1 {1 Überlappung} other {# Überlappungen}}",
+    "reportTitle": "Überlappende Untertitel",
+    "reportDescription": "Die Datei wurde geladen. Nichts wird blockiert — klicke auf eine Untertitelnummer, um dorthin zu springen, und korrigiere das Timing, wenn du kannst.",
+    "trackCounts": "{overlaps, plural, =1 {1 Überlappung} other {# Überlappungen}} · {invalid, plural, =1 {1 ungültiger Untertitel} other {# ungültige Untertitel}}",
+    "pairsSection": "Überlappende Paare",
+    "invalidSection": "Ungültiges Timing",
+    "cueButton": "Untertitel #{id}",
+    "goToCue": "Zu Untertitel #{id} in Spur {track} springen",
+    "cueRange": "{start} – {end}",
+    "overlapDuration": "Überlappung {value} s",
+    "invalidCue": "Endet vor oder mit dem Start",
+    "morePairs": "{count, plural, =1 {…und 1 weiterer} other {…und # weitere}}",
+    "close": "Schließen",
+    "saveBadge": "{count, plural, =1 {1 Überlappung} other {# Überlappungen}}",
+    "saveConfirmTitle": "Mit überlappenden Untertiteln herunterladen?",
+    "saveConfirmDescription": "Spur {track} hat {count, plural, =1 {1 überlappendes Paar} other {# überlappende Paare}}. Die Datei wird genau so gespeichert, wie sie ist — kein Timing wird korrigiert und keine Zeile umsortiert.",
+    "downloadAnyway": "Trotzdem herunterladen",
+    "back": "Zurück"
   }
 }

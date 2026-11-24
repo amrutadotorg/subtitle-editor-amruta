@@ -238,7 +238,11 @@
     "invalidStartTitle": "Hora de início inválida",
     "invalidStartDescription": "A hora de início não pode ser posterior à hora de término da legenda.",
     "invalidEndTitle": "Hora de término inválida",
-    "invalidEndDescription": "A hora de término não pode ser anterior à hora de início da legenda."
+    "invalidEndDescription": "A hora de término não pode ser anterior à hora de início da legenda.",
+    "invalidSubtitleFileTitle": "Arquivo de legendas inválido",
+    "invalidSubtitleFileDescription": "Nenhuma legenda válida foi encontrada.",
+    "loadFailedTitle": "Não foi possível carregar as legendas",
+    "unknownError": "Erro desconhecido"
   },
   "metadata": {
     "title": "Editor de Legendas — Editor SRT/VTT de código aberto e baseado na web",
@@ -274,5 +278,28 @@
     "regionSummary": "Legenda de {start} a {end} na faixa {track}",
     "regionAnnouncement": "Legenda selecionada de {start} a {end} na faixa {track}.",
     "untitledTrack": "Faixa sem título"
+  },
+  "overlaps": {
+    "tooltipTitle": "{count, plural, =1 {Sobreposto a 1 legenda} other {Sobreposto a # legendas}}",
+    "tooltipPair": "Legenda #{id} · {start} – {end} · sobreposição {value} s",
+    "rowSr": "Sobreposto à legenda #{id} ({start} – {end}) por {value} s.",
+    "trackBadge": "{count, plural, =1 {1 sobreposição} other {# sobreposições}}",
+    "reportTitle": "Legendas sobrepostas",
+    "reportDescription": "O arquivo foi carregado. Nada está bloqueado — clique em um número de legenda para ir até ela e corrija o tempo quando puder.",
+    "trackCounts": "{overlaps, plural, =1 {1 sobreposição} other {# sobreposições}} · {invalid, plural, =1 {1 legenda inválida} other {# legendas inválidas}}",
+    "pairsSection": "Pares sobrepostos",
+    "invalidSection": "Tempo inválido",
+    "cueButton": "Legenda #{id}",
+    "goToCue": "Ir para a legenda #{id} na faixa {track}",
+    "cueRange": "{start} – {end}",
+    "overlapDuration": "Sobreposição {value} s",
+    "invalidCue": "Termina antes ou no início",
+    "morePairs": "{count, plural, =1 {…e mais 1} other {…e mais #}}",
+    "close": "Fechar",
+    "saveBadge": "{count, plural, =1 {1 sobreposição} other {# sobreposições}}",
+    "saveConfirmTitle": "Baixar com legendas sobrepostas?",
+    "saveConfirmDescription": "A faixa {track} tem {count, plural, =1 {1 par sobreposto} other {# pares sobrepostos}}. O arquivo é salvo exatamente como está — nenhum tempo é corrigido e nenhuma legenda é reordenada.",
+    "downloadAnyway": "Baixar mesmo assim",
+    "back": "Voltar"
   }
 }

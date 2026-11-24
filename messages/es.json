@@ -238,7 +238,11 @@
     "invalidStartTitle": "Hora de inicio no válida",
     "invalidStartDescription": "La hora de inicio no puede ser posterior a la hora de fin del subtítulo.",
     "invalidEndTitle": "Hora de fin no válida",
-    "invalidEndDescription": "La hora de fin no puede ser anterior a la hora de inicio del subtítulo."
+    "invalidEndDescription": "La hora de fin no puede ser anterior a la hora de inicio del subtítulo.",
+    "invalidSubtitleFileTitle": "Archivo de subtítulos no válido",
+    "invalidSubtitleFileDescription": "No se encontraron subtítulos válidos.",
+    "loadFailedTitle": "No se pudieron cargar los subtítulos",
+    "unknownError": "Error desconocido"
   },
   "metadata": {
     "title": "Editor de subtítulos - Editor SRT/VTT de código abierto y basado en web",
@@ -274,5 +278,28 @@
     "regionSummary": "Subtítulo de {start} a {end} en la pista {track}",
     "regionAnnouncement": "Subtítulo seleccionado de {start} a {end} en la pista {track}.",
     "untitledTrack": "Pista sin título"
+  },
+  "overlaps": {
+    "tooltipTitle": "{count, plural, =1 {Se superpone con 1 subtítulo} other {Se superpone con # subtítulos}}",
+    "tooltipPair": "Subtítulo #{id} · {start} – {end} · superposición {value} s",
+    "rowSr": "Se superpone con el subtítulo #{id} ({start} – {end}) durante {value} s.",
+    "trackBadge": "{count, plural, =1 {1 superposición} other {# superposiciones}}",
+    "reportTitle": "Subtítulos superpuestos",
+    "reportDescription": "El archivo se cargó. Nada está bloqueado: haz clic en un número de subtítulo para ir a él y corrige el tiempo cuando puedas.",
+    "trackCounts": "{overlaps, plural, =1 {1 superposición} other {# superposiciones}} · {invalid, plural, =1 {1 subtítulo no válido} other {# subtítulos no válidos}}",
+    "pairsSection": "Pares superpuestos",
+    "invalidSection": "Tiempo no válido",
+    "cueButton": "Subtítulo #{id}",
+    "goToCue": "Ir al subtítulo #{id} de la pista {track}",
+    "cueRange": "{start} – {end}",
+    "overlapDuration": "Superposición {value} s",
+    "invalidCue": "Termina antes o al mismo tiempo que empieza",
+    "morePairs": "{count, plural, =1 {…y 1 más} other {…y # más}}",
+    "close": "Cerrar",
+    "saveBadge": "{count, plural, =1 {1 solapamiento} other {# solapamientos}}",
+    "saveConfirmTitle": "¿Descargar con subtítulos solapados?",
+    "saveConfirmDescription": "La pista {track} tiene {count, plural, =1 {1 par solapado} other {# pares solapados}}. El archivo se guarda tal cual: no se corrige ningún tiempo ni se reordena ningún subtítulo.",
+    "downloadAnyway": "Descargar de todos modos",
+    "back": "Volver"
   }
 }

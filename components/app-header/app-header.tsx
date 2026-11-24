@@ -13,6 +13,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useSubtitleState } from "@/context/subtitle";
+import type { SubtitleFileLoadOptions } from "@/hooks/use-subtitle-file-loader";
 import { getTrackHandleColor } from "@/lib/track-colors";
 import type { SubtitleTrack } from "@/types/subtitle";
 import {
@@ -61,6 +62,10 @@ interface AppHeaderProps {
   isBulkOffsetOpen: boolean;
   onToggleBulkOffset: () => void;
   bulkOffsetDisabled: boolean;
+  onLoadSubtitleFile: (
+    file: File,
+    options?: SubtitleFileLoadOptions,
+  ) => Promise<void>;
 }
 
 export function AppHeader({
@@ -74,6 +79,7 @@ export function AppHeader({
   isBulkOffsetOpen,
   onToggleBulkOffset,
   bulkOffsetDisabled,
+  onLoadSubtitleFile,
 }: AppHeaderProps) {
   const t = useTranslations();
   const { tracks, activeTrackId } = useSubtitleState();
@@ -192,7 +198,7 @@ export function AppHeader({
 
         <FindReplace />
 
-        <LoadSrt />
+        <LoadSrt onLoadSubtitleFile={onLoadSubtitleFile} />
 
         <Label className="cursor-pointer">
           <Input

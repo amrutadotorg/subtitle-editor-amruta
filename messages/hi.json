@@ -238,7 +238,11 @@
     "invalidStartTitle": "अमान्य प्रारंभ समय",
     "invalidStartDescription": "प्रारंभ समय उपशीर्षक के समाप्ति समय से बाद नहीं हो सकता।",
     "invalidEndTitle": "अमान्य समाप्ति समय",
-    "invalidEndDescription": "समाप्ति समय उपशीर्षक के प्रारंभ समय से पहले नहीं हो सकता।"
+    "invalidEndDescription": "समाप्ति समय उपशीर्षक के प्रारंभ समय से पहले नहीं हो सकता।",
+    "invalidSubtitleFileTitle": "अमान्य सबटाइटल फ़ाइल",
+    "invalidSubtitleFileDescription": "कोई मान्य सबटाइटल नहीं मिला।",
+    "loadFailedTitle": "सबटाइटल लोड नहीं हो सके",
+    "unknownError": "अज्ञात त्रुटि"
   },
   "metadata": {
     "title": "उपशीर्षक संपादक - ओपन-सोर्स, वेब-आधारित SRT/VTT संपादक",
@@ -274,5 +278,28 @@
     "regionSummary": "ट्रैक {track} पर {start} से {end} तक का उपशीर्षक",
     "regionAnnouncement": "ट्रैक {track} पर {start} से {end} तक का उपशीर्षक चयनित।",
     "untitledTrack": "बिना नाम वाला ट्रैक"
+  },
+  "overlaps": {
+    "tooltipTitle": "{count, plural, =1 {1 क्यू से ओवरलैप} other {# क्यू से ओवरलैप}}",
+    "tooltipPair": "क्यू #{id} · {start} – {end} · ओवरलैप {value} सेकंड",
+    "rowSr": "क्यू #{id} ({start} – {end}) से {value} सेकंड ओवरलैप करता है।",
+    "trackBadge": "{count, plural, =1 {1 ओवरलैप} other {# ओवरलैप}}",
+    "reportTitle": "ओवरलैप होते सबटाइटल",
+    "reportDescription": "फ़ाइल लोड हो गई। कुछ भी अवरुद्ध नहीं है — किसी सबटाइटल नंबर पर क्लिक करके उस पर जाएँ और समय ठीक करें।",
+    "trackCounts": "{overlaps, plural, =1 {1 ओवरलैप} other {# ओवरलैप}} · {invalid, plural, =1 {1 अमान्य सबटाइटल} other {# अमान्य सबटाइटल}}",
+    "pairsSection": "ओवरलैप होते जोड़े",
+    "invalidSection": "अमान्य समय",
+    "cueButton": "सबटाइटल #{id}",
+    "goToCue": "ट्रैक {track} में सबटाइटल #{id} पर जाएँ",
+    "cueRange": "{start} – {end}",
+    "overlapDuration": "ओवरलैप {value} से",
+    "invalidCue": "शुरू होने से पहले या उसी समय समाप्त होता है",
+    "morePairs": "{count, plural, =1 {…और 1 और} other {…और # और}}",
+    "close": "बंद करें",
+    "saveBadge": "{count, plural, =1 {1 ओवरलैप} other {# ओवरलैप}}",
+    "saveConfirmTitle": "ओवरलैपिंग उपशीर्षकों के साथ डाउनलोड करें?",
+    "saveConfirmDescription": "ट्रैक {track} में {count, plural, =1 {1 ओवरलैपिंग जोड़ी} other {# ओवरलैपिंग जोड़ियाँ}} हैं। फ़ाइल बिल्कुल वैसी ही सहेजी जाएगी जैसी है — कोई समय ठीक नहीं किया जाएगा और कोई उपशीर्षक पुनः क्रमबद्ध नहीं होगा।",
+    "downloadAnyway": "फिर भी डाउनलोड करें",
+    "back": "वापस"
   }
 }

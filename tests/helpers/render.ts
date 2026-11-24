@@ -1,3 +1,9 @@
+/**
+ * Import this module BEFORE any component module: Radix picks its layout-effect
+ * implementation at module load time (`typeof window !== "undefined"`), so a
+ * component imported first falls back to `useEffect` and portals (Dialog,
+ * Tooltip) are not mounted synchronously inside `render`.
+ */
 import { cleanup, fireEvent, render, within } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import {
@@ -25,6 +31,8 @@ Object.defineProperty(globalThis, "navigator", {
   configurable: true,
 });
 globalThis.HTMLElement = window.HTMLElement;
+globalThis.Node = window.Node;
+globalThis.Element = window.Element;
 globalThis.SVGElement = window.SVGElement;
 globalThis.HTMLFormElement = window.HTMLFormElement;
 globalThis.MutationObserver =
@@ -44,6 +52,8 @@ globalThis.ResizeObserver =
     unobserve() {}
   };
 globalThis.PointerEvent = window.PointerEvent ?? window.MouseEvent;
+globalThis.CustomEvent = window.CustomEvent;
+globalThis.NodeFilter = window.NodeFilter;
 globalThis.requestAnimationFrame =
   window.requestAnimationFrame ??
   ((cb: FrameRequestCallback) => setTimeout(cb, 0));

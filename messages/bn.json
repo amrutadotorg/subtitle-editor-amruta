@@ -238,7 +238,11 @@
     "invalidStartTitle": "অবৈধ শুরুর সময়",
     "invalidStartDescription": "শুরুর সময় উপশিরোনামের শেষের সময়ের পরে হতে পারে না।",
     "invalidEndTitle": "অবৈধ শেষের সময়",
-    "invalidEndDescription": "শেষের সময় উপশিরোনামের শুরুর সময়ের আগে হতে পারে না।"
+    "invalidEndDescription": "শেষের সময় উপশিরোনামের শুরুর সময়ের আগে হতে পারে না।",
+    "invalidSubtitleFileTitle": "অবৈধ সাবটাইটেল ফাইল",
+    "invalidSubtitleFileDescription": "কোনো বৈধ সাবটাইটেল পাওয়া যায়নি।",
+    "loadFailedTitle": "সাবটাইটেল লোড করা যায়নি",
+    "unknownError": "অজানা ত্রুটি"
   },
   "metadata": {
     "title": "উপশিরোনাম সম্পাদক - ওপেন-সোর্স, ওয়েব-ভিত্তিক SRT/VTT সম্পাদক",
@@ -274,5 +278,28 @@
     "regionSummary": "ট্র্যাক {track} এ {start} থেকে {end} পর্যন্ত উপশিরোনাম",
     "regionAnnouncement": "ট্র্যাক {track} এ {start} থেকে {end} পর্যন্ত উপশিরোনাম নির্বাচিত।",
     "untitledTrack": "শিরোনামহীন ট্র্যাক"
+  },
+  "overlaps": {
+    "tooltipTitle": "{count, plural, =1 {1টি কিউ-এর সাথে ওভারল্যাপ} other {#টি কিউ-এর সাথে ওভারল্যাপ}}",
+    "tooltipPair": "কিউ #{id} · {start} – {end} · ওভারল্যাপ {value} সে.",
+    "rowSr": "কিউ #{id} ({start} – {end}) এর সাথে {value} সে. ওভারল্যাপ করে।",
+    "trackBadge": "{count, plural, =1 {1টি ওভারল্যাপ} other {#টি ওভারল্যাপ}}",
+    "reportTitle": "ওভারল্যাপিং সাবটাইটেল",
+    "reportDescription": "ফাইলটি লোড হয়েছে। কিছুই ব্লক করা হয়নি — কোনো সাবটাইটেল নম্বরে ক্লিক করে সেখানে যান এবং সময় ঠিক করুন।",
+    "trackCounts": "{overlaps, plural, =1 {১টি ওভারল্যাপ} other {#টি ওভারল্যাপ}} · {invalid, plural, =1 {১টি অবৈধ সাবটাইটেল} other {#টি অবৈধ সাবটাইটেল}}",
+    "pairsSection": "ওভারল্যাপিং জোড়া",
+    "invalidSection": "অবৈধ সময়",
+    "cueButton": "সাবটাইটেল #{id}",
+    "goToCue": "ট্র্যাক {track}-এ সাবটাইটেল #{id}-এ যান",
+    "cueRange": "{start} – {end}",
+    "overlapDuration": "ওভারল্যাপ {value} সে",
+    "invalidCue": "শুরুর আগে বা শুরুর সময়েই শেষ হয়",
+    "morePairs": "{count, plural, =1 {…আরও ১টি} other {…আরও #টি}}",
+    "close": "বন্ধ করুন",
+    "saveBadge": "{count} টি ওভারল্যাপ",
+    "saveConfirmTitle": "ওভারল্যাপিং উপশিরোনামসহ ডাউনলোড করবেন?",
+    "saveConfirmDescription": "{track} ট্র্যাকে {count} টি ওভারল্যাপিং জোড়া আছে। ফাইলটি ঠিক যেমন আছে তেমনই সংরক্ষিত হবে — কোনো সময় সংশোধন করা হবে না এবং কোনো উপশিরোনাম পুনর্বিন্যাস করা হবে না।",
+    "downloadAnyway": "তবুও ডাউনলোড করুন",
+    "back": "ফিরে যান"
   }
 }
