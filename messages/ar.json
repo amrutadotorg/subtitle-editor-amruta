@@ -238,7 +238,9 @@
     "invalidStartTitle": "وقت بدء غير صالح",
     "invalidStartDescription": "لا يمكن أن يكون وقت البدء بعد وقت انتهاء الترجمة.",
     "invalidEndTitle": "وقت انتهاء غير صالح",
-    "invalidEndDescription": "لا يمكن أن يكون وقت الانتهاء قبل وقت بدء الترجمة."
+    "invalidEndDescription": "لا يمكن أن يكون وقت الانتهاء قبل وقت بدء الترجمة.",
+    "invalidSubtitleFileTitle": "ملف ترجمة غير صالح",
+    "invalidSubtitleFileDescription": "لم يتم العثور على ترجمات صالحة."
   },
   "metadata": {
     "title": "محرر الترجمة — محرر SRT/VTT مفتوح المصدر ومبني على الويب",

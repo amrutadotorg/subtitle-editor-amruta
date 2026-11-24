@@ -238,7 +238,9 @@
     "invalidStartTitle": "Неверное время начала",
     "invalidStartDescription": "Время начала не может быть позже времени окончания субтитра.",
     "invalidEndTitle": "Неверное время окончания",
-    "invalidEndDescription": "Время окончания не может быть раньше времени начала субтитра."
+    "invalidEndDescription": "Время окончания не может быть раньше времени начала субтитра.",
+    "invalidSubtitleFileTitle": "Недопустимый файл субтитров",
+    "invalidSubtitleFileDescription": "Допустимые субтитры не найдены."
   },
   "metadata": {
     "title": "Редактор субтитров — open-source веб-редактор SRT/VTT",
