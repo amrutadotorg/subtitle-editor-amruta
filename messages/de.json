@@ -292,6 +292,11 @@
     "overlapDuration": "Überlappung {value} s",
     "invalidCue": "Endet vor oder mit dem Start",
     "morePairs": "{count, plural, =1 {…und 1 weiterer} other {…und # weitere}}",
-    "close": "Schließen"
+    "close": "Schließen",
+    "saveBadge": "{count, plural, =1 {1 Überlappung} other {# Überlappungen}}",
+    "saveConfirmTitle": "Mit überlappenden Untertiteln herunterladen?",
+    "saveConfirmDescription": "Spur {track} hat {count, plural, =1 {1 überlappendes Paar} other {# überlappende Paare}}. Die Datei wird genau so gespeichert, wie sie ist — kein Timing wird korrigiert und keine Zeile umsortiert.",
+    "downloadAnyway": "Trotzdem herunterladen",
+    "back": "Zurück"
   }
 }

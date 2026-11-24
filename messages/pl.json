@@ -294,6 +294,11 @@
     "overlapDuration": "Nakładka {value} s",
     "invalidCue": "Kończy się przed początkiem lub razem z nim",
     "morePairs": "{count, plural, =1 {…i 1 więcej} few {…i # więcej} many {…i # więcej} other {…i # więcej}}",
-    "close": "Zamknij"
+    "close": "Zamknij",
+    "saveBadge": "{count, plural, =1 {1 nakładka} few {# nakładki} many {# nakładek} other {# nakładki}}",
+    "saveConfirmTitle": "Pobrać mimo nakładających się napisów?",
+    "saveConfirmDescription": "Ścieżka {track} ma {count, plural, =1 {1 nakładającą się parę} few {# nakładające się pary} many {# nakładających się par} other {# nakładającej się pary}}. Plik zostanie zapisany dokładnie tak, jak jest — timing nie jest poprawiany, a kolejność napisów nie zmienia się.",
+    "downloadAnyway": "Pobierz mimo to",
+    "back": "Wróć"
   }
 }
