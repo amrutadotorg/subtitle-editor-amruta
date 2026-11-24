@@ -279,6 +279,18 @@
     "tooltipTitle": "{count, plural, one {Перекрывает # субтитр} few {Перекрывает # субтитра} many {Перекрывает # субтитров} other {Перекрывает # субтитра}}",
     "tooltipPair": "Субтитр #{id} · {start} – {end} · перекрытие {value} с",
     "rowSr": "Перекрывает субтитр #{id} ({start} – {end}) на {value} с.",
-    "trackBadge": "{count, plural, one {# перекрытие} few {# перекрытия} many {# перекрытий} other {# перекрытия}}"
+    "trackBadge": "{count, plural, one {# перекрытие} few {# перекрытия} many {# перекрытий} other {# перекрытия}}",
+    "reportTitle": "Перекрывающиеся субтитры",
+    "reportDescription": "Файл загружен. Ничего не блокируется — нажмите номер субтитра, чтобы перейти к нему, и исправьте тайминг, когда сможете.",
+    "trackCounts": "{overlaps, plural, =1 {1 перекрытие} few {# перекрытия} many {# перекрытий} other {# перекрытия}} · {invalid, plural, =1 {1 неверный субтитр} few {# неверных субтитра} many {# неверных субтитров} other {# неверного субтитра}}",
+    "pairsSection": "Перекрывающиеся пары",
+    "invalidSection": "Неверный тайминг",
+    "cueButton": "Субтитр #{id}",
+    "goToCue": "Перейти к субтитру #{id} на дорожке {track}",
+    "cueRange": "{start} – {end}",
+    "overlapDuration": "Перекрытие {value} с",
+    "invalidCue": "Заканчивается до начала или одновременно с ним",
+    "morePairs": "{count, plural, =1 {…и ещё 1} few {…и ещё #} many {…и ещё #} other {…и ещё #}}",
+    "close": "Закрыть"
   }
 }

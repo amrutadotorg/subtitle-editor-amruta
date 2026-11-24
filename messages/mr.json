@@ -279,6 +279,18 @@
     "tooltipTitle": "{count, plural, =1 {1 क्यूशी ओव्हरलॅप} other {# क्यूंशी ओव्हरलॅप}}",
     "tooltipPair": "क्यू #{id} · {start} – {end} · ओव्हरलॅप {value} सेकंद",
     "rowSr": "क्यू #{id} ({start} – {end}) शी {value} सेकंद ओव्हरलॅप होतो.",
-    "trackBadge": "{count, plural, =1 {1 ओव्हरलॅप} other {# ओव्हरलॅप}}"
+    "trackBadge": "{count, plural, =1 {1 ओव्हरलॅप} other {# ओव्हरलॅप}}",
+    "reportTitle": "ओव्हरलॅप होणारे सब्टायटल",
+    "reportDescription": "फाइल लोड झाली. काहीही ब्लॉक केलेले नाही — सब्टायटल क्रमांकावर क्लिक करून तिथे जा आणि वेळ दुरुस्त कर.",
+    "trackCounts": "{overlaps, plural, =1 {1 ओव्हरलॅप} other {# ओव्हरलॅप}} · {invalid, plural, =1 {1 अवैध सब्टायटल} other {# अवैध सब्टायटल}}",
+    "pairsSection": "ओव्हरलॅप होणार्या जोड्या",
+    "invalidSection": "अवैध वेळ",
+    "cueButton": "सब्टायटल #{id}",
+    "goToCue": "ट्रॅक {track} मधील सब्टायटल #{id} वर जा",
+    "cueRange": "{start} – {end}",
+    "overlapDuration": "ओव्हरलॅप {value} से",
+    "invalidCue": "सुरू होण्यापूर्वी किंवा त्याच वेळी संपते",
+    "morePairs": "{count, plural, =1 {…आणि 1 अधिक} other {…आणि # अधिक}}",
+    "close": "बंद करा"
   }
 }

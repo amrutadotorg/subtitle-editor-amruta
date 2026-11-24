@@ -280,6 +280,18 @@
     "tooltipTitle": "{count, plural, =1 {Nakłada się na 1 napis} few {Nakłada się na # napisy} many {Nakłada się na # napisów} other {Nakłada się na # napisu}}",
     "tooltipPair": "Napis #{id} · {start} – {end} · nakładka {value} s",
     "rowSr": "Nakłada się na napis #{id} ({start} – {end}) przez {value} s.",
-    "trackBadge": "{count, plural, =1 {1 nakładka} few {# nakładki} many {# nakładek} other {# nakładki}}"
+    "trackBadge": "{count, plural, =1 {1 nakładka} few {# nakładki} many {# nakładek} other {# nakładki}}",
+    "reportTitle": "Nakładające się napisy",
+    "reportDescription": "Plik został wczytany. Nic nie jest blokowane — kliknij numer napisu, aby do niego przejść, i popraw timing, kiedy możesz.",
+    "trackCounts": "{overlaps, plural, =1 {1 nakładka} few {# nakładki} many {# nakładek} other {# nakładki}} · {invalid, plural, =1 {1 nieprawidłowy napis} few {# nieprawidłowe napisy} many {# nieprawidłowych napisów} other {# nieprawidłowego napisu}}",
+    "pairsSection": "Nakładające się pary",
+    "invalidSection": "Nieprawidłowy timing",
+    "cueButton": "Napis #{id}",
+    "goToCue": "Przejdź do napisu #{id} na ścieżce {track}",
+    "cueRange": "{start} – {end}",
+    "overlapDuration": "Nakładka {value} s",
+    "invalidCue": "Kończy się przed początkiem lub razem z nim",
+    "morePairs": "{count, plural, =1 {…i 1 więcej} few {…i # więcej} many {…i # więcej} other {…i # więcej}}",
+    "close": "Zamknij"
   }
 }

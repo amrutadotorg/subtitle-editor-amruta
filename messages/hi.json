@@ -279,6 +279,18 @@
     "tooltipTitle": "{count, plural, =1 {1 क्यू से ओवरलैप} other {# क्यू से ओवरलैप}}",
     "tooltipPair": "क्यू #{id} · {start} – {end} · ओवरलैप {value} सेकंड",
     "rowSr": "क्यू #{id} ({start} – {end}) से {value} सेकंड ओवरलैप करता है।",
-    "trackBadge": "{count, plural, =1 {1 ओवरलैप} other {# ओवरलैप}}"
+    "trackBadge": "{count, plural, =1 {1 ओवरलैप} other {# ओवरलैप}}",
+    "reportTitle": "ओवरलैप होते सबटाइटल",
+    "reportDescription": "फ़ाइल लोड हो गई। कुछ भी अवरुद्ध नहीं है — किसी सबटाइटल नंबर पर क्लिक करके उस पर जाएँ और समय ठीक करें।",
+    "trackCounts": "{overlaps, plural, =1 {1 ओवरलैप} other {# ओवरलैप}} · {invalid, plural, =1 {1 अमान्य सबटाइटल} other {# अमान्य सबटाइटल}}",
+    "pairsSection": "ओवरलैप होते जोड़े",
+    "invalidSection": "अमान्य समय",
+    "cueButton": "सबटाइटल #{id}",
+    "goToCue": "ट्रैक {track} में सबटाइटल #{id} पर जाएँ",
+    "cueRange": "{start} – {end}",
+    "overlapDuration": "ओवरलैप {value} से",
+    "invalidCue": "शुरू होने से पहले या उसी समय समाप्त होता है",
+    "morePairs": "{count, plural, =1 {…और 1 और} other {…और # और}}",
+    "close": "बंद करें"
   }
 }

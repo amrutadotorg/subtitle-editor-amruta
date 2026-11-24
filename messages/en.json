@@ -280,6 +280,18 @@
     "tooltipTitle": "{count, plural, =1 {Overlaps 1 cue} other {Overlaps # cues}}",
     "tooltipPair": "Cue #{id} · {start} – {end} · overlap {value} s",
     "rowSr": "Overlaps cue #{id} ({start} – {end}) by {value} s.",
-    "trackBadge": "{count, plural, =1 {1 overlap} other {# overlaps}}"
+    "trackBadge": "{count, plural, =1 {1 overlap} other {# overlaps}}",
+    "reportTitle": "Overlapping cues",
+    "reportDescription": "The file was loaded. Nothing is blocked — click a cue number to jump to it and fix the timing when you can.",
+    "trackCounts": "{overlaps, plural, =1 {1 overlap} other {# overlaps}} · {invalid, plural, =1 {1 invalid cue} other {# invalid cues}}",
+    "pairsSection": "Overlapping pairs",
+    "invalidSection": "Invalid timing",
+    "cueButton": "Cue #{id}",
+    "goToCue": "Go to cue #{id} in track {track}",
+    "cueRange": "{start} – {end}",
+    "overlapDuration": "Overlap {value} s",
+    "invalidCue": "Ends at or before it starts",
+    "morePairs": "{count, plural, =1 {…and 1 more} other {…and # more}}",
+    "close": "Close"
   }
 }

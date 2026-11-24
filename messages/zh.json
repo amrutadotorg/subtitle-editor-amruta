@@ -279,6 +279,18 @@
     "tooltipTitle": "{count} 条字幕重叠",
     "tooltipPair": "字幕 #{id} · {start} – {end} · 重叠 {value} 秒",
     "rowSr": "与字幕 #{id}（{start} – {end}）重叠 {value} 秒。",
-    "trackBadge": "{count} 个重叠"
+    "trackBadge": "{count} 个重叠",
+    "reportTitle": "重叠的字幕",
+    "reportDescription": "文件已加载。没有阻止任何操作——点击字幕编号即可跳转，方便时再修正时间。",
+    "trackCounts": "{overlaps, plural, =1 {1 处重叠} other {# 处重叠}} · {invalid, plural, =1 {1 条无效字幕} other {# 条无效字幕}}",
+    "pairsSection": "重叠的字幕对",
+    "invalidSection": "无效时间",
+    "cueButton": "字幕 #{id}",
+    "goToCue": "前往轨道 {track} 的字幕 #{id}",
+    "cueRange": "{start} – {end}",
+    "overlapDuration": "重叠 {value} 秒",
+    "invalidCue": "在开始之前或同时结束",
+    "morePairs": "{count, plural, =1 {…还有 1 条} other {…还有 # 条}}",
+    "close": "关闭"
   }
 }
