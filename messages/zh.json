@@ -274,5 +274,11 @@
     "regionSummary": "{start} 至 {end} 的字幕，位于轨道 {track}",
     "regionAnnouncement": "已选中 {start} 至 {end} 的字幕，位于轨道 {track}。",
     "untitledTrack": "未命名轨道"
+  },
+  "overlaps": {
+    "tooltipTitle": "{count} 条字幕重叠",
+    "tooltipPair": "字幕 #{id} · {start} – {end} · 重叠 {value} 秒",
+    "rowSr": "与字幕 #{id}（{start} – {end}）重叠 {value} 秒。",
+    "trackBadge": "{count} 个重叠"
   }
 }

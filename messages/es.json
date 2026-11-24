@@ -274,5 +274,11 @@
     "regionSummary": "Subtítulo de {start} a {end} en la pista {track}",
     "regionAnnouncement": "Subtítulo seleccionado de {start} a {end} en la pista {track}.",
     "untitledTrack": "Pista sin título"
+  },
+  "overlaps": {
+    "tooltipTitle": "{count, plural, =1 {Se superpone con 1 subtítulo} other {Se superpone con # subtítulos}}",
+    "tooltipPair": "Subtítulo #{id} · {start} – {end} · superposición {value} s",
+    "rowSr": "Se superpone con el subtítulo #{id} ({start} – {end}) durante {value} s.",
+    "trackBadge": "{count, plural, =1 {1 superposición} other {# superposiciones}}"
   }
 }

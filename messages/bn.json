@@ -274,5 +274,11 @@
     "regionSummary": "ট্র্যাক {track} এ {start} থেকে {end} পর্যন্ত উপশিরোনাম",
     "regionAnnouncement": "ট্র্যাক {track} এ {start} থেকে {end} পর্যন্ত উপশিরোনাম নির্বাচিত।",
     "untitledTrack": "শিরোনামহীন ট্র্যাক"
+  },
+  "overlaps": {
+    "tooltipTitle": "{count, plural, =1 {1টি কিউ-এর সাথে ওভারল্যাপ} other {#টি কিউ-এর সাথে ওভারল্যাপ}}",
+    "tooltipPair": "কিউ #{id} · {start} – {end} · ওভারল্যাপ {value} সে.",
+    "rowSr": "কিউ #{id} ({start} – {end}) এর সাথে {value} সে. ওভারল্যাপ করে।",
+    "trackBadge": "{count, plural, =1 {1টি ওভারল্যাপ} other {#টি ওভারল্যাপ}}"
   }
 }

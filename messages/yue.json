@@ -271,5 +271,11 @@
     "regionSummary": "{start} 至 {end} 嘅字幕，喺第 {track} 條軌",
     "regionAnnouncement": "已揀咗由 {start} 至 {end} 嘅字幕，喺第 {track} 條軌。",
     "untitledTrack": "未命名嘅軌"
+  },
+  "overlaps": {
+    "tooltipTitle": "{count} 條字幕重疊",
+    "tooltipPair": "字幕 #{id} · {start} – {end} · 重疊 {value} 秒",
+    "rowSr": "同字幕 #{id}（{start} – {end}）重疊 {value} 秒。",
+    "trackBadge": "{count} 個重疊"
   }
 }

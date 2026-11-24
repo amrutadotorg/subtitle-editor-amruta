@@ -275,5 +275,11 @@
     "regionSummary": "Napis od {start} do {end} na ścieżce {track}",
     "regionAnnouncement": "Zaznaczono napis od {start} do {end} na ścieżce {track}.",
     "untitledTrack": "Ścieżka bez nazwy"
+  },
+  "overlaps": {
+    "tooltipTitle": "{count, plural, =1 {Nakłada się na 1 napis} few {Nakłada się na # napisy} many {Nakłada się na # napisów} other {Nakłada się na # napisu}}",
+    "tooltipPair": "Napis #{id} · {start} – {end} · nakładka {value} s",
+    "rowSr": "Nakłada się na napis #{id} ({start} – {end}) przez {value} s.",
+    "trackBadge": "{count, plural, =1 {1 nakładka} few {# nakładki} many {# nakładek} other {# nakładki}}"
   }
 }
