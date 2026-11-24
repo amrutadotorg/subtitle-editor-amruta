@@ -273,5 +273,11 @@
     "regionSummary": "Untertitel von {start} bis {end} in Spur {track}",
     "regionAnnouncement": "Untertitel von {start} bis {end} in Spur {track} ausgewählt.",
     "untitledTrack": "Unbenannte Spur"
+  },
+  "overlaps": {
+    "tooltipTitle": "{count, plural, =1 {Überschneidet 1 Untertitel} other {Überschneidet # Untertitel}}",
+    "tooltipPair": "Untertitel #{id} · {start} – {end} · Überlappung {value} s",
+    "rowSr": "Überschneidet Untertitel #{id} ({start} – {end}) um {value} s.",
+    "trackBadge": "{count, plural, =1 {1 Überlappung} other {# Überlappungen}}"
   }
 }

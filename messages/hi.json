@@ -274,5 +274,11 @@
     "regionSummary": "ट्रैक {track} पर {start} से {end} तक का उपशीर्षक",
     "regionAnnouncement": "ट्रैक {track} पर {start} से {end} तक का उपशीर्षक चयनित।",
     "untitledTrack": "बिना नाम वाला ट्रैक"
+  },
+  "overlaps": {
+    "tooltipTitle": "{count, plural, =1 {1 क्यू से ओवरलैप} other {# क्यू से ओवरलैप}}",
+    "tooltipPair": "क्यू #{id} · {start} – {end} · ओवरलैप {value} सेकंड",
+    "rowSr": "क्यू #{id} ({start} – {end}) से {value} सेकंड ओवरलैप करता है।",
+    "trackBadge": "{count, plural, =1 {1 ओवरलैप} other {# ओवरलैप}}"
   }
 }

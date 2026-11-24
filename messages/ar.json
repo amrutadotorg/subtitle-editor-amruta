@@ -274,5 +274,11 @@
     "regionSummary": "ترجمة من {start} إلى {end} في المسار {track}",
     "regionAnnouncement": "ترجمة محددة من {start} إلى {end} في المسار {track}.",
     "untitledTrack": "مسار بدون عنوان"
+  },
+  "overlaps": {
+    "tooltipTitle": "{count, plural, =1 {يتداخل مع ترجمة واحدة} other {يتداخل مع # ترجمات}}",
+    "tooltipPair": "الترجمة #{id} · {start} – {end} · التداخل {value} ثانية",
+    "rowSr": "يتداخل مع الترجمة #{id} ({start} – {end}) بمقدار {value} ثانية.",
+    "trackBadge": "{count, plural, =1 {تداخل واحد} other {# تداخلات}}"
   }
 }

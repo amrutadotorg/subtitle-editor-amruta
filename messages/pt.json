@@ -274,5 +274,11 @@
     "regionSummary": "Legenda de {start} a {end} na faixa {track}",
     "regionAnnouncement": "Legenda selecionada de {start} a {end} na faixa {track}.",
     "untitledTrack": "Faixa sem título"
+  },
+  "overlaps": {
+    "tooltipTitle": "{count, plural, =1 {Sobreposto a 1 legenda} other {Sobreposto a # legendas}}",
+    "tooltipPair": "Legenda #{id} · {start} – {end} · sobreposição {value} s",
+    "rowSr": "Sobreposto à legenda #{id} ({start} – {end}) por {value} s.",
+    "trackBadge": "{count, plural, =1 {1 sobreposição} other {# sobreposições}}"
   }
 }

@@ -274,5 +274,11 @@
     "regionSummary": "Sous-titre de {start} à {end} sur la piste {track}",
     "regionAnnouncement": "Sous-titre sélectionné de {start} à {end} sur la piste {track}.",
     "untitledTrack": "Piste sans titre"
+  },
+  "overlaps": {
+    "tooltipTitle": "{count, plural, =1 {Chevauche 1 sous-titre} other {Chevauche # sous-titres}}",
+    "tooltipPair": "Sous-titre #{id} · {start} – {end} · chevauchement {value} s",
+    "rowSr": "Chevauche le sous-titre #{id} ({start} – {end}) de {value} s.",
+    "trackBadge": "{count, plural, =1 {1 chevauchement} other {# chevauchements}}"
   }
 }

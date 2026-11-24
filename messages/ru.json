@@ -274,5 +274,11 @@
     "regionSummary": "Субтитр от {start} до {end} на дорожке {track}",
     "regionAnnouncement": "Выбран субтитр от {start} до {end} на дорожке {track}.",
     "untitledTrack": "Дорожка без названия"
+  },
+  "overlaps": {
+    "tooltipTitle": "{count, plural, one {Перекрывает # субтитр} few {Перекрывает # субтитра} many {Перекрывает # субтитров} other {Перекрывает # субтитра}}",
+    "tooltipPair": "Субтитр #{id} · {start} – {end} · перекрытие {value} с",
+    "rowSr": "Перекрывает субтитр #{id} ({start} – {end}) на {value} с.",
+    "trackBadge": "{count, plural, one {# перекрытие} few {# перекрытия} many {# перекрытий} other {# перекрытия}}"
   }
 }
