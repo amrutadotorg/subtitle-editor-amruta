@@ -56,6 +56,32 @@ export type OverlapPartnersByUuid = Record<string, OverlapPartner[]>;
  */
 export const OVERLAP_PAIR_DISPLAY_LIMIT = 100;
 
+/** Formats offered by the save dialog; only some carry cue timings. */
+export type OverlapDownloadFormat = "srt" | "vtt" | "txt" | "csv";
+
+/**
+ * Whether saving `format` for a track with `counts` needs a confirmation first.
+ * TXT and CSV drop the cue timings, so an overlap cannot corrupt them.
+ */
+export const needsOverlapConfirmation = (
+  format: OverlapDownloadFormat,
+  counts: TrackOverlapCounts | undefined,
+): boolean =>
+  (format === "srt" || format === "vtt") && (counts?.overlaps ?? 0) > 0;
+
+/**
+ * Applies the display cap to one pair list while keeping the number of hidden
+ * rows for the "…and N more" line. Shared by the report and the save
+ * confirmation so both truncate identically.
+ */
+export function limitOverlapPairs(pairs: OverlapPair[]): {
+  displayed: OverlapPair[];
+  hiddenCount: number;
+} {
+  const displayed = pairs.slice(0, OVERLAP_PAIR_DISPLAY_LIMIT);
+  return { displayed, hiddenCount: pairs.length - displayed.length };
+}
+
 // ---------------------------------------------------------------------------
 // Internal helpers
 // ---------------------------------------------------------------------------

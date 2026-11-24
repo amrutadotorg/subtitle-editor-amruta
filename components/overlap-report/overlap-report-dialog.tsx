@@ -1,5 +1,6 @@
 "use client";
 
+import OverlapPairList from "@/components/overlap-report/overlap-pair-list";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,11 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  OVERLAP_PAIR_DISPLAY_LIMIT,
-  type OverlapCueRef,
-  type OverlapReport,
-} from "@/lib/overlap-report";
+import { limitOverlapPairs, type OverlapReport } from "@/lib/overlap-report";
 import { cn } from "@/lib/utils";
 import type { SubtitleTrack } from "@/types/subtitle";
 import { useTranslations } from "next-intl";
@@ -28,9 +25,6 @@ interface OverlapReportDialogProps {
   onNavigate: (trackId: string, uuid: string) => void;
   className?: string;
 }
-
-const formatOverlapSeconds = (overlapMs: number): string =>
-  (overlapMs / 1000).toFixed(3);
 
 export default function OverlapReportDialog({
   open,
@@ -54,77 +48,12 @@ export default function OverlapReportDialog({
     return null;
   }
 
-  const displayedPairs = report.pairs.slice(0, OVERLAP_PAIR_DISPLAY_LIMIT);
-  const hiddenPairCount = report.pairs.length - displayedPairs.length;
+  const { displayed: displayedPairs, hiddenCount: hiddenPairCount } =
+    limitOverlapPairs(report.pairs);
   const tracksWithIssues = tracks.filter((track) => {
     const counts = report.countsByTrack[track.id];
     return counts ? counts.overlaps > 0 || counts.invalid > 0 : false;
   });
-
-  const renderCueButton = (
-    trackId: string,
-    trackName: string,
-    cue: OverlapCueRef,
-  ) => (
-    <button
-      type="button"
-      onClick={() => handleNavigate(trackId, cue.uuid)}
-      aria-label={t("overlaps.goToCue", { id: cue.id, track: trackName })}
-      className="cursor-pointer rounded-xs px-1 text-sm font-semibold font-mono text-[var(--ruby-9)] underline-offset-2 hover:underline focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-    >
-      {t("overlaps.cueButton", { id: cue.id })}
-    </button>
-  );
-
-  const renderPairRow = (
-    track: SubtitleTrack,
-    pair: OverlapReport["pairs"][number],
-  ) => (
-    <li
-      key={`${pair.a.uuid}:${pair.b.uuid}`}
-      data-overlap-pair=""
-      className="grid gap-1 rounded border border-border px-3 py-2 text-sm"
-    >
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-        {renderCueButton(track.id, track.name, pair.a)}
-        <span className="font-mono text-xs tabular-nums">
-          {t("overlaps.cueRange", { start: pair.a.start, end: pair.a.end })}
-        </span>
-        {renderCueButton(track.id, track.name, pair.b)}
-        <span className="font-mono text-xs tabular-nums">
-          {t("overlaps.cueRange", { start: pair.b.start, end: pair.b.end })}
-        </span>
-      </div>
-      <span className="text-xs text-muted-foreground">
-        {t("overlaps.overlapDuration", {
-          value: formatOverlapSeconds(pair.overlapMs),
-        })}
-      </span>
-    </li>
-  );
-
-  const renderInvalidRow = (
-    track: SubtitleTrack,
-    entry: OverlapReport["invalidTiming"][number],
-  ) => (
-    <li
-      key={entry.cue.uuid}
-      className="grid gap-1 rounded border border-border px-3 py-2 text-sm"
-    >
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-        {renderCueButton(track.id, track.name, entry.cue)}
-        <span className="font-mono text-xs tabular-nums">
-          {t("overlaps.cueRange", {
-            start: entry.cue.start,
-            end: entry.cue.end,
-          })}
-        </span>
-        <span className="text-xs text-muted-foreground">
-          {t("overlaps.invalidCue")}
-        </span>
-      </div>
-    </li>
-  );
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -166,29 +95,13 @@ export default function OverlapReportDialog({
                   </span>
                 </h3>
 
-                {trackPairs.length > 0 && (
-                  <div className="space-y-2">
-                    <h4 className="text-xs font-semibold">
-                      {t("overlaps.pairsSection")}
-                    </h4>
-                    <ul className="space-y-1">
-                      {trackPairs.map((pair) => renderPairRow(track, pair))}
-                    </ul>
-                  </div>
-                )}
-
-                {trackInvalid.length > 0 && (
-                  <div className="mt-3 space-y-2">
-                    <h4 className="text-xs font-semibold">
-                      {t("overlaps.invalidSection")}
-                    </h4>
-                    <ul className="space-y-1">
-                      {trackInvalid.map((entry) =>
-                        renderInvalidRow(track, entry),
-                      )}
-                    </ul>
-                  </div>
-                )}
+                <OverlapPairList
+                  trackId={track.id}
+                  trackName={track.name}
+                  pairs={trackPairs}
+                  invalidTiming={trackInvalid}
+                  onNavigate={handleNavigate}
+                />
               </section>
             );
           })}

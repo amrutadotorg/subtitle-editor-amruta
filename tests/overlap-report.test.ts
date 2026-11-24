@@ -5,6 +5,8 @@ import {
   buildOverlapPartnerMap,
   buildOverlapReport,
   buildTrackOverlapReport,
+  limitOverlapPairs,
+  needsOverlapConfirmation,
 } from "../lib/overlap-report";
 import { secondsToTime } from "../lib/utils";
 import type { Subtitle, SubtitleTrack } from "../types/subtitle";
@@ -288,4 +290,46 @@ test("a 5000 cue track with one neighbour overlap per cue reports 4999 pairs", (
   assert.deepEqual(report.countsByTrack.t1, { overlaps: 4999, invalid: 0 });
   assert.equal(report.pairs[0]?.overlapMs, 500);
   assert.equal(report.pairs.at(-1)?.overlapMs, 500);
+});
+
+// ---------------------------------------------------------------------------
+// Save-dialog policy
+// ---------------------------------------------------------------------------
+
+test("only SRT and VTT need confirmation, and only with overlaps", () => {
+  const overlapping = { overlaps: 2, invalid: 0 };
+  const clean = { overlaps: 0, invalid: 3 };
+
+  assert.equal(needsOverlapConfirmation("srt", overlapping), true);
+  assert.equal(needsOverlapConfirmation("vtt", overlapping), true);
+  assert.equal(needsOverlapConfirmation("txt", overlapping), false);
+  assert.equal(needsOverlapConfirmation("csv", overlapping), false);
+
+  assert.equal(needsOverlapConfirmation("srt", clean), false);
+  assert.equal(needsOverlapConfirmation("vtt", clean), false);
+  assert.equal(needsOverlapConfirmation("srt", undefined), false);
+});
+
+test("the pair display cap keeps the hidden count for the more-pairs line", () => {
+  // Every cue lasts 3 s and starts 2 s after the previous one, so each cue
+  // overlaps exactly its successor: N cues give N - 1 pairs.
+  const pairs = buildOverlapReport([
+    makeTrack(
+      "t1",
+      Array.from({ length: OVERLAP_PAIR_DISPLAY_LIMIT + 2 }, (_, index) =>
+        makeSubtitle(
+          index + 1,
+          secondsToTime(index * 2),
+          secondsToTime(index * 2 + 3),
+        ),
+      ),
+    ),
+  ]).pairs;
+  assert.equal(pairs.length, OVERLAP_PAIR_DISPLAY_LIMIT + 1);
+
+  const { displayed, hiddenCount } = limitOverlapPairs(pairs);
+
+  assert.equal(displayed.length, OVERLAP_PAIR_DISPLAY_LIMIT);
+  assert.equal(hiddenCount, pairs.length - OVERLAP_PAIR_DISPLAY_LIMIT);
+  assert.deepEqual(limitOverlapPairs([]), { displayed: [], hiddenCount: 0 });
 });
