@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useOverlapReport } from "@/hooks/use-overlap-report";
+import type { SubtitleFileLoadOptions } from "@/hooks/use-subtitle-file-loader";
 import { buildOverlapPartnerMap } from "@/lib/overlap-report";
 import { getTrackColor, getTrackHandleColor } from "@/lib/track-colors";
 import type { SubtitleTrack } from "@/types/subtitle";
@@ -34,7 +35,10 @@ interface TrackTabsProps {
   onTimeJump: (seconds: number) => void;
   jumpDuration: number;
   resumeUuid: string | null;
-  onLoadSubtitleFile: (file: File) => Promise<void>;
+  onLoadSubtitleFile: (
+    file: File,
+    options?: SubtitleFileLoadOptions,
+  ) => Promise<void>;
   onStartFromScratch: () => void;
 }
 
@@ -174,6 +178,7 @@ export default function TrackTabs({
             jumpDuration={jumpDuration}
             resumeUuid={activeTrackId === track.id ? resumeUuid : null}
             overlapPartnersByUuid={overlapPartnersByUuid}
+            onLoadSubtitleFile={onLoadSubtitleFile}
           />
         </TabsContent>
       ))}

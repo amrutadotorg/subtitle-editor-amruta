@@ -74,16 +74,7 @@ export default function LoadSrt({
     if (!file) return;
 
     try {
-      await onLoadSubtitleFile(file, {
-        trackId,
-        onEmpty: () => {
-          toast({
-            title: "Invalid subtitle file",
-            description: "No valid cues were found.",
-            variant: "destructive",
-          });
-        },
-      });
+      await onLoadSubtitleFile(file, { trackId });
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : String(err);
       toast({

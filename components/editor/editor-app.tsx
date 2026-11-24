@@ -38,7 +38,7 @@ import { usePendingScroll } from "@/hooks/use-pending-scroll";
 import { usePlaybackState } from "@/hooks/use-playback-state";
 import { useResumeCursor } from "@/hooks/use-resume-cursor";
 import { useSubtitleFileLoader } from "@/hooks/use-subtitle-file-loader";
-import type { SubtitleFileLoadOptions } from "@/hooks/use-subtitle-file-loader";
+import { useToast } from "@/hooks/use-toast";
 import { useSubtitleShortcuts } from "@/hooks/use-subtitle-shortcuts";
 import { usePlaybackVisibilityCoordinator } from "@/hooks/use-visibility-playback";
 import { isMediaFile, isSubtitleFile } from "@/lib/file-utils";
@@ -201,6 +201,28 @@ function MainContent() {
     trackCount: tracks.length,
     disabled: bulkOffsetDisabled,
   });
+
+  const { toast } = useToast();
+
+  const handleImportedReport = useCallback((report: OverlapReport) => {
+    if (report.pairs.length === 0 && report.invalidTiming.length === 0) {
+      return;
+    }
+    setOverlapReport(report);
+  }, []);
+
+  const handleEmptyImport = useCallback(() => {
+    // A URL import sets the jump flag before parsing; clear it when nothing loaded.
+    shouldJumpToFirstRef.current = false;
+    toast({
+      title: t("validation.invalidSubtitleFileTitle"),
+      description: t("validation.invalidSubtitleFileDescription"),
+      variant: "destructive",
+    });
+  }, [t, toast]);
+
+  // Every import path (header Load, drop, both pickers, URL) runs through this
+  // one loader; its report/empty callbacks are the single post-import seam.
   const { loadSubtitleFile, handleStartFromScratch } = useSubtitleFileLoader({
     activeTrackId,
     activeTrackIsEmpty,
@@ -210,25 +232,9 @@ function MainContent() {
     loadSubtitlesIntoTrack,
     renameTrack,
     setInitialSubtitles,
+    onImported: handleImportedReport,
+    onEmpty: handleEmptyImport,
   });
-
-  const handleImportedReport = useCallback((report: OverlapReport) => {
-    if (report.pairs.length === 0 && report.invalidTiming.length === 0) {
-      return;
-    }
-    setOverlapReport(report);
-  }, []);
-
-  // Only the header "Load" path opts into the post-import report for now; the
-  // remaining import paths are wired by #27 through the same hook.
-  const loadSubtitleFileFromHeader = useCallback(
-    (file: File, options?: SubtitleFileLoadOptions) =>
-      loadSubtitleFile(file, {
-        ...options,
-        onImported: handleImportedReport,
-      }),
-    [loadSubtitleFile, handleImportedReport],
-  );
 
   // Load shared file from URL query parameter (e.g. ?import=final_subtitles_xyz.vtt)
   useSharedSubtitleUrlLoader({
@@ -345,7 +351,7 @@ function MainContent() {
           isBulkOffsetOpen={isBulkOffsetOpen}
           onToggleBulkOffset={toggleBulkOffset}
           bulkOffsetDisabled={bulkOffsetDisabled}
-          onLoadSubtitleFile={loadSubtitleFileFromHeader}
+          onLoadSubtitleFile={loadSubtitleFile}
         />
 
         <OverlapReportDialog
