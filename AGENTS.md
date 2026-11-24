@@ -58,6 +58,20 @@ npm run lint && npm run format:check && npm run test && npm run knip && npm run 
 
 Infrastructure that is shared with other stacks (compose project layout, nginx upstream pinning, DIUN defaults) is documented in `~/containers/AGENTS.md` — that file wins for cross-stack rules.
 
+## Agent skills
+
+### Issue tracker
+
+Issues and specs live as GitHub issues in `amrutadotorg/subtitle-editor-amruta`; use the `gh` CLI. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Canonical five: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: `GLOSSARY.md` + `docs/adr/` at the repo root (created lazily). See `docs/agents/domain.md`.
+
 <!-- BEGIN:nextjs-agent-rules -->
 
 ## This is NOT the Next.js you know
