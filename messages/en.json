@@ -292,6 +292,11 @@
     "overlapDuration": "Overlap {value} s",
     "invalidCue": "Ends at or before it starts",
     "morePairs": "{count, plural, =1 {…and 1 more} other {…and # more}}",
-    "close": "Close"
+    "close": "Close",
+    "saveBadge": "{count, plural, =1 {1 overlap} other {# overlaps}}",
+    "saveConfirmTitle": "Download with overlapping cues?",
+    "saveConfirmDescription": "Track {track} has {count, plural, =1 {1 overlapping pair} other {# overlapping pairs}}. The file is saved exactly as it is — no timing is fixed and no cue is reordered.",
+    "downloadAnyway": "Download anyway",
+    "back": "Back"
   }
 }

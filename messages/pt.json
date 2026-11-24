@@ -291,6 +291,11 @@
     "overlapDuration": "Sobreposição {value} s",
     "invalidCue": "Termina antes ou no início",
     "morePairs": "{count, plural, =1 {…e mais 1} other {…e mais #}}",
-    "close": "Fechar"
+    "close": "Fechar",
+    "saveBadge": "{count, plural, =1 {1 sobreposição} other {# sobreposições}}",
+    "saveConfirmTitle": "Baixar com legendas sobrepostas?",
+    "saveConfirmDescription": "A faixa {track} tem {count, plural, =1 {1 par sobreposto} other {# pares sobrepostos}}. O arquivo é salvo exatamente como está — nenhum tempo é corrigido e nenhuma legenda é reordenada.",
+    "downloadAnyway": "Baixar mesmo assim",
+    "back": "Voltar"
   }
 }

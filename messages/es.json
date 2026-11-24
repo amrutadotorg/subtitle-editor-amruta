@@ -291,6 +291,11 @@
     "overlapDuration": "Superposición {value} s",
     "invalidCue": "Termina antes o al mismo tiempo que empieza",
     "morePairs": "{count, plural, =1 {…y 1 más} other {…y # más}}",
-    "close": "Cerrar"
+    "close": "Cerrar",
+    "saveBadge": "{count, plural, =1 {1 solapamiento} other {# solapamientos}}",
+    "saveConfirmTitle": "¿Descargar con subtítulos solapados?",
+    "saveConfirmDescription": "La pista {track} tiene {count, plural, =1 {1 par solapado} other {# pares solapados}}. El archivo se guarda tal cual: no se corrige ningún tiempo ni se reordena ningún subtítulo.",
+    "downloadAnyway": "Descargar de todos modos",
+    "back": "Volver"
   }
 }

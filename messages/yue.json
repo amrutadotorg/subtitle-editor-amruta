@@ -288,6 +288,11 @@
     "overlapDuration": "重疊 {value} 秒",
     "invalidCue": "喺開始之前或者同時結束",
     "morePairs": "{count, plural, =1 {…仲有 1 個} other {…仲有 # 個}}",
-    "close": "閂"
+    "close": "閂",
+    "saveBadge": "{count} 個重疊",
+    "saveConfirmTitle": "有字幕重疊，照樣下載？",
+    "saveConfirmDescription": "{track} 呢條軌有 {count} 對重疊字幕。檔案會原封不動咁儲存 — 唔會修正時間，亦都唔會改字幕次序。",
+    "downloadAnyway": "照樣下載",
+    "back": "返去"
   }
 }

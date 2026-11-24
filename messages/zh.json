@@ -291,6 +291,11 @@
     "overlapDuration": "重叠 {value} 秒",
     "invalidCue": "在开始之前或同时结束",
     "morePairs": "{count, plural, =1 {…还有 1 条} other {…还有 # 条}}",
-    "close": "关闭"
+    "close": "关闭",
+    "saveBadge": "{count} 个重叠",
+    "saveConfirmTitle": "存在重叠字幕，仍要下载吗？",
+    "saveConfirmDescription": "轨道 {track} 有 {count} 对重叠字幕。文件将按原样保存——不会修正任何时间，也不会重新排列字幕。",
+    "downloadAnyway": "仍然下载",
+    "back": "返回"
   }
 }
